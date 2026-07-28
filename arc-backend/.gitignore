@@ -1,8 +1,8 @@
-# Compiled Java class files
+# Maven build outputs
+target/
 *.class
 
-# Build outputs
-target/
+# Package files
 *.jar
 *.war
 *.ear
@@ -10,14 +10,14 @@ target/
 *.tar.gz
 *.rar
 
-# Bundled binaries & archives
+# Bundled binaries
 apache-maven-*/
 maven.zip
 
-# Log files
+# Logs
 *.log
 
-# IDE & Editor configuration
+# IDE files
 .vscode/
 .idea/
 *.iws
@@ -28,6 +28,6 @@ maven.zip
 .project
 .factorypath
 
-# OS generated files
+# OS files
 .DS_Store
 Thumbs.db
