@@ -31,15 +31,14 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({ onSelectRole, onBa
 
       {/* Role Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        
+
         {/* Manager Card */}
         <div
           onClick={() => setSelectedRole('manager')}
-          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-200 ${
-            selectedRole === 'manager'
+          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-200 ${selectedRole === 'manager'
               ? 'border-[#5E40FF] bg-indigo-50/20 shadow-lg shadow-indigo-500/10 ring-2 ring-[#5E40FF]/20'
               : 'border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50/50'
-          }`}
+            }`}
         >
           {/* Active Check Indicator */}
           {selectedRole === 'manager' && (
@@ -72,11 +71,10 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({ onSelectRole, onBa
         {/* Operator Card */}
         <div
           onClick={() => setSelectedRole('operator')}
-          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-200 ${
-            selectedRole === 'operator'
+          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-200 ${selectedRole === 'operator'
               ? 'border-[#5E40FF] bg-indigo-50/20 shadow-lg shadow-indigo-500/10 ring-2 ring-[#5E40FF]/20'
               : 'border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50/50'
-          }`}
+            }`}
         >
           {/* Active Check Indicator */}
           {selectedRole === 'operator' && (
@@ -130,3 +128,6 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({ onSelectRole, onBa
     </div>
   );
 };
+
+export default RoleSelection;
+

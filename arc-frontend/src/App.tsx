@@ -16,10 +16,10 @@ export function App() {
 
   const handleSignOut = () => {
     setIsRoleConfirmed(false);
-    setSelectedRole('operator'); // reset back to default choice for next login
+    setSelectedRole('operator');
   };
 
-  // If user has confirmed their role, show the dashboard
+  // If user has confirmed their role, show the main system layout
   if (isRoleConfirmed) {
     return (
       <DashboardLayout
@@ -38,7 +38,7 @@ export function App() {
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Top Branding Header */}
-      <div className="mb-6 flex items-center space-x-3 text-gray-800 animate-fade-in">
+      <div className="mb-6 flex items-center space-x-3 text-gray-800">
         <div className="w-10 h-10 rounded-xl bg-[#5E40FF] text-white flex items-center justify-center shadow-lg shadow-indigo-500/30">
           <Factory className="w-6 h-6" />
         </div>
@@ -71,4 +71,3 @@ export function App() {
 }
 
 export default App;
-
