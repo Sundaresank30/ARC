@@ -5,6 +5,7 @@ import { StatusCards } from './StatusCards';
 import { ProductionExceptions } from './ProductionExceptions';
 import { LeakageTestingView } from '../LeakageTesting/LeakageTestingView';
 import { DataEmbossingPage } from '../DataEmbossing/DataEmbossingPage';
+import { MachinePage } from '../Machine/MachinePage';
 import { UserRole } from '../../types';
 
 interface DashboardLayoutProps {
