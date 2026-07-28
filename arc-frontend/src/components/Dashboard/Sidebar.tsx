@@ -7,7 +7,8 @@ import {
   Droplet, 
   Settings, 
   Lock, 
-  LogOut 
+  LogOut,
+  Cpu
 } from 'lucide-react';
 import { UserRole } from '../../types';
 
@@ -35,6 +36,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'data-preparation',
       label: 'Data Preparation',
       icon: Database,
+      disabled: false,
+    },
+    {
+      id: 'machine',
+      label: 'Machine',
+      icon: Cpu,
       disabled: false,
     },
     {

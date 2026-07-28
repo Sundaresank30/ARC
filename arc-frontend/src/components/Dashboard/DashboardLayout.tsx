@@ -5,6 +5,7 @@ import { StatusCards } from './StatusCards';
 import { ProductionExceptions } from './ProductionExceptions';
 import { LeakageTestingView } from '../LeakageTesting/LeakageTestingView';
 import { DataEmbossingPage } from '../DataEmbossing/DataEmbossingPage';
+import { MachinePage } from '../Machine/MachinePage';
 import { UserRole } from '../../types';
 
 interface DashboardLayoutProps {
@@ -77,6 +78,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </div>
         ) : currentTab === 'leakage-testing' ? (
           <LeakageTestingView />
+        ) : currentTab === 'machine' ? (
+          <MachinePage />
         ) : currentTab === 'data-embossing' ? (
           <DataEmbossingPage />
         ) : (
