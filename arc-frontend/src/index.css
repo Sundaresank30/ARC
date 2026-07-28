@@ -1,0 +1,50 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@layer base {
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #f3f4f6;
+    color: #1f2937;
+  }
+}
+
+/* Custom transitions and hover cards */
+.role-card {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.role-card:hover {
+  transform: translateY(-3px);
+}
+
+.role-card-selected {
+  border-color: #5E40FF !important;
+  box-shadow: 0 10px 25px -5px rgba(94, 64, 255, 0.15), 0 8px 10px -6px rgba(94, 64, 255, 0.1) !important;
+}
+
+/* Primary purple button styling */
+.btn-primary-purple {
+  background-color: #5E40FF;
+}
+
+.btn-primary-purple:hover {
+  background-color: #4b2bee;
+}
+
+/* Micro animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
