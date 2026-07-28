@@ -49,9 +49,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'leakage-testing',
       label: 'Leakage Testing',
       icon: Droplet,
-      disabled: true,
+      disabled: false,
       locked: true,
-      lockColor: 'red',
+      lockColor: 'green',
     },
     {
       id: 'settings',

@@ -3,6 +3,7 @@ import { Calendar } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { StatusCards } from './StatusCards';
 import { ProductionExceptions } from './ProductionExceptions';
+import { LeakageTestingView } from '../LeakageTesting/LeakageTestingView';
 import { DataEmbossingPage } from '../DataEmbossing/DataEmbossingPage';
 import { UserRole } from '../../types';
 
@@ -74,6 +75,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <ProductionExceptions />
 
           </div>
+        ) : currentTab === 'leakage-testing' ? (
+          <LeakageTestingView />
         ) : currentTab === 'data-embossing' ? (
           <DataEmbossingPage />
         ) : (
