@@ -3,6 +3,7 @@ import { Calendar } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { StatusCards } from './StatusCards';
 import { ProductionExceptions } from './ProductionExceptions';
+import { LeakageTestingView } from '../LeakageTesting/LeakageTestingView';
 import { UserRole } from '../../types';
 
 interface DashboardLayoutProps {
@@ -73,6 +74,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <ProductionExceptions />
 
           </div>
+        ) : currentTab === 'leakage-testing' ? (
+          <LeakageTestingView />
         ) : (
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-150 animate-fade-in">
             <h1 className="text-2xl font-bold text-gray-900 capitalize mb-4">
