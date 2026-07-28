@@ -16,11 +16,24 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   selectedRole,
   onSignOut,
 }) => {
-  const [currentTab, setCurrentTab] = useState('dashboard');
+  // Allowed tabs per role definition
+  const allowedTabs = selectedRole === 'operator'
+    ? ['data-embossing', 'leakage-testing', 'settings']
+    : ['dashboard', 'data-preparation', 'settings'];
+
+  const defaultTab = selectedRole === 'operator' ? 'data-embossing' : 'dashboard';
+  const [currentTab, setCurrentTab] = useState(defaultTab);
+
+  // Sync default tab if selectedRole changes
+  React.useEffect(() => {
+    setCurrentTab(selectedRole === 'operator' ? 'data-embossing' : 'dashboard');
+  }, [selectedRole]);
+
+  // Ensure user cannot stay on an unauthorized tab
+  const activeTab = allowedTabs.includes(currentTab) ? currentTab : defaultTab;
 
   // Hardcode or get formatted date "20 July, 2026" or current date
   const getFormattedDate = () => {
-    // For exact alignment with user mockup
     return '20 July, 2026';
   };
 
@@ -28,7 +41,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     <div className="min-h-screen bg-[#F4F5F8] flex w-full">
       {/* Sidebar Panel */}
       <Sidebar
-        currentTab={currentTab}
+        currentTab={activeTab}
         setCurrentTab={setCurrentTab}
         selectedRole={selectedRole}
         onSignOut={onSignOut}
@@ -36,9 +49,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
       {/* Main Container Area */}
       <main className="flex-1 p-6 sm:p-10 max-w-7xl mx-auto overflow-y-auto">
-        {currentTab === 'dashboard' ? (
+        {activeTab === 'dashboard' ? (
           <div className="animate-fade-in space-y-6">
-            
+
             {/* Top Workspace Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
@@ -64,7 +77,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <h2 className="text-lg font-bold text-gray-800 tracking-tight mb-4">
                 Production Status
               </h2>
-              <StatusCards 
+              <StatusCards
                 completedCount={498}
                 failedCount={3}
                 totalBatches={5}
@@ -75,17 +88,17 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <ProductionExceptions />
 
           </div>
-        ) : currentTab === 'leakage-testing' ? (
+        ) : activeTab === 'leakage-testing' ? (
           <LeakageTestingView />
-        ) : currentTab === 'data-embossing' ? (
+        ) : activeTab === 'data-embossing' ? (
           <DataEmbossingPage />
         ) : (
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-150 animate-fade-in">
             <h1 className="text-2xl font-bold text-gray-900 capitalize mb-4">
-              {currentTab.replace('-', ' ')}
+              {activeTab.replace('-', ' ')}
             </h1>
             <p className="text-gray-500">
-              This section is currently under development or disabled for the demo. Please use the "Dashboard" tab to view operational status.
+              This section is currently under development or disabled for the demo.
             </p>
           </div>
         )}
@@ -94,4 +107,5 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   );
 };
 export default DashboardLayout;
+
 
