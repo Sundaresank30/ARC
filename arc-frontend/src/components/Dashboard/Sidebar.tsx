@@ -41,8 +41,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'data-embossing',
       label: 'Data Embossing',
       icon: Hammer,
-      disabled: true,
+      disabled: false,
       locked: true,
+      lockColor: 'green',
     },
     {
       id: 'leakage-testing',
@@ -50,6 +51,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: Droplet,
       disabled: true,
       locked: true,
+      lockColor: 'red',
     },
     {
       id: 'settings',
@@ -89,7 +91,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   isActive
                     ? 'bg-gray-100 text-gray-900 shadow-sm'
                     : item.disabled
-                    ? 'text-gray-300/80 cursor-not-allowed'
+                    ? 'text-gray-350 cursor-not-allowed'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                 }`}
               >
@@ -97,10 +99,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <Icon className={`w-5 h-5 ${
                     isActive ? 'text-gray-950' : item.disabled ? 'text-gray-300' : 'text-gray-500'
                   }`} />
-                  <span className={item.disabled ? 'text-gray-300' : 'text-gray-700'}>{item.label}</span>
+                  <span className={item.disabled ? 'text-gray-350' : 'text-gray-700'}>{item.label}</span>
                 </div>
                 {item.locked && (
-                  <Lock className="w-4 h-4 text-[#FF4D4D] stroke-[2.5]" />
+                  <Lock className={`w-4 h-4 stroke-[2.5] ${
+                    item.lockColor === 'green' ? 'text-[#00B074]' : 'text-[#FF4D4D]'
+                  }`} />
                 )}
               </button>
             );
