@@ -30,7 +30,6 @@ public class AuthController {
 
     @PostMapping("/role-login")
     public ResponseEntity<AuthResponse> roleLogin(@Valid @RequestBody RoleLoginRequest request) {
-        // Map selected role to default credentials for standalone role portal
         String username = (request.getRole() == Role.MANAGER) ? "arc_manager" : "arc_operator";
         String password = (request.getRole() == Role.MANAGER) ? "Manager@123" : "Operator@123";
 
