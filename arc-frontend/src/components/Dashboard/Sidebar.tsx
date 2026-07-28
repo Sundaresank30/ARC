@@ -1,14 +1,13 @@
 import React from 'react';
-import { 
-  LayoutGrid, 
-  LayoutDashboard, 
-  Database, 
-  Hammer, 
-  Droplet, 
-  Settings, 
-  Lock, 
-  LogOut,
-  Cpu
+import {
+  LayoutGrid,
+  LayoutDashboard,
+  Database,
+  Hammer,
+  Droplet,
+  Settings,
+  Lock,
+  LogOut
 } from 'lucide-react';
 import { UserRole } from '../../types';
 
@@ -19,11 +18,11 @@ interface SidebarProps {
   onSignOut: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ 
-  currentTab, 
-  setCurrentTab, 
-  selectedRole, 
-  onSignOut 
+export const Sidebar: React.FC<SidebarProps> = ({
+  currentTab,
+  setCurrentTab,
+  selectedRole,
+  onSignOut
 }) => {
   const menuItems = [
     {
@@ -88,30 +87,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentTab === item.id;
-            
+
             return (
               <button
                 key={item.id}
                 onClick={() => !item.disabled && setCurrentTab(item.id)}
                 disabled={item.disabled}
-                className={`w-full flex items-center justify-between px-3 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
-                  isActive
+                className={`w-full flex items-center justify-between px-3 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${isActive
                     ? 'bg-gray-100 text-gray-900 shadow-sm'
                     : item.disabled
-                    ? 'text-gray-350 cursor-not-allowed'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
+                      ? 'text-gray-350 cursor-not-allowed'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
               >
                 <div className="flex items-center space-x-3">
-                  <Icon className={`w-5 h-5 ${
-                    isActive ? 'text-gray-950' : item.disabled ? 'text-gray-300' : 'text-gray-500'
-                  }`} />
+                  <Icon className={`w-5 h-5 ${isActive ? 'text-gray-950' : item.disabled ? 'text-gray-300' : 'text-gray-500'
+                    }`} />
                   <span className={item.disabled ? 'text-gray-350' : 'text-gray-700'}>{item.label}</span>
                 </div>
                 {item.locked && (
-                  <Lock className={`w-4 h-4 stroke-[2.5] ${
-                    item.lockColor === 'green' ? 'text-[#00B074]' : 'text-[#FF4D4D]'
-                  }`} />
+                  <Lock className={`w-4 h-4 stroke-[2.5] ${item.lockColor === 'green' ? 'text-[#00B074]' : 'text-[#FF4D4D]'
+                    }`} />
                 )}
               </button>
             );
