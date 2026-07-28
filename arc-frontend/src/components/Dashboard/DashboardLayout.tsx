@@ -5,6 +5,7 @@ import { StatusCards } from './StatusCards';
 import { ProductionExceptions } from './ProductionExceptions';
 import { LeakageTestingView } from '../LeakageTesting/LeakageTestingView';
 import { DataEmbossingPage } from '../DataEmbossing/DataEmbossingPage';
+import { MachinePage } from '../Machine/MachinePage';
 import { UserRole } from '../../types';
 
 interface DashboardLayoutProps {
@@ -19,7 +20,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   // Allowed tabs per role definition
   const allowedTabs = selectedRole === 'operator'
     ? ['data-embossing', 'leakage-testing', 'settings']
-    : ['dashboard', 'data-preparation', 'settings'];
+    : ['dashboard', 'data-preparation', 'machine', 'settings'];
 
   const defaultTab = selectedRole === 'operator' ? 'data-embossing' : 'dashboard';
   const [currentTab, setCurrentTab] = useState(defaultTab);
@@ -90,6 +91,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </div>
         ) : activeTab === 'leakage-testing' ? (
           <LeakageTestingView />
+        ) : activeTab === 'machine' ? (
+          <MachinePage />
         ) : activeTab === 'data-embossing' ? (
           <DataEmbossingPage />
         ) : (
