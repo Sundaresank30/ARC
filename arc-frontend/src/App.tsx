@@ -1,16 +1,35 @@
 import React, { useState } from 'react';
 import { UserRole } from './types';
 import { RoleSelection } from './components/RoleSelection';
+import { DashboardLayout } from './components/Dashboard/DashboardLayout';
 import { Factory } from 'lucide-react';
 
 export function App() {
   const [selectedRole, setSelectedRole] = useState<UserRole>('operator');
+  const [isRoleConfirmed, setIsRoleConfirmed] = useState<boolean>(false);
 
   const handleSelectRole = (role: UserRole) => {
     setSelectedRole(role);
-    console.log('Selected Role:', role);
+    setIsRoleConfirmed(true);
+    console.log('Confirmed Role:', role);
   };
 
+  const handleSignOut = () => {
+    setIsRoleConfirmed(false);
+    setSelectedRole('operator'); // reset back to default choice for next login
+  };
+
+  // If user has confirmed their role, show the dashboard
+  if (isRoleConfirmed) {
+    return (
+      <DashboardLayout
+        selectedRole={selectedRole}
+        onSignOut={handleSignOut}
+      />
+    );
+  }
+
+  // Otherwise, show the role selection portal
   return (
     <div className="min-h-screen bg-[#F4F5F8] flex flex-col items-center justify-center p-4 sm:p-6 select-none relative overflow-hidden">
       
@@ -19,7 +38,7 @@ export function App() {
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Top Branding Header */}
-      <div className="mb-6 flex items-center space-x-3 text-gray-800">
+      <div className="mb-6 flex items-center space-x-3 text-gray-800 animate-fade-in">
         <div className="w-10 h-10 rounded-xl bg-[#5E40FF] text-white flex items-center justify-center shadow-lg shadow-indigo-500/30">
           <Factory className="w-6 h-6" />
         </div>
@@ -52,3 +71,4 @@ export function App() {
 }
 
 export default App;
+
