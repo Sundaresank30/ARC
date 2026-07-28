@@ -1,0 +1,33 @@
+# Compiled Java class files
+*.class
+
+# Build outputs
+target/
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Bundled binaries & archives
+apache-maven-*/
+maven.zip
+
+# Log files
+*.log
+
+# IDE & Editor configuration
+.vscode/
+.idea/
+*.iws
+*.iml
+*.ipr
+.settings/
+.classpath
+.project
+.factorypath
+
+# OS generated files
+.DS_Store
+Thumbs.db
