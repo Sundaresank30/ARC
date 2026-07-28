@@ -38,6 +38,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       disabled: false,
     },
     {
+      id: 'machine',
+      label: 'Machine',
+      icon: Cpu,
+      disabled: false,
+    },
+    {
       id: 'data-embossing',
       label: 'Data Embossing',
       icon: Hammer,

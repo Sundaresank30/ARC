@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Briefcase, Settings, Check } from 'lucide-react';
-import { UserRole } from '../types';
+import { UserRole } from '../../types';
 import { ManagerIllustration, OperatorIllustration } from './RoleIllustrations';
 
 interface RoleSelectionProps {
