@@ -8,7 +8,3 @@ target/
 *.iml
 *.ipr
 .vscode/
-
-# Ignore application.properties (sensitive configuration)
-src/main/resources/application.properties
-application.properties

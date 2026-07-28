@@ -4,4 +4,3 @@ target/
 *.jar
 *.war
 uploads/
-**/application.properties

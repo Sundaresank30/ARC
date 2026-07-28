@@ -1,12 +1,12 @@
 import React from 'react';
-import {
-  LayoutGrid,
-  LayoutDashboard,
-  Database,
-  Hammer,
-  Droplet,
-  Settings,
-  Lock,
+import { 
+  LayoutGrid, 
+  LayoutDashboard, 
+  Database, 
+  Hammer, 
+  Droplet, 
+  Settings, 
+  Lock, 
   LogOut,
   Cpu
 } from 'lucide-react';
