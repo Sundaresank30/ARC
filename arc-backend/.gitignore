@@ -1,6 +1,0 @@
-target/
-**/target/
-.mvn/
-*.jar
-*.war
-uploads/
