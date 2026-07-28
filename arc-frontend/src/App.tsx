@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UserRole } from './types';
-import { RoleSelection } from './components/RoleSelection';
+import { RoleSelection } from './components/login/RoleSelection';
 import { Factory } from 'lucide-react';
 
 export function App() {
@@ -13,7 +13,7 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-[#F4F5F8] flex flex-col items-center justify-center p-4 sm:p-6 select-none relative overflow-hidden">
-      
+
       {/* Background ambient decorative shapes */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
