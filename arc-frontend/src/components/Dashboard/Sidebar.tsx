@@ -8,7 +8,6 @@ import {
   Droplet,
   Settings,
   LogOut,
-  Cpu,
   Lock,
   LogOut,
 
