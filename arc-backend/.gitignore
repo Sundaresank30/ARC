@@ -1,10 +1,30 @@
+# Target & Build Artifacts
 target/
 !.mvn/wrapper/maven-wrapper.jar
+
+# IDE & Editor files
 .idea/
+.vscode/
 *.iml
+*.ipr
+*.iws
 .classpath
 .project
 .settings/
+.factorypath
+
+# Logs
 *.log
-# Spring Boot configuration
-src/main/resources/application.properties
+
+# Secrets & Local Credentials (DO NOT ignore main application.properties or pom.xml)
+application-local.properties
+application-local.yml
+application-secret.properties
+application-secret.yml
+*.secret.properties
+.env
+.env.local
+
+# OS-specific files
+.DS_Store
+Thumbs.db

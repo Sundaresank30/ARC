@@ -1,27 +1,44 @@
 # Global Git Ignore Rules for ARC Workspace
 
+# Target & Build Artifacts
+target/
+dist/
+dist-ssr/
+*.class
+*.jar
+*.war
+apache-maven-*/
+maven.zip
+*.tsbuildinfo
+
+# Node dependencies & Caches
+node_modules/
+.eslintcache
+.npm
+
 # IDE / Editor settings
-.vscode/
 .idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-.DS_Store
 
-# Frontend
-node_modules/
-dist/
-dist-ssr/
-.eslintcache
-*.tsbuildinfo
-
-# Backend
-target/
-*.class
-apache-maven-*/
-maven.zip
-
-# Logs
+# Log files
 *.log
+
+# Secrets & Local Configurations (DO NOT ignore main application.properties or pom.xml)
+application-local.properties
+application-secret.properties
+*.secret.properties
+.env
+.env.local
+.env.*.local
+
+# OS-specific files
+.DS_Store
+Thumbs.db
