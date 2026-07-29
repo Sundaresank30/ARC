@@ -12,21 +12,26 @@ import { DataPreparationPage } from '../DataPreparation/DataPreparationPage';
 import { UserRole } from '../../types';
 
 interface DashboardLayoutProps {
+  selectedRole?: UserRole;
   onSignOut: () => void;
 }
 
-<<<<<<< HEAD
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
-  selectedRole,
-  onSignOut,
-}) => {
-  // Allowed tabs per role definition
-  const allowedTabs = selectedRole === 'operator'
-    ? ['data-embossing', 'leakage-testing', 'settings']
-    : ['dashboard', 'data-preparation', 'machine', 'settings'];
+export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: propRole, onSignOut }) => {
+  const { role: storeRole, modules } = useAuthStore();
+  const effectiveRole = storeRole || propRole || 'manager';
+  
+  const allowedTabs = modules.length > 0
+    ? modulesToTabs(modules)
+    : effectiveRole === 'operator'
+      ? ['data-embossing', 'leakage-testing', 'settings']
+      : ['dashboard', 'data-preparation', 'machine', 'settings'];
 
-  const defaultTab = selectedRole === 'operator' ? 'data-embossing' : 'dashboard';
+  const defaultTab = getDefaultTab ? getDefaultTab(effectiveRole) : (effectiveRole === 'operator' ? 'data-embossing' : 'dashboard');
   const [currentTab, setCurrentTab] = useState(defaultTab);
+
+  useEffect(() => {
+    setCurrentTab(defaultTab);
+  }, [effectiveRole]);
 
   // Backend state for Dashboard KPIs & exceptions
   const [dashboardData, setDashboardData] = useState<{
@@ -63,33 +68,14 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     }
   };
 
-  React.useEffect(() => {
-    if (selectedRole === 'manager') {
+  useEffect(() => {
+    if (effectiveRole.toLowerCase() === 'manager') {
       fetchDashboardData();
     }
-  }, [selectedRole]);
-
-  // Sync default tab if selectedRole changes
-  React.useEffect(() => {
-    setCurrentTab(selectedRole === 'operator' ? 'data-embossing' : 'dashboard');
-  }, [selectedRole]);
-=======
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onSignOut }) => {
-  const { role, modules } = useAuthStore();
-  const allowedTabs = modulesToTabs(modules);
-  const defaultTab = role ? getDefaultTab(role) : 'dashboard';
-  const [currentTab, setCurrentTab] = useState(defaultTab);
-
-  useEffect(() => {
-    if (role) {
-      setCurrentTab(getDefaultTab(role));
-    }
-  }, [role]);
->>>>>>> bf91402edd01f60953912840c083578b6c70ffa5
+  }, [effectiveRole]);
 
   const activeTab = allowedTabs.includes(currentTab) ? currentTab : defaultTab;
 
-<<<<<<< HEAD
   const handleResolveCarryForward = async (id: string, partNo: string) => {
     try {
       await fetch(`http://localhost:8080/api/dashboard/carry-forward/${id}/resolve`, { method: 'POST' });
@@ -125,20 +111,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onSignOut }) =
     });
   };
 
-  // Hardcode or get formatted date "20 July, 2026" or current date
-=======
->>>>>>> bf91402edd01f60953912840c083578b6c70ffa5
   const getFormattedDate = () => {
-    return new Date().toLocaleDateString(undefined, {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
+    return '20 July, 2026';
   };
-
-  if (!role) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-[#F4F5F8] flex w-full">
@@ -146,7 +121,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onSignOut }) =
         currentTab={activeTab}
         setCurrentTab={setCurrentTab}
         allowedTabs={allowedTabs}
-        selectedRole={role}
+        selectedRole={effectiveRole as UserRole}
         onSignOut={onSignOut}
       />
 
@@ -173,7 +148,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onSignOut }) =
               <h2 className="text-lg font-bold text-gray-800 tracking-tight mb-4">
                 Production Status
               </h2>
-<<<<<<< HEAD
               <StatusCards
                 completedCount={dashboardData.completedCount}
                 failedCount={dashboardData.failedCount}
@@ -181,20 +155,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onSignOut }) =
               />
             </div>
 
-            {/* Production Exceptions Table Section */}
             <ProductionExceptions
               carryForwardData={dashboardData.carryForwardEmbossing}
               leakageFailuresData={dashboardData.leakageTestingFailures}
               onResolveCarryForward={handleResolveCarryForward}
               onResolveLeakage={handleResolveLeakage}
             />
-
-=======
-              <StatusCards completedCount={498} failedCount={3} totalBatches={5} />
-            </div>
-
-            <ProductionExceptions />
->>>>>>> bf91402edd01f60953912840c083578b6c70ffa5
           </div>
         ) : activeTab === 'leakage-testing' ? (
           <LeakageTestingView />
@@ -204,8 +170,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onSignOut }) =
           <MachinePage />
         ) : activeTab === 'data-preparation' ? (
           <DataPreparationPage />
-        ) : activeTab === 'machine' ? (
-          <MachinePage />
         ) : (
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-150 animate-fade-in">
             <h1 className="text-2xl font-bold text-gray-900 capitalize mb-4">
