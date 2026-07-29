@@ -7,8 +7,6 @@ import {
   Hammer,
   Droplet,
   Settings,
-  LogOut,
-  Cpu,
   Lock,
   LogOut,
 
