@@ -23,10 +23,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
   const allowedTabs = modules.length > 0
     ? modulesToTabs(modules)
     : effectiveRole === 'operator'
-      ? ['data-embossing', 'leakage-testing', 'settings']
-      : ['dashboard', 'data-preparation', 'machine', 'settings'];
+      ? ['data-embossing', 'leakage-testing', 'machine', 'settings']
+      : ['dashboard', 'data-preparation', 'settings'];
 
-  const defaultTab = getDefaultTab ? getDefaultTab(effectiveRole) : (effectiveRole === 'operator' ? 'data-embossing' : 'dashboard');
+  const defaultTab = getDefaultTab ? getDefaultTab(effectiveRole) : (effectiveRole === 'operator' ? 'machine' : 'dashboard');
   const [currentTab, setCurrentTab] = useState(defaultTab);
 
   useEffect(() => {
