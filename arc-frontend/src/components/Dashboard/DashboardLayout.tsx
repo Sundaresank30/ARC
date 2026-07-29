@@ -6,6 +6,7 @@ import { ProductionExceptions } from './ProductionExceptions';
 import { LeakageTestingView } from '../LeakageTesting/LeakageTestingView';
 import { DataEmbossingPage } from '../DataEmbossing/DataEmbossingPage';
 import { MachinePage } from '../Machine/MachinePage';
+import { DataPreparationPage } from '../DataPreparation/DataPreparationPage';
 import { UserRole } from '../../types';
 
 interface DashboardLayoutProps {
@@ -174,6 +175,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           <LeakageTestingView />
         ) : activeTab === 'data-embossing' ? (
           <DataEmbossingPage />
+        ) : activeTab === 'data-preparation' ? (
+          <DataPreparationPage />
         ) : activeTab === 'machine' ? (
           <MachinePage />
         ) : (

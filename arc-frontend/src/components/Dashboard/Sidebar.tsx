@@ -8,7 +8,8 @@ import {
   Droplet,
   Settings,
   Lock,
-  LogOut
+  LogOut,
+
 } from 'lucide-react';
 import { UserRole } from '../../types';
 
