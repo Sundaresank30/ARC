@@ -22,6 +22,10 @@ target/
 *.class
 apache-maven-*/
 maven.zip
+application.properties
+**/application.properties
+pom.xml
+
 
 # Logs
 *.log
