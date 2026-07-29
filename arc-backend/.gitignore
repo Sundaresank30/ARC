@@ -6,8 +6,11 @@ target/
 .project
 .settings/
 *.log
-# Spring Boot configuration & pom
+
+# Spring Boot configuration
+src/main/resources/application.properties
 application.properties
 **/application.properties
-pom.xml
 
+# Maven build file
+pom.xml

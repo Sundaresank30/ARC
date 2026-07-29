@@ -9,7 +9,6 @@ import { MachinePage } from '../Machine/MachinePage';
 import { useAuthStore } from '../../store/authStore';
 import { getDefaultTab, modulesToTabs } from '../../utils/navigation';
 import { DataPreparationPage } from '../DataPreparation/DataPreparationPage';
-import { UserRole } from '../../types';
 
 interface DashboardLayoutProps {
   onSignOut: () => void;
@@ -28,6 +27,82 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onSignOut }) =
   }, [role]);
 
   const activeTab = allowedTabs.includes(currentTab) ? currentTab : defaultTab;
+
+  // Backend state for Dashboard KPIs & exceptions
+  const [dashboardData, setDashboardData] = useState<{
+    completedCount: number;
+    failedCount: number;
+    totalBatches: number;
+    carryForwardEmbossing: any[];
+    leakageTestingFailures: any[];
+  }>({
+    completedCount: 460,
+    failedCount: 3,
+    totalBatches: 5,
+    carryForwardEmbossing: [
+      { id: '1', partNo: 'Pn00111c', serialNo: 'P0011156', status: 'Pending', remainingSince: '17:57, 20 Jul', nextShift: '21 Jul', action: 'Queued' },
+      { id: '2', partNo: 'Pn00112c', serialNo: 'P0011157', status: 'Pending', remainingSince: '17:58, 20 Jul', nextShift: '21 Jul', action: 'Queued' },
+      { id: '3', partNo: 'Pn00113c', serialNo: 'P0011158', status: 'Pending', remainingSince: '18:00, 20 Jul', nextShift: '21 Jul', action: 'Queued' },
+    ],
+    leakageTestingFailures: [
+      { id: '1', partNo: 'Pn00111c', serialNo: 'P0011156', status: 'Failed', testValue: 0.42, direction: 'down', timestamp: '17:57, 20 Jul', attempt: '2/2', action: 'Scrap' },
+      { id: '2', partNo: 'Pn00112c', serialNo: 'P0011157', status: 'Failed', testValue: 1.08, direction: 'up', timestamp: '17:58, 20 Jul', attempt: '1/2', action: 'Pending' },
+      { id: '3', partNo: 'Pn00113c', serialNo: 'P0011158', status: 'Failed', testValue: 0.48, direction: 'down', timestamp: '18:00, 20 Jul', attempt: '1/2', action: 'Pending' },
+    ],
+  });
+
+  const fetchDashboardData = async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/dashboard');
+      if (res.ok) {
+        const data = await res.json();
+        setDashboardData(data);
+      }
+    } catch (err) {
+      console.warn('Backend API offline, using local state.');
+    }
+  };
+
+  useEffect(() => {
+    if (role === 'manager') {
+      fetchDashboardData();
+    }
+  }, [role]);
+
+  const handleResolveCarryForward = async (id: string, partNo: string) => {
+    try {
+      await fetch(`http://localhost:8080/api/dashboard/carry-forward/${id}/resolve`, { method: 'POST' });
+    } catch (e) {}
+
+    setDashboardData((prev) => {
+      const newCarryForward = prev.carryForwardEmbossing.filter((item) => item.id !== id);
+      const newLeakage = prev.leakageTestingFailures;
+      const isAllClear = newCarryForward.length === 0 && newLeakage.length === 0;
+      return {
+        ...prev,
+        carryForwardEmbossing: newCarryForward,
+        completedCount: isAllClear ? 498 : prev.completedCount,
+      };
+    });
+  };
+
+  const handleResolveLeakage = async (id: string, partNo: string) => {
+    try {
+      await fetch(`http://localhost:8080/api/dashboard/leakage-failures/${id}/resolve`, { method: 'POST' });
+    } catch (e) {}
+
+    setDashboardData((prev) => {
+      const newLeakage = prev.leakageTestingFailures.filter((item) => item.id !== id);
+      const newCarryForward = prev.carryForwardEmbossing;
+      const isAllClear = newCarryForward.length === 0 && newLeakage.length === 0;
+      return {
+        ...prev,
+        leakageTestingFailures: newLeakage,
+        failedCount: newLeakage.length,
+        completedCount: isAllClear ? 498 : prev.completedCount,
+      };
+    });
+  };
 
   const getFormattedDate = () => {
     return new Date().toLocaleDateString(undefined, {
@@ -74,10 +149,20 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onSignOut }) =
               <h2 className="text-lg font-bold text-gray-800 tracking-tight mb-4">
                 Production Status
               </h2>
-              <StatusCards completedCount={498} failedCount={3} totalBatches={5} />
+              <StatusCards
+                completedCount={dashboardData.completedCount}
+                failedCount={dashboardData.failedCount}
+                totalBatches={dashboardData.totalBatches}
+              />
             </div>
 
-            <ProductionExceptions />
+            {/* Production Exceptions Table Section */}
+            <ProductionExceptions
+              carryForwardData={dashboardData.carryForwardEmbossing}
+              leakageFailuresData={dashboardData.leakageTestingFailures}
+              onResolveCarryForward={handleResolveCarryForward}
+              onResolveLeakage={handleResolveLeakage}
+            />
           </div>
         ) : activeTab === 'leakage-testing' ? (
           <LeakageTestingView />
@@ -103,3 +188,4 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onSignOut }) =
 };
 
 export default DashboardLayout;
+
