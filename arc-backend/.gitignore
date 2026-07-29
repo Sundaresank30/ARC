@@ -15,16 +15,5 @@ target/
 
 # Logs
 *.log
-
-# Secrets & Local Credentials (DO NOT ignore main application.properties or pom.xml)
-application-local.properties
-application-local.yml
-application-secret.properties
-application-secret.yml
-*.secret.properties
-.env
-.env.local
-
-# OS-specific files
-.DS_Store
-Thumbs.db
+# Spring Boot configuration
+src/main/resources/application.properties
