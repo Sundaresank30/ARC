@@ -1,690 +1,421 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Play, 
-  RotateCcw, 
-  Sliders, 
-  Settings, 
-  Cpu, 
-  Wrench, 
-  CheckCircle2, 
-  Zap, 
-  Volume2, 
-  VolumeX
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  Play,
+  RotateCcw,
+  Cpu,
+  CheckCircle2,
+  Clock,
+  Zap,
+  RefreshCw,
+  Layers,
+  CheckCheck,
+  AlertCircle,
 } from 'lucide-react';
+import {
+  getMachineRecords,
+  updateMachineRecordStatus,
+  resetMachineRecords,
+  MachineRecord,
+} from '../../api/machine';
 
-interface EmbossingPart {
-  id: string;
-  partNo: string;
-  serialNo: string;
-  status: string;
-}
+const INITIAL_DUMMY_RECORDS: MachineRecord[] = [
+  { id: 1, serialNumber: 'SN-1001', partNumber: 'PN-A89', status: 'waiting' },
+  { id: 2, serialNumber: 'SN-1002', partNumber: 'PN-A90', status: 'waiting' },
+  { id: 3, serialNumber: 'SN-1003', partNumber: 'PN-A91', status: 'waiting' },
+  { id: 4, serialNumber: 'SN-1004', partNumber: 'PN-A92', status: 'waiting' },
+  { id: 5, serialNumber: 'SN-1005', partNumber: 'PN-A93', status: 'waiting' },
+];
 
 export const MachinePage: React.FC = () => {
-  // Demo Parts Queue
-  const partsQueue: EmbossingPart[] = [
-    { id: '1', partNo: 'Pn00111c', serialNo: 'P0011156', status: 'Pending' },
-    { id: '2', partNo: 'Pn00112c', serialNo: 'P0011157', status: 'Pending' },
-    { id: '3', partNo: 'Pn00113c', serialNo: 'P0011158', status: 'Pending' }
-  ];
+  const [records, setRecords] = useState<MachineRecord[]>(INITIAL_DUMMY_RECORDS);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [activeItem, setActiveItem] = useState<MachineRecord | null>(null);
+  const [isEmbossing, setIsEmbossing] = useState<boolean>(false);
+  const [lastCompletedId, setLastCompletedId] = useState<number | null>(null);
 
-  // Component State
-  const [selectedPartId, setSelectedPartId] = useState<string>('1');
-  const [embossingSpeed, setEmbossingSpeed] = useState<number>(50); // 10 to 100 mm/s
-  const [markingForce, setMarkingForce] = useState<number>(6.5); // 1.0 to 10.0 N
-  const [markingDepth, setMarkingDepth] = useState<number>(0.8); // 0.1 to 1.5 mm
-  const [fontType, setFontType] = useState<string>('Dot-matrix'); // 'Dot-matrix' | 'Standard Block'
-  const [soundEnabled, setSoundEnabled] = useState<boolean>(false);
-  
-  // Animation State
-  const [simStatus, setSimStatus] = useState<'idle' | 'marking_part' | 'marking_serial' | 'returning' | 'completed'>('idle');
-  const [activeCharIndex, setActiveCharIndex] = useState<number>(-1);
-  const [completedPartChars, setCompletedPartChars] = useState<boolean[]>([]);
-  const [completedSerialChars, setCompletedSerialChars] = useState<boolean[]>([]);
-  
-  // Visual Gantry Needle Coordinates
-  const [needlePos, setNeedlePos] = useState<{ x: number; y: number }>({ x: 30, y: 30 });
-  const [sparks, setSparks] = useState<{ id: number; x: number; y: number; size: number }[]>([]);
-
-  // Selected Part values
-  const currentPart = partsQueue.find(p => p.id === selectedPartId) || partsQueue[0];
-  const { partNo, serialNo } = currentPart;
-
-  // Refs for tracking animation loops
-  const timerRef = useRef<any>(null);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-
-  // Initialize character state on part change
-  useEffect(() => {
-    resetSimulation();
-  }, [selectedPartId]);
-
-  // Audio synthesizer player for mechanical marking tap sound
-  const playMarkingTone = (freq = 400) => {
-    if (!soundEnabled) return;
+  // Fetch records from backend REST endpoint
+  const loadRecords = useCallback(async () => {
     try {
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      setLoading(true);
+      const data = await getMachineRecords();
+      if (Array.isArray(data) && data.length > 0) {
+        setRecords(data);
+      } else {
+        setRecords(INITIAL_DUMMY_RECORDS);
       }
-      const ctx = audioCtxRef.current;
-      if (ctx.state === 'suspended') {
-        ctx.resume();
-      }
-      
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      
-      // Industrial marking sound - short metallic impulse
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.08);
-      
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
-      
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      
-      osc.start();
-      osc.stop(ctx.currentTime + 0.08);
-    } catch (e) {
-      console.warn('Audio feedback failed:', e);
+    } catch (error) {
+      console.warn('Backend REST API unavailable, using localized state service fallback:', error);
+      setRecords((prev) => (prev.length > 0 ? prev : INITIAL_DUMMY_RECORDS));
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const resetSimulation = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setSimStatus('idle');
-    setActiveCharIndex(-1);
-    setCompletedPartChars(new Array(partNo.length).fill(false));
-    setCompletedSerialChars(new Array(serialNo.length).fill(false));
-    setNeedlePos({ x: 30, y: 30 }); // Home coordinates
-    setSparks([]);
-  };
-
-  // Spark generators
-  const generateSparks = (x: number, y: number) => {
-    const newSparks = Array.from({ length: 6 }).map((_, i) => ({
-      id: Date.now() + i,
-      x: x + (Math.random() - 0.5) * 12,
-      y: y + (Math.random() - 0.5) * 12,
-      size: Math.random() * 3 + 1
-    }));
-    setSparks(prev => [...prev.slice(-10), ...newSparks]);
-  };
-
-  // Main simulation effect runner
-  const startSimulation = () => {
-    resetSimulation();
-    
-    // Coordinates calculation mapping for SVG visualization
-    // SVG metal size is 440 x 180
-    
-    const partNoY = 75;
-    const serialNoY = 125;
-    
-    const getPartCharX = (idx: number) => {
-      const startX = 130;
-      const spacing = 22;
-      return startX + idx * spacing;
-    };
-
-    const getSerialCharX = (idx: number) => {
-      const startX = 130;
-      const spacing = 22;
-      return startX + idx * spacing;
-    };
-
-    let stage: 'moving_to_part' | 'marking_part' | 'moving_to_serial' | 'marking_serial' | 'returning' = 'moving_to_part';
-    let currentIdx = 0;
-    
-    // Step speed is inversely proportional to embossingSpeed slider
-    const stepDelay = Math.max(100, 1000 - embossingSpeed * 9); 
-
-    const runStep = () => {
-      if (stage === 'moving_to_part') {
-        setSimStatus('marking_part');
-        const targetX = getPartCharX(0);
-        const targetY = partNoY;
-        
-        // Rapid move to first char
-        setNeedlePos({ x: targetX, y: targetY });
-        stage = 'marking_part';
-        currentIdx = 0;
-        timerRef.current = setTimeout(runStep, stepDelay / 2);
-      } 
-      else if (stage === 'marking_part') {
-        if (currentIdx < partNo.length) {
-          const charX = getPartCharX(currentIdx);
-          setNeedlePos({ x: charX, y: partNoY });
-          setActiveCharIndex(currentIdx);
-          generateSparks(charX, partNoY);
-          playMarkingTone(480 + currentIdx * 20);
-
-          setCompletedPartChars(prev => {
-            const next = [...prev];
-            next[currentIdx] = true;
-            return next;
-          });
-
-          currentIdx++;
-          timerRef.current = setTimeout(runStep, stepDelay);
-        } else {
-          // Finished part number, move to serial
-          stage = 'moving_to_serial';
-          setActiveCharIndex(-1);
-          timerRef.current = setTimeout(runStep, 400); // pause between rows
-        }
-      } 
-      else if (stage === 'moving_to_serial') {
-        setSimStatus('marking_serial');
-        const targetX = getSerialCharX(0);
-        const targetY = serialNoY;
-        setNeedlePos({ x: targetX, y: targetY });
-        stage = 'marking_serial';
-        currentIdx = 0;
-        timerRef.current = setTimeout(runStep, stepDelay / 2);
-      } 
-      else if (stage === 'marking_serial') {
-        if (currentIdx < serialNo.length) {
-          const charX = getSerialCharX(currentIdx);
-          setNeedlePos({ x: charX, y: serialNoY });
-          setActiveCharIndex(currentIdx);
-          generateSparks(charX, serialNoY);
-          playMarkingTone(380 + currentIdx * 15);
-
-          setCompletedSerialChars(prev => {
-            const next = [...prev];
-            next[currentIdx] = true;
-            return next;
-          });
-
-          currentIdx++;
-          timerRef.current = setTimeout(runStep, stepDelay);
-        } else {
-          // Finished serial number, return to home
-          stage = 'returning';
-          setSimStatus('returning');
-          setActiveCharIndex(-1);
-          timerRef.current = setTimeout(runStep, 300);
-        }
-      } 
-      else if (stage === 'returning') {
-        setNeedlePos({ x: 30, y: 30 });
-        setSimStatus('completed');
-        // Final chime
-        if (soundEnabled) {
-          setTimeout(() => playMarkingTone(800), 100);
-          setTimeout(() => playMarkingTone(1000), 200);
-        }
-      }
-    };
-
-    // Begin loop
-    runStep();
-  };
-
-  useEffect(() => {
-    // Clean up sparks after rendering
-    if (sparks.length > 0) {
-      const sparkTimeout = setTimeout(() => {
-        setSparks([]);
-      }, 500);
-      return () => clearTimeout(sparkTimeout);
-    }
-  }, [sparks]);
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
   }, []);
+
+  useEffect(() => {
+    loadRecords();
+  }, [loadRecords]);
+
+  // Find next waiting item
+  const nextWaitingItem = records.find((r) => r.status === 'waiting');
+  const allCompleted = records.length > 0 && records.every((r) => r.status === 'completed');
+
+  // Handle Embossing Execution
+  const handleStartEmbossing = async () => {
+    const target = nextWaitingItem;
+    if (!target || isEmbossing) return;
+
+    setIsEmbossing(true);
+    setActiveItem(target);
+
+    // Simulate active marking delay for visual realism
+    setTimeout(async () => {
+      try {
+        await updateMachineRecordStatus(target.id, 'completed');
+      } catch (err) {
+        console.warn('Backend status update fallback to local state:', err);
+      }
+
+      setRecords((prev) =>
+        prev.map((r) => (r.id === target.id ? { ...r, status: 'completed' } : r))
+      );
+
+      setLastCompletedId(target.id);
+      setIsEmbossing(false);
+    }, 1200);
+  };
+
+  // Reset Records
+  const handleResetQueue = async () => {
+    try {
+      const resetData = await resetMachineRecords();
+      if (Array.isArray(resetData) && resetData.length > 0) {
+        setRecords(resetData);
+      } else {
+        setRecords(INITIAL_DUMMY_RECORDS);
+      }
+    } catch (err) {
+      console.warn('Reset endpoint fallback to local state:', err);
+      setRecords(INITIAL_DUMMY_RECORDS.map((r) => ({ ...r, status: 'waiting' })));
+    }
+    setActiveItem(null);
+    setLastCompletedId(null);
+    setIsEmbossing(false);
+  };
 
   return (
     <div className="animate-fade-in space-y-6">
-      
-      {/* Top Welcome/Heading Bar */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      {/* Header Bar */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-6 rounded-3xl border border-gray-150 shadow-sm">
         <div>
-          <h1 className="text-[28px] font-bold text-gray-900 tracking-tight leading-tight flex items-center space-x-2">
-            <Cpu className="w-8 h-8 text-[#5E40FF] stroke-[2.5]" />
-            <span>Machine Embossing Simulator</span>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#5E40FF] text-white flex items-center justify-center shadow-lg shadow-indigo-500/30">
+              <Cpu className="w-6 h-6 stroke-[2.5]" />
+            </div>
+            <span>Machine Module</span>
           </h1>
-          <p className="mt-1 text-sm sm:text-base text-gray-500 font-medium">
-            Configure embossing parameters, adjust fonts, and preview physical markings on tags
+          <p className="mt-1 text-sm text-gray-500 font-medium">
+            Industrial Marking Chamber Workpiece &amp; Sequential Embossing Controller
           </p>
         </div>
 
-        {/* Live Status Indicators */}
-        <div className="flex flex-wrap gap-2.5">
-          <div className="flex items-center space-x-2 bg-white border border-gray-150 px-4 py-2 rounded-xl shadow-sm">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#00B074] animate-pulse" />
-            <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">
-              Station 4: Online
-            </span>
-          </div>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={handleResetQueue}
+            className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-4 py-2.5 rounded-xl border border-gray-200 transition-all text-sm shadow-sm"
+            title="Reset queue back to initial waiting state"
+          >
+            <RotateCcw className="w-4 h-4" />
+            <span>Reset Queue</span>
+          </button>
 
           <button
-            onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`flex items-center space-x-2 border px-4 py-2 rounded-xl shadow-sm transition-all duration-150 ${
-              soundEnabled 
-                ? 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100 font-bold' 
-                : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-55 font-semibold'
-            }`}
+            onClick={loadRecords}
+            disabled={loading}
+            className="p-2.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-all shadow-sm"
+            title="Refresh from REST API"
           >
-            {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-            <span className="text-xs">{soundEnabled ? 'Sound On' : 'Muted'}</span>
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
         </div>
       </div>
 
-      {/* Grid Dashboard */}
+      {/* Main Two-Panel Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* Left Column: Mechanical / Workpiece Graphic (7 Columns) */}
-        <div className="lg:col-span-7 space-y-6">
+        {/* LEFT PANEL: Machine Module List (5 Columns) */}
+        <div className="lg:col-span-5 bg-white rounded-3xl border border-gray-150 shadow-md p-6 space-y-5">
+          <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+            <div className="flex items-center space-x-2.5">
+              <Layers className="w-5 h-5 text-[#5E40FF]" />
+              <h2 className="text-base font-bold text-gray-900 uppercase tracking-wider">
+                Machine Module List
+              </h2>
+            </div>
+            <span className="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">
+              {records.length} Records Loaded
+            </span>
+          </div>
+
+          {/* Record List Items */}
+          <div className="space-y-3">
+            {records.map((item) => {
+              const isWaiting = item.status === 'waiting';
+              const isCompleted = item.status === 'completed';
+              const isActive = activeItem?.id === item.id;
+              const isNextToMark = nextWaitingItem?.id === item.id;
+
+              return (
+                <div
+                  key={item.id}
+                  className={`p-4 rounded-2xl border transition-all duration-200 flex items-center justify-between ${
+                    isActive && isEmbossing
+                      ? 'bg-indigo-50/80 border-[#5E40FF] shadow-md ring-2 ring-[#5E40FF]/20'
+                      : isNextToMark
+                      ? 'bg-amber-50/40 border-amber-200 hover:border-amber-300 shadow-sm'
+                      : isCompleted
+                      ? 'bg-emerald-50/30 border-emerald-100 opacity-90'
+                      : 'bg-gray-50 border-gray-200'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3.5">
+                    <div
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center font-mono text-xs font-black shadow-sm ${
+                        isCompleted
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                          : isNextToMark
+                          ? 'bg-amber-100 text-amber-900 border border-amber-300 animate-pulse'
+                          : 'bg-gray-200 text-gray-700'
+                      }`}
+                    >
+                      #{item.id}
+                    </div>
+
+                    <div>
+                      <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                        Workpiece {item.id}
+                      </div>
+                      <div className="text-sm font-bold text-gray-900 font-mono flex items-center space-x-2 mt-0.5">
+                        <span className="text-gray-900">{item.serialNumber}</span>
+                        <span className="text-gray-400 font-normal">&bull;</span>
+                        <span className="text-indigo-600">{item.partNumber}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Status Badge ('waiting' vs 'completed') */}
+                  <div>
+                    {isWaiting ? (
+                      <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300 uppercase tracking-wider shadow-xs">
+                        <Clock className="w-3.5 h-3.5 text-amber-600 animate-spin-slow" />
+                        <span>waiting</span>
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 uppercase tracking-wider shadow-xs">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>completed</span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Queue summary footer */}
+          <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-medium">
+            <span>
+              Completed:{' '}
+              <strong className="text-emerald-600">
+                {records.filter((r) => r.status === 'completed').length} / {records.length}
+              </strong>
+            </span>
+            <span>
+              Waiting:{' '}
+              <strong className="text-amber-600">
+                {records.filter((r) => r.status === 'waiting').length}
+              </strong>
+            </span>
+          </div>
+        </div>
+
+        {/* RIGHT PANEL: Industrial Marking Chamber Overlay (7 Columns) */}
+        <div className="lg:col-span-7 space-y-5">
           
-          {/* Main Visualizer Card */}
-          <div className="bg-white rounded-3xl border border-gray-200 shadow-md p-6 relative overflow-hidden">
-            {/* Visualizer Header */}
-            <div className="flex justify-between items-center mb-5 pb-3 border-b border-gray-100">
-              <div className="flex items-center space-x-2">
-                <Wrench className="w-5 h-5 text-gray-500" />
-                <h2 className="text-base font-bold text-gray-800 uppercase tracking-wider">
+          {/* Machine Chamber Main Container */}
+          <div className="bg-white rounded-3xl border border-gray-150 shadow-md p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <div className="flex items-center space-x-2.5">
+                <Zap className="w-5 h-5 text-[#5E40FF]" />
+                <h2 className="text-base font-bold text-gray-900 uppercase tracking-wider">
                   Industrial Marking Chamber
                 </h2>
               </div>
+
+              {isEmbossing && (
+                <span className="flex items-center space-x-1.5 text-xs font-extrabold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 animate-pulse">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+                  <span>EMBOSSING IN PROGRESS</span>
+                </span>
+              )}
+            </div>
+
+            {/* RELATIVE CONTAINER FOR INDUSTRIAL MARKING CHAMBER IMAGE */}
+            <div className="relative w-full rounded-2xl overflow-hidden border-4 border-slate-900 bg-slate-950 shadow-2xl min-h-[380px] flex items-center justify-center select-none group">
               
-              {/* XY Readouts */}
-              <div className="flex items-center space-x-3 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">
-                <span className="text-[10px] font-extrabold text-gray-400 tracking-wider">GANTRY AXIS:</span>
-                <span className="text-xs font-mono font-bold text-gray-700">
-                  X: {needlePos.x.toFixed(1)} mm
-                </span>
-                <span className="text-xs font-mono font-bold text-gray-700">
-                  Y: {needlePos.y.toFixed(1)} mm
-                </span>
+              {/* Image named "industrial marking chamber" */}
+              <img
+                src="/assets/industrial_marking_chamber.png"
+                alt="industrial marking chamber"
+                className="w-full h-auto object-cover opacity-85 min-h-[380px] max-h-[460px] transition-all duration-500 group-hover:scale-[1.01]"
+              />
+
+              {/* Grid / HUD Overlay lines on image */}
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#334155_1px,transparent_1px),linear-gradient(to_bottom,#334155_1px,transparent_1px)] bg-[size:32px_32px] opacity-20 pointer-events-none" />
+
+              {/* Laser Reticle Target Box */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-[75%] border border-cyan-500/30 rounded-xl pointer-events-none flex flex-col justify-between p-2">
+                <div className="flex justify-between">
+                  <div className="w-3 h-3 border-t-2 border-l-2 border-cyan-400" />
+                  <div className="w-3 h-3 border-t-2 border-r-2 border-cyan-400" />
+                </div>
+                <div className="flex justify-between">
+                  <div className="w-3 h-3 border-b-2 border-l-2 border-cyan-400" />
+                  <div className="w-3 h-3 border-b-2 border-r-2 border-cyan-400" />
+                </div>
+              </div>
+
+              {/* ABSOLUTE POSITIONED OVERLAY BOX OVER IMAGE TARGET AREA */}
+              <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-900/90 backdrop-blur-md border-2 ${
+                isEmbossing 
+                  ? 'border-amber-400 shadow-[0_0_35px_rgba(245,158,11,0.6)] scale-105' 
+                  : activeItem || lastCompletedId
+                  ? 'border-indigo-500/90 shadow-[0_0_30px_rgba(94,64,255,0.5)]'
+                  : 'border-slate-700 shadow-xl'
+              } rounded-2xl p-6 text-center min-w-[280px] max-w-[90%] transition-all duration-300 z-10`}>
+                
+                {/* Active Text Header */}
+                <div className="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 mb-2 flex items-center justify-center space-x-1.5">
+                  <span className={`w-2 h-2 rounded-full ${
+                    isEmbossing ? 'bg-amber-400 animate-ping' : activeItem ? 'bg-indigo-400' : 'bg-slate-500'
+                  }`} />
+                  <span>
+                    {isEmbossing
+                      ? 'EMBOSSING ACTIVE ITEM'
+                      : activeItem
+                      ? `ACTIVE WORKPIECE (ID: #${activeItem.id})`
+                      : 'MARKING CHAMBER OVERLAY'}
+                  </span>
+                </div>
+
+                {/* Display serialNumber & partNumber over image */}
+                <div className="space-y-3 my-2 py-2 bg-slate-950/70 rounded-xl border border-slate-800 px-4">
+                  <div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      SERIAL NUMBER
+                    </div>
+                    <div className="text-2xl sm:text-3xl font-black font-mono text-indigo-400 tracking-widest drop-shadow-[0_2px_8px_rgba(94,64,255,0.4)]">
+                      {activeItem
+                        ? activeItem.serialNumber
+                        : lastCompletedId
+                        ? records.find((r) => r.id === lastCompletedId)?.serialNumber || 'SN-XXXX'
+                        : nextWaitingItem
+                        ? nextWaitingItem.serialNumber
+                        : 'SN-XXXX'}
+                    </div>
+                  </div>
+
+                  <div className="border-t border-slate-800/80 pt-2">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      PART NUMBER
+                    </div>
+                    <div className="text-xl sm:text-2xl font-extrabold font-mono text-slate-100 tracking-wider">
+                      {activeItem
+                        ? activeItem.partNumber
+                        : lastCompletedId
+                        ? records.find((r) => r.id === lastCompletedId)?.partNumber || 'PN-XXXX'
+                        : nextWaitingItem
+                        ? nextWaitingItem.partNumber
+                        : 'PN-XXXX'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Overlay status tag */}
+                <div className="mt-3">
+                  {isEmbossing ? (
+                    <span className="inline-block bg-amber-500/20 text-amber-300 border border-amber-500/50 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full animate-pulse">
+                      STAMPING IN PROGRESS...
+                    </span>
+                  ) : activeItem && activeItem.status === 'completed' ? (
+                    <span className="inline-block bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
+                      EMBOSSING COMPLETED
+                    </span>
+                  ) : nextWaitingItem ? (
+                    <span className="inline-block bg-indigo-500/20 text-indigo-300 border border-indigo-500/50 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
+                      READY TO EMBOSS
+                    </span>
+                  ) : (
+                    <span className="inline-block bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
+                      ALL RECORDS COMPLETED
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
-            {/* Embossing Gantry Arena */}
-            <div className="relative bg-gray-900 rounded-2xl border-4 border-gray-950 p-4 shadow-inner flex items-center justify-center min-h-[300px]">
+            {/* EMBOSSING EXECUTION CONTROLS */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
               
-              {/* Laser Grid Background */}
-              <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:24px_24px] opacity-25" />
-              
-              {/* Dynamic Gantry Guides */}
-              <div 
-                className="absolute left-0 right-0 h-[2px] bg-red-500/15 pointer-events-none transition-all duration-75"
-                style={{ top: `${(needlePos.y / 180) * 100}%` }}
-              />
-              <div 
-                className="absolute top-0 bottom-0 w-[2px] bg-red-500/15 pointer-events-none transition-all duration-75"
-                style={{ left: `${(needlePos.x / 440) * 100}%` }}
-              />
-
-              {/* Physical Metal Workpiece tag simulation */}
-              <div className="relative w-full max-w-[440px] aspect-[440/180] rounded-lg bg-gradient-to-br from-[#E2E8F0] via-[#CBD5E1] to-[#94A3B8] border-2 border-slate-400 shadow-[inset_0_4px_12px_rgba(255,255,255,0.7),0_10px_20px_rgba(0,0,0,0.4)] flex flex-col justify-between p-6 select-none">
-                
-                {/* Metallic Clamps/Rivets in 4 corners */}
-                <div className="absolute top-2 left-2 w-4 h-4 rounded-full bg-slate-500 border border-slate-600 shadow-[inset_0_1px_3px_rgba(255,255,255,0.5)] flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 rounded-full bg-slate-700" />
-                </div>
-                <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-slate-500 border border-slate-600 shadow-[inset_0_1px_3px_rgba(255,255,255,0.5)] flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 rounded-full bg-slate-700" />
-                </div>
-                <div className="absolute bottom-2 left-2 w-4 h-4 rounded-full bg-slate-500 border border-slate-600 shadow-[inset_0_1px_3px_rgba(255,255,255,0.5)] flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 rounded-full bg-slate-700" />
-                </div>
-                <div className="absolute bottom-2 right-2 w-4 h-4 rounded-full bg-slate-500 border border-slate-600 shadow-[inset_0_1px_3px_rgba(255,255,255,0.5)] flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 rounded-full bg-slate-700" />
-                </div>
-
-                {/* Manufacturer Branding Logo on Tag */}
-                <div className="flex justify-between items-center opacity-60">
-                  <div className="text-[10px] font-black tracking-widest text-slate-800">
-                    ARC INDUSTRIAL CORP
-                  </div>
-                  <div className="text-[8px] font-bold text-slate-700">
-                    MADE IN USA
-                  </div>
-                </div>
-
-                {/* Part Number Label & Stamped Text */}
-                <div className="my-2">
-                  <div className="text-[10px] font-black text-slate-600 tracking-wider mb-1 uppercase">
-                    PART NUMBER:
-                  </div>
-                  <div className="flex space-x-1.5 font-mono text-[22px] font-black tracking-widest h-8 items-center pl-4">
-                    {partNo.split('').map((char, index) => {
-                      const isCompleted = completedPartChars[index];
-                      const isActive = simStatus === 'marking_part' && activeCharIndex === index;
-                      
-                      return (
-                        <span 
-                          key={index} 
-                          className={`relative inline-block transition-all duration-150 ${
-                            isCompleted 
-                              ? 'text-slate-950 scale-100 filter drop-shadow-[1px_2px_1px_rgba(255,255,255,0.8)] [text-shadow:inset_0_2px_2px_rgba(0,0,0,0.6)] font-extrabold' 
-                              : 'text-slate-400/40 border-b border-dashed border-slate-500/20'
-                          } ${isActive ? 'text-[#5E40FF] scale-125 font-bold' : ''}`}
-                          style={{
-                            fontFamily: fontType === 'Dot-matrix' ? '"Courier New", Courier, monospace' : 'inherit',
-                          }}
-                        >
-                          {char}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Serial Number Label & Stamped Text */}
-                <div className="my-2">
-                  <div className="text-[10px] font-black text-slate-600 tracking-wider mb-1 uppercase">
-                    SERIAL NUMBER:
-                  </div>
-                  <div className="flex space-x-1.5 font-mono text-[22px] font-black tracking-widest h-8 items-center pl-4">
-                    {serialNo.split('').map((char, index) => {
-                      const isCompleted = completedSerialChars[index];
-                      const isActive = simStatus === 'marking_serial' && activeCharIndex === index;
-                      
-                      return (
-                        <span 
-                          key={index} 
-                          className={`relative inline-block transition-all duration-150 ${
-                            isCompleted 
-                              ? 'text-slate-955 scale-100 filter drop-shadow-[1px_2px_1px_rgba(255,255,255,0.8)] [text-shadow:inset_0_2px_2px_rgba(0,0,0,0.6)] font-extrabold' 
-                              : 'text-slate-400/40 border-b border-dashed border-slate-500/20'
-                          } ${isActive ? 'text-[#5E40FF] scale-125 font-bold' : ''}`}
-                          style={{
-                            fontFamily: fontType === 'Dot-matrix' ? '"Courier New", Courier, monospace' : 'inherit',
-                          }}
-                        >
-                          {char}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Tag Footer details */}
-                <div className="flex justify-between items-center text-[9px] font-bold text-slate-700 opacity-60">
-                  <span>SPECIFICATION ID: Q-4981C</span>
-                  <span>DEPTH LIMIT: {markingDepth.toFixed(2)} MM</span>
-                </div>
-              </div>
-
-              {/* Physical Embossing Pin Overlay */}
-              <div 
-                className="absolute pointer-events-none transition-all duration-75 z-20"
-                style={{ 
-                  left: `calc(${(needlePos.x / 440) * 100}% - 14px)`, 
-                  top: `calc(${(needlePos.y / 180) * 100}% - 14px)` 
-                }}
+              {/* "Start Embossing" Button */}
+              <button
+                onClick={handleStartEmbossing}
+                disabled={!nextWaitingItem || isEmbossing}
+                className={`w-full sm:w-auto flex items-center justify-center space-x-2.5 px-8 py-3.5 rounded-2xl font-extrabold text-base shadow-lg transition-all duration-200 ${
+                  !nextWaitingItem || isEmbossing
+                    ? 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed shadow-none'
+                    : 'bg-[#5E40FF] hover:bg-[#4d32e6] text-white shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-[1.02] active:scale-[0.98]'
+                }`}
               >
-                {/* Marking Stylus Visual */}
-                <svg width="28" height="28" viewBox="0 0 28 28">
-                  {/* Outer casing */}
-                  <circle cx="14" cy="14" r="10" fill="#374151" stroke="#6b7280" strokeWidth="2" opacity="0.85" />
-                  {/* Metal Pin core */}
-                  <circle cx="14" cy="14" r="4" fill="#9ca3af" stroke="#f3f4f6" strokeWidth="1" />
-                  {/* Red/Yellow laser alignment dot */}
-                  <circle 
-                    cx="14" 
-                    cy="14" 
-                    r="1.5" 
-                    fill={simStatus.startsWith('marking') ? '#FF3E3E' : '#EAB308'} 
-                    className={simStatus.startsWith('marking') ? 'animate-pulse' : ''} 
-                  />
-                  {/* Stylus Pointer Crosshair */}
-                  <line x1="14" y1="0" x2="14" y2="6" stroke="#ef4444" strokeWidth="1.5" />
-                  <line x1="14" y1="22" x2="14" y2="28" stroke="#ef4444" strokeWidth="1.5" />
-                  <line x1="0" y1="14" x2="6" y2="14" stroke="#ef4444" strokeWidth="1.5" />
-                  <line x1="22" y1="14" x2="28" y2="14" stroke="#ef4444" strokeWidth="1.5" />
-                </svg>
+                <Play className={`w-5 h-5 fill-current ${isEmbossing ? 'animate-bounce' : ''}`} />
+                <span>
+                  {isEmbossing
+                    ? 'Embossing...'
+                    : allCompleted
+                    ? 'All Items Completed'
+                    : `Start Embossing (${nextWaitingItem?.serialNumber || ''})`}
+                </span>
+              </button>
 
-                {/* Status tag */}
-                {simStatus.startsWith('marking') && (
-                  <div className="absolute left-6 top-1/2 -translate-y-1/2 bg-red-600 text-white font-bold text-[8px] tracking-wider px-1.5 py-0.5 rounded shadow whitespace-nowrap animate-pulse">
-                    STAMPING PIN
-                  </div>
+              {/* Status helper text */}
+              <div className="text-right text-xs font-semibold text-gray-500">
+                {allCompleted ? (
+                  <span className="text-emerald-600 font-bold flex items-center justify-end space-x-1">
+                    <CheckCheck className="w-4 h-4" />
+                    <span>All 5 records marked completed!</span>
+                  </span>
+                ) : nextWaitingItem ? (
+                  <span>
+                    Next in queue: <strong className="text-gray-900 font-mono">{nextWaitingItem.serialNumber}</strong> ({nextWaitingItem.partNumber})
+                  </span>
+                ) : (
+                  <span>Ready</span>
                 )}
               </div>
-
-              {/* Sparks layer */}
-              {sparks.map(spark => (
-                <div
-                  key={spark.id}
-                  className="absolute rounded-full bg-amber-400 pointer-events-none z-30"
-                  style={{
-                    left: `calc(${(spark.x / 440) * 100}% - 2px)`,
-                    top: `calc(${(spark.y / 180) * 100}% - 2px)`,
-                    width: `${spark.size}px`,
-                    height: `${spark.size}px`,
-                    boxShadow: '0 0 6px #F59E0B, 0 0 12px #F59E0B'
-                  }}
-                />
-              ))}
             </div>
 
-            {/* Sim Control Actions */}
-            <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex space-x-2">
-                <button
-                  onClick={startSimulation}
-                  disabled={simStatus.startsWith('marking') || simStatus === 'returning'}
-                  className={`flex items-center space-x-2 px-6 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-all duration-150 ${
-                    simStatus.startsWith('marking') || simStatus === 'returning'
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-[#5E40FF] hover:bg-[#4d32e6] text-white hover:shadow-md'
-                  }`}
-                >
-                  <Play className="w-4 h-4 fill-current" />
-                  <span>
-                    {simStatus === 'completed' ? 'Re-run Embossing' : 'Start Embossing'}
-                  </span>
-                </button>
-
-                <button
-                  onClick={resetSimulation}
-                  className="flex items-center space-x-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-all duration-150"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  <span>Reset Tag</span>
-                </button>
-              </div>
-
-              {/* Progress display */}
-              <div className="text-right">
-                <div className="text-xs font-semibold text-gray-500 mb-1">
-                  Simulation Status
-                </div>
-                <div className="text-sm font-bold text-gray-800 flex items-center justify-end space-x-1.5">
-                  {simStatus === 'idle' && (
-                    <span className="text-gray-500">Ready to mark</span>
-                  )}
-                  {simStatus === 'marking_part' && (
-                    <span className="text-[#5E40FF] flex items-center">
-                      <Zap className="w-3.5 h-3.5 mr-1 text-amber-500 fill-amber-500 animate-bounce" />
-                      Embossing Part Number
-                    </span>
-                  )}
-                  {simStatus === 'marking_serial' && (
-                    <span className="text-[#5E40FF] flex items-center">
-                      <Zap className="w-3.5 h-3.5 mr-1 text-amber-500 fill-amber-500 animate-bounce" />
-                      Embossing Serial Number
-                    </span>
-                  )}
-                  {simStatus === 'returning' && (
-                    <span className="text-yellow-600">Returning pin...</span>
-                  )}
-                  {simStatus === 'completed' && (
-                    <span className="text-[#00B074] flex items-center">
-                      <CheckCircle2 className="w-4 h-4 mr-1 text-[#00B074]" />
-                      Embossing Complete
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
 
-        </div>
-
-        {/* Right Column: Parameters (5 Columns) */}
-        <div className="lg:col-span-5 space-y-6">
-          
-          {/* Part Selection Dropdown */}
-          <div className="bg-white rounded-3xl border border-gray-200 shadow-md p-6">
-            <h2 className="text-base font-bold text-gray-800 uppercase tracking-wider mb-4 flex items-center space-x-2">
-              <Sliders className="w-5 h-5 text-[#5E40FF]" />
-              <span>Select Part from Queue</span>
-            </h2>
-
-            <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-              Choose an active batch workpiece to simulate marking output. These values represent actual data awaiting embossing in this shift.
+          {/* Instruction Note */}
+          <div className="bg-indigo-50/50 border border-indigo-100 p-4 rounded-2xl flex items-start space-x-3">
+            <AlertCircle className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
+            <p className="text-xs text-indigo-900 leading-relaxed font-medium">
+              Click <strong>&quot;Start Embossing&quot;</strong> to process each item sequentially from status <span className="font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded">waiting</span> to <span className="font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded">completed</span>. Active item details are positioned over the industrial marking chamber image target area in real-time.
             </p>
-
-            <div className="space-y-2">
-              {partsQueue.map(part => {
-                const isSelected = part.id === selectedPartId;
-                return (
-                  <button
-                    key={part.id}
-                    onClick={() => {
-                      if (!simStatus.startsWith('marking') && simStatus !== 'returning') {
-                        setSelectedPartId(part.id);
-                      }
-                    }}
-                    disabled={simStatus.startsWith('marking') || simStatus === 'returning'}
-                    className={`w-full text-left p-3.5 rounded-2xl border transition-all duration-150 flex items-center justify-between ${
-                      isSelected
-                        ? 'bg-indigo-50/50 border-[#5E40FF] shadow-sm'
-                        : 'bg-white border-gray-150 hover:bg-gray-50 text-gray-700'
-                    } ${
-                      (simStatus.startsWith('marking') || simStatus === 'returning') && !isSelected
-                        ? 'opacity-50 cursor-not-allowed'
-                        : 'cursor-pointer'
-                    }`}
-                  >
-                    <div>
-                      <div className="text-xs font-bold text-gray-400 uppercase">Part {part.id}</div>
-                      <div className="text-sm font-bold text-gray-800 font-mono mt-0.5">
-                        {part.partNo} &bull; {part.serialNo}
-                      </div>
-                    </div>
-
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-[#FEF3C7] text-[#D97706] uppercase tracking-wider">
-                      {part.status}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Marking Parameters Settings */}
-          <div className="bg-white rounded-3xl border border-gray-200 shadow-md p-6">
-            <h2 className="text-base font-bold text-gray-800 uppercase tracking-wider mb-5 flex items-center space-x-2">
-              <Settings className="w-5 h-5 text-[#5E40FF]" />
-              <span>Marking Configurations</span>
-            </h2>
-
-            <div className="space-y-4">
-              
-              {/* Slider 1: Embossing speed */}
-              <div>
-                <div className="flex justify-between text-xs font-bold text-gray-700 mb-1.5">
-                  <span>Marking Speed</span>
-                  <span className="font-mono text-gray-500 font-semibold">{embossingSpeed} mm/s</span>
-                </div>
-                <input
-                  type="range"
-                  min="10"
-                  max="100"
-                  value={embossingSpeed}
-                  onChange={(e) => setEmbossingSpeed(parseInt(e.target.value))}
-                  disabled={simStatus.startsWith('marking') || simStatus === 'returning'}
-                  className="w-full accent-[#5E40FF] cursor-pointer"
-                />
-                <div className="flex justify-between text-[10px] text-gray-400 font-medium mt-1">
-                  <span>Precision (10 mm/s)</span>
-                  <span>Draft (100 mm/s)</span>
-                </div>
-              </div>
-
-              {/* Slider 2: Solenoid Force */}
-              <div>
-                <div className="flex justify-between text-xs font-bold text-gray-700 mb-1.5">
-                  <span>Pin Impact Force</span>
-                  <span className="font-mono text-gray-500 font-semibold">{markingForce.toFixed(1)} kN</span>
-                </div>
-                <input
-                  type="range"
-                  min="10"
-                  max="100"
-                  value={markingForce * 10}
-                  onChange={(e) => setMarkingForce(parseInt(e.target.value) / 10)}
-                  disabled={simStatus.startsWith('marking') || simStatus === 'returning'}
-                  className="w-full accent-[#5E40FF] cursor-pointer"
-                />
-                <div className="flex justify-between text-[10px] text-gray-400 font-medium mt-1">
-                  <span>Soft (1.0 kN)</span>
-                  <span>Hard Steel (10.0 kN)</span>
-                </div>
-              </div>
-
-              {/* Slider 3: Depth */}
-              <div>
-                <div className="flex justify-between text-xs font-bold text-gray-700 mb-1.5">
-                  <span>Target Penetration Depth</span>
-                  <span className="font-mono text-gray-500 font-semibold">{markingDepth.toFixed(2)} mm</span>
-                </div>
-                <input
-                  type="range"
-                  min="1"
-                  max="15"
-                  value={markingDepth * 10}
-                  onChange={(e) => setMarkingDepth(parseInt(e.target.value) / 10)}
-                  disabled={simStatus.startsWith('marking') || simStatus === 'returning'}
-                  className="w-full accent-[#5E40FF] cursor-pointer"
-                />
-                <div className="flex justify-between text-[10px] text-gray-400 font-medium mt-1">
-                  <span>Light (0.1 mm)</span>
-                  <span>Deep (1.5 mm)</span>
-                </div>
-              </div>
-
-              {/* Font Family selector */}
-              <div>
-                <label className="block text-xs font-bold text-gray-700 mb-2">
-                  Engraving Font Style
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {['Dot-matrix', 'Standard Block'].map((font) => (
-                    <button
-                      key={font}
-                      onClick={() => setFontType(font)}
-                      disabled={simStatus.startsWith('marking') || simStatus === 'returning'}
-                      className={`py-2 px-3 text-xs font-bold rounded-xl border transition-all duration-150 ${
-                        fontType === font
-                          ? 'bg-[#EBFDF5] border-[#00B074] text-[#00B074] shadow-sm'
-                          : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      {font}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-            </div>
           </div>
 
         </div>
 
       </div>
-
     </div>
   );
 };
