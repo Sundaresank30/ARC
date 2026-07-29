@@ -3,11 +3,15 @@ import {
   LayoutGrid,
   LayoutDashboard,
   Database,
+  Cpu,
   Hammer,
   Droplet,
   Settings,
   LogOut,
   Cpu,
+  Lock,
+  LogOut,
+
 } from 'lucide-react';
 import { UserRole } from '../../types';
 
