@@ -3,6 +3,7 @@ import {
   LayoutGrid,
   LayoutDashboard,
   Database,
+  Cpu,
   Hammer,
   Droplet,
   Settings,
@@ -94,10 +95,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => !item.disabled && setCurrentTab(item.id)}
                 disabled={item.disabled}
                 className={`w-full flex items-center justify-between px-3 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${isActive
-                    ? 'bg-gray-100 text-gray-900 shadow-sm'
-                    : item.disabled
-                      ? 'text-gray-350 cursor-not-allowed'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-gray-100 text-gray-900 shadow-sm'
+                  : item.disabled
+                    ? 'text-gray-350 cursor-not-allowed'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
               >
                 <div className="flex items-center space-x-3">
