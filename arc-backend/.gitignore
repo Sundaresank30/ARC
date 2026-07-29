@@ -15,5 +15,11 @@ target/
 
 # Logs
 *.log
+
 # Spring Boot configuration
 src/main/resources/application.properties
+application.properties
+**/application.properties
+
+# Maven build file
+pom.xml

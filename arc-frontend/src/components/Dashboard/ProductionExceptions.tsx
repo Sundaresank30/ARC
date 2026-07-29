@@ -23,72 +23,96 @@ interface LeakageFailureItem {
   action: string;
 }
 
-export const ProductionExceptions: React.FC = () => {
-  const [carryForwardData, setCarryForwardData] = useState<CarryForwardItem[]>([
-    {
-      id: '1',
-      partNo: 'Pn00111c',
-      serialNo: 'P0011156',
-      status: 'Pending',
-      remainingSince: '17:57, 20 Jul',
-      nextShift: '21 Jul',
-      action: 'Queued',
-    },
-    {
-      id: '2',
-      partNo: 'Pn00112c',
-      serialNo: 'P0011157',
-      status: 'Pending',
-      remainingSince: '17:58, 20 Jul',
-      nextShift: '21 Jul',
-      action: 'Queued',
-    },
-    {
-      id: '3',
-      partNo: 'Pn00113c',
-      serialNo: 'P0011158',
-      status: 'Pending',
-      remainingSince: '18:00, 20 Jul',
-      nextShift: '21 Jul',
-      action: 'Queued',
-    },
-  ]);
+interface ProductionExceptionsProps {
+  carryForwardData?: CarryForwardItem[];
+  leakageFailuresData?: LeakageFailureItem[];
+  onResolveCarryForward?: (id: string, partNo: string) => void;
+  onResolveLeakage?: (id: string, partNo: string) => void;
+}
 
-  const [leakageFailuresData, setLeakageFailuresData] = useState<LeakageFailureItem[]>([
-    {
-      id: '1',
-      partNo: 'Pn00111c',
-      serialNo: 'P0011156',
-      status: 'Failed',
-      testValue: 0.42,
-      direction: 'down',
-      timestamp: '17:57, 20 Jul',
-      attempt: '2/2',
-      action: 'Scrap',
-    },
-    {
-      id: '2',
-      partNo: 'Pn00112c',
-      serialNo: 'P0011157',
-      status: 'Failed',
-      testValue: 1.08,
-      direction: 'up',
-      timestamp: '17:58, 20 Jul',
-      attempt: '1/2',
-      action: 'Pending',
-    },
-    {
-      id: '3',
-      partNo: 'Pn00113c',
-      serialNo: 'P0011158',
-      status: 'Failed',
-      testValue: 0.48,
-      direction: 'down',
-      timestamp: '18:00, 20 Jul',
-      attempt: '1/2',
-      action: 'Pending',
-    },
-  ]);
+export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
+  carryForwardData: initialCarryForward,
+  leakageFailuresData: initialLeakage,
+  onResolveCarryForward,
+  onResolveLeakage,
+}) => {
+  const [carryForwardData, setCarryForwardData] = useState<CarryForwardItem[]>(
+    initialCarryForward || [
+      {
+        id: '1',
+        partNo: 'Pn00111c',
+        serialNo: 'P0011156',
+        status: 'Pending',
+        remainingSince: '17:57, 20 Jul',
+        nextShift: '21 Jul',
+        action: 'Queued',
+      },
+      {
+        id: '2',
+        partNo: 'Pn00112c',
+        serialNo: 'P0011157',
+        status: 'Pending',
+        remainingSince: '17:58, 20 Jul',
+        nextShift: '21 Jul',
+        action: 'Queued',
+      },
+      {
+        id: '3',
+        partNo: 'Pn00113c',
+        serialNo: 'P0011158',
+        status: 'Pending',
+        remainingSince: '18:00, 20 Jul',
+        nextShift: '21 Jul',
+        action: 'Queued',
+      },
+    ]
+  );
+
+  const [leakageFailuresData, setLeakageFailuresData] = useState<LeakageFailureItem[]>(
+    initialLeakage || [
+      {
+        id: '1',
+        partNo: 'Pn00111c',
+        serialNo: 'P0011156',
+        status: 'Failed',
+        testValue: 0.42,
+        direction: 'down',
+        timestamp: '17:57, 20 Jul',
+        attempt: '2/2',
+        action: 'Scrap',
+      },
+      {
+        id: '2',
+        partNo: 'Pn00112c',
+        serialNo: 'P0011157',
+        status: 'Failed',
+        testValue: 1.08,
+        direction: 'up',
+        timestamp: '17:58, 20 Jul',
+        attempt: '1/2',
+        action: 'Pending',
+      },
+      {
+        id: '3',
+        partNo: 'Pn00113c',
+        serialNo: 'P0011158',
+        status: 'Failed',
+        testValue: 0.48,
+        direction: 'down',
+        timestamp: '18:00, 20 Jul',
+        attempt: '1/2',
+        action: 'Pending',
+      },
+    ]
+  );
+
+  React.useEffect(() => {
+    if (initialCarryForward) setCarryForwardData(initialCarryForward);
+  }, [initialCarryForward]);
+
+  React.useEffect(() => {
+    if (initialLeakage) setLeakageFailuresData(initialLeakage);
+  }, [initialLeakage]);
 
   // Toast / Action notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -101,11 +125,17 @@ export const ProductionExceptions: React.FC = () => {
   };
 
   const handleCarryForwardAction = (id: string, partNo: string, currentAction: string) => {
-    triggerToast(`Action "${currentAction}" triggered for Part ${partNo}`);
+    if (onResolveCarryForward) {
+      onResolveCarryForward(id, partNo);
+    }
+    triggerToast(`Action "${currentAction}" completed for Part ${partNo}`);
   };
 
   const handleLeakageAction = (id: string, partNo: string, currentAction: string) => {
-    triggerToast(`Action "${currentAction}" triggered for Part ${partNo}`);
+    if (onResolveLeakage) {
+      onResolveLeakage(id, partNo);
+    }
+    triggerToast(`Action "${currentAction}" completed for Part ${partNo}`);
   };
 
   return (
