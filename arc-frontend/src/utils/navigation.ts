@@ -24,7 +24,7 @@ export function apiRoleToUserRole(role: string): UserRole {
 }
 
 export function getDefaultTab(role: UserRole): string {
-  return role === 'operator' ? 'data-embossing' : 'dashboard';
+  return role === 'operator' ? 'machine' : 'dashboard';
 }
 
 export function formatEmbossingStatus(status: string): string {

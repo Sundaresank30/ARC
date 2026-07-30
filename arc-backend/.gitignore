@@ -16,6 +16,7 @@ target/
 # Logs
 *.log
 
+<<<<<<< HEAD
 # Secrets & Local Credentials (DO NOT ignore main application.properties or pom.xml)
 application-local.properties
 application-local.yml
@@ -28,3 +29,12 @@ application-secret.yml
 # OS-specific files
 .DS_Store
 Thumbs.db
+=======
+# Spring Boot configuration
+src/main/resources/application.properties
+application.properties
+**/application.properties
+
+# Maven build file
+pom.xml
+>>>>>>> d8920553b80614e26b76b2b20c05052ba57e80b4
