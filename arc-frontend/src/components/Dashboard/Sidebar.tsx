@@ -7,12 +7,7 @@ import {
   Hammer,
   Droplet,
   Settings,
-  Lock,
   LogOut,
-<<<<<<< HEAD
-=======
-
->>>>>>> bf8ff53e94d95077b0ef1d3958f29baf7eeebdfd
 } from 'lucide-react';
 import { UserRole } from '../../types';
 
