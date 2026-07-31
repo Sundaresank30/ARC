@@ -12,7 +12,7 @@ node_modules/
 dist/
 dist-ssr/
 
-# Environment files
+# Secrets & Local Environment Variables
 .env
 .env.local
 .env.development.local
@@ -29,7 +29,10 @@ dist-ssr/
 *.njsproj
 *.sln
 *.sw?
+
+# OS-specific files
 .DS_Store
+Thumbs.db
 
 # Cache & Temporary Files
 .eslintcache

@@ -1,10 +1,19 @@
+# Target & Build Artifacts
 target/
 !.mvn/wrapper/maven-wrapper.jar
+
+# IDE & Editor files
 .idea/
+.vscode/
 *.iml
+*.ipr
+*.iws
 .classpath
 .project
 .settings/
+.factorypath
+
+# Logs
 *.log
 
 # Spring Boot configuration & secrets
