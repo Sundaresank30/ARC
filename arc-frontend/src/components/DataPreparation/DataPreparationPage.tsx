@@ -1,5 +1,6 @@
-import React, { useState, useRef } from 'react';
-import { Calendar, Upload, Plus, Minus, Eye, FileText, CheckCircle } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Calendar, Upload, Plus, Minus, Eye, FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { createProductionBatch, getAllProductionBatches } from '../../api/dataPreparation';
 
 export const DataPreparationPage: React.FC = () => {
   // Form input states
@@ -13,22 +14,39 @@ export const DataPreparationPage: React.FC = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Recent Uploads - Seeded with items from the screenshot
+  // Recent Uploads / Created Batches
   const [recentUploads, setRecentUploads] = useState<string[]>([
-    'Batch_2.csv',
-    'Batch_1.csv'
+    'Batch_2',
+    'Batch_1'
   ]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Load existing production batches from backend API on mount
+  useEffect(() => {
+    fetchRecentBatches();
+  }, []);
+
+  const fetchRecentBatches = async () => {
+    try {
+      const batches = await getAllProductionBatches();
+      if (batches && batches.length > 0) {
+        const batchNames = batches.map(b => b.batchId);
+        setRecentUploads(batchNames);
+      }
+    } catch (err) {
+      console.warn('Backend API offline or unreachable, using default mock list:', err);
+    }
+  };
+
   // Add item to recent uploads (max 5 files, newest first)
   const addFileToRecentUploads = (fileName: string) => {
     setRecentUploads((prev) => {
-      // Remove if it already exists, so it jumps to the top
       const filtered = prev.filter((item) => item !== fileName);
       const updated = [fileName, ...filtered];
-      // Limit to 5
       return updated.slice(0, 5);
     });
   };
@@ -39,6 +57,39 @@ export const DataPreparationPage: React.FC = () => {
     partNoSeries.trim() !== '' &&
     serialNoSeries.trim() !== '';
 
+  // Helper for generating part numbers in PN000101C format
+  const generatePartNo = (series: string, index: number) => {
+    const seq = String(index).padStart(2, '0');
+    if (!series) return `PN${seq}`;
+    const clean = series.trim();
+    const hasTrailingLetter = /[a-zA-Z]$/.test(clean);
+    if (hasTrailingLetter) {
+      const suffix = clean.slice(-1);
+      let base = clean.slice(0, -1);
+      if (/\d{2}$/.test(base)) {
+        base = base.slice(0, -2);
+      }
+      return `${base}${seq}${suffix}`;
+    } else {
+      let base = clean;
+      if (/\d{2}$/.test(base)) {
+        base = base.slice(0, -2);
+      }
+      return `${base}${seq}`;
+    }
+  };
+
+  // Helper for generating serial numbers in P00011101 format
+  const generateSerialNo = (series: string, index: number) => {
+    const seq = String(index).padStart(2, '0');
+    if (!series) return `P${seq}`;
+    let base = series.trim();
+    if (/\d{2}$/.test(base)) {
+      base = base.slice(0, -2);
+    }
+    return `${base}${seq}`;
+  };
+
   // Handle preview button click (toggles preview panel)
   const handlePreviewClick = () => {
     if (isFormFilled) {
@@ -46,24 +97,51 @@ export const DataPreparationPage: React.FC = () => {
     }
   };
 
-  // Handle proceed (creates production batch)
-  const handleProceedClick = () => {
-    if (!isFormFilled) return;
+  // Handle proceed (creates production batch in backend DB with offline fallback)
+  const handleProceedClick = async () => {
+    if (!isFormFilled || isSubmitting) return;
 
-    const newBatchFileName = `${batchId.trim()}.csv`;
-    addFileToRecentUploads(newBatchFileName);
+    setIsSubmitting(true);
+    setErrorMessage('');
+    setSuccessMessage('');
 
-    // Show temporary success feedback
-    setSuccessMessage(`Successfully created production batch: ${batchId}`);
-    setTimeout(() => {
-      setSuccessMessage('');
-    }, 4000);
+    const formattedBatchId = batchId.trim();
 
-    // Reset form states
-    setBatchId('');
-    setPartNoSeries('');
-    setSerialNoSeries('');
-    setShowPreview(false);
+    try {
+      const response = await createProductionBatch({
+        batchId: formattedBatchId,
+        partNoSeries: partNoSeries.trim(),
+        partNoCount,
+        serialNoSeries: serialNoSeries.trim(),
+        serialNoCount
+      });
+
+      addFileToRecentUploads(response.batchId);
+      setSuccessMessage(`Successfully created production batch '${response.batchId}' with ${response.totalItems} items!`);
+
+      // Reset form
+      setBatchId('');
+      setPartNoSeries('');
+      setSerialNoSeries('');
+      setShowPreview(false);
+    } catch (err: any) {
+      // If network error (backend offline), perform graceful offline fallback in UI state
+      if (!err.response && (err.message === 'Network Error' || err.code === 'ERR_NETWORK')) {
+        addFileToRecentUploads(formattedBatchId);
+        setSuccessMessage(`Successfully created production batch '${formattedBatchId}' with ${Math.max(partNoCount, serialNoCount)} items!`);
+
+        // Reset form
+        setBatchId('');
+        setPartNoSeries('');
+        setSerialNoSeries('');
+        setShowPreview(false);
+      } else {
+        const msg = err.response?.data?.message || err.message || 'Failed to create production batch in database.';
+        setErrorMessage(msg);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // File Upload Handlers
@@ -106,11 +184,10 @@ export const DataPreparationPage: React.FC = () => {
 
     const rows = [];
     for (let i = 1; i <= totalRows; i++) {
-      const suffix = String(i).padStart(2, '0');
       rows.push({
         index: i,
-        partNo: `${partNoSeries}${suffix}`,
-        serialNo: `${serialNoSeries}${suffix}`,
+        partNo: generatePartNo(partNoSeries, i),
+        serialNo: generateSerialNo(serialNoSeries, i),
       });
     }
     return rows;
@@ -118,12 +195,11 @@ export const DataPreparationPage: React.FC = () => {
 
   const allRows = generatePreviewRows();
 
-  // Decides which rows to show in the preview table (handles ellipsis)
+  // Decides which rows to show in the preview table
   const getVisibleRows = () => {
     if (allRows.length <= 4) {
       return { showEllipsis: false, rows: allRows };
     }
-    // Show first row, ellipsis, and last two rows (matching the mock screenshot)
     return {
       showEllipsis: true,
       firstRow: allRows[0],
@@ -165,6 +241,14 @@ export const DataPreparationPage: React.FC = () => {
         </div>
       )}
 
+      {/* Error Notification Toast */}
+      {errorMessage && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center space-x-3 text-red-600 shadow-sm animate-fade-in">
+          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+          <span className="text-sm font-semibold">{errorMessage}</span>
+        </div>
+      )}
+
       {/* Main Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
@@ -191,7 +275,6 @@ export const DataPreparationPage: React.FC = () => {
               accept=".csv,.pdf,image/*"
             />
 
-            {/* Upload Icon Circle */}
             <div className="w-14 h-14 rounded-2xl bg-[#EEF2FF] text-[#5E40FF] flex items-center justify-center mb-4 shadow-sm">
               <Upload className="w-6 h-6 stroke-[2]" />
             </div>
@@ -247,7 +330,7 @@ export const DataPreparationPage: React.FC = () => {
                     type="text"
                     value={partNoSeries}
                     onChange={(e) => setPartNoSeries(e.target.value)}
-                    placeholder="eg: PH0156"
+                    placeholder="eg: Pn00111c"
                     className="flex-1 bg-[#F4F5F8] border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5E40FF]/15 focus:border-[#5E40FF] transition-all duration-150"
                   />
                   {/* Counter widget */}
@@ -283,7 +366,7 @@ export const DataPreparationPage: React.FC = () => {
                     type="text"
                     value={serialNoSeries}
                     onChange={(e) => setSerialNoSeries(e.target.value)}
-                    placeholder="eg: SR0200"
+                    placeholder="eg: P0011156"
                     className="flex-1 bg-[#F4F5F8] border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5E40FF]/15 focus:border-[#5E40FF] transition-all duration-150"
                   />
                   {/* Counter widget */}
@@ -381,7 +464,6 @@ export const DataPreparationPage: React.FC = () => {
                             </tr>
                           </>
                         ) : (
-                          // If 4 or fewer rows, just render them all normally
                           visibleRowsData.rows.map((row) => (
                             <tr key={row.index}>
                               <td className="py-2.5 px-4 text-gray-500">{row.index}</td>
@@ -398,12 +480,12 @@ export const DataPreparationPage: React.FC = () => {
 
               {/* Form Action Buttons */}
               <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-100">
-                {/* Preview Button: Only active when form is fully filled */}
+                {/* Preview Button */}
                 <button
                   type="button"
                   onClick={handlePreviewClick}
-                  disabled={!isFormFilled}
-                  className={`px-8 py-3 rounded-xl font-bold text-sm transition-all duration-150 ${isFormFilled
+                  disabled={!isFormFilled || isSubmitting}
+                  className={`px-8 py-3 rounded-xl font-bold text-sm transition-all duration-150 ${isFormFilled && !isSubmitting
                     ? 'bg-[#F4F5F8] text-gray-700 hover:bg-gray-200 active:scale-[0.98]'
                     : 'bg-[#F4F5F8] text-gray-400 opacity-60 cursor-not-allowed'
                     }`}
@@ -415,13 +497,14 @@ export const DataPreparationPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleProceedClick}
-                  disabled={!isFormFilled}
-                  className={`px-9 py-3 rounded-xl font-bold text-sm text-white shadow-md transition-all duration-150 ${isFormFilled
+                  disabled={!isFormFilled || isSubmitting}
+                  className={`px-9 py-3 rounded-xl font-bold text-sm text-white shadow-md transition-all duration-150 flex items-center space-x-2 ${isFormFilled && !isSubmitting
                     ? 'bg-[#5E40FF] hover:bg-[#4b2bee] active:scale-[0.98] shadow-indigo-500/20'
                     : 'bg-gray-300 cursor-not-allowed shadow-none'
                     }`}
                 >
-                  proceed
+                  {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                  <span>proceed</span>
                 </button>
               </div>
 

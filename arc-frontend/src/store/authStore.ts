@@ -49,8 +49,8 @@ export const useAuthStore = create<AuthState>()(
 
           const defaultModules =
             role === 'manager'
-              ? ['Dashboard', 'Data Preparation', 'Machine', 'Settings']
-              : ['Data Embossing', 'Leakage Testing', 'Settings'];
+              ? ['Dashboard', 'Data Preparation', 'Settings']
+              : ['Data Embossing', 'Leakage Testing', 'Machine', 'Settings'];
 
           const fallbackToken = 'local-dev-fallback-token';
           localStorage.setItem(AUTH_TOKEN_KEY, fallbackToken);
