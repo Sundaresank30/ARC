@@ -12,12 +12,13 @@ node_modules/
 dist/
 dist-ssr/
 
-# Environment files
+# Secrets & Local Environment Variables
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env.example
 
 # Editor / IDE settings
 .vscode/*
@@ -28,7 +29,10 @@ dist-ssr/
 *.njsproj
 *.sln
 *.sw?
+
+# OS-specific files
 .DS_Store
+Thumbs.db
 
 # Cache & Temporary Files
 .eslintcache
