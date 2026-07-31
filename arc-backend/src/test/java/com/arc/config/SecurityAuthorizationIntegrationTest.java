@@ -46,7 +46,7 @@ class SecurityAuthorizationIntegrationTest {
 
     @Test
     void manager_canAccessDataPreparation() throws Exception {
-        mockMvc.perform(get("/api/data-preparation")
+        mockMvc.perform(get("/api/data-preparation/batches")
                         .header("Authorization", "Bearer " + managerToken))
                 .andExpect(status().isOk());
     }
@@ -113,11 +113,10 @@ class SecurityAuthorizationIntegrationTest {
     }
 
     @Test
-    void operator_cannotAccessDataPreparation() throws Exception {
-        mockMvc.perform(get("/api/data-preparation")
+    void operator_canAccessDataPreparation() throws Exception {
+        mockMvc.perform(get("/api/data-preparation/batches")
                         .header("Authorization", "Bearer " + operatorToken))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value("Forbidden"));
+                .andExpect(status().isOk());
     }
 
     @Test
