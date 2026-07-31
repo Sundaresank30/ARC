@@ -16,16 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Seeds the database with dummy embossing jobs on application startup.
- * Skips initialization if jobs already exist.
+ * Seeds the database with embossing jobs in the `embossing_jobs` table.
+ * All items coming from completed embossing are marked COMPLETED initially,
+ * so the Leakage Testing table starts clean with 0 failures unless an item fails.
  */
 @Component
 @Order(2)
 @Slf4j
 public class EmbossingDataInitializer implements CommandLineRunner {
-
-    private static final int PART_NUMBER_BASE = 24001;
-    private static final int SERIAL_NUMBER_BASE = 840001;
 
     private final EmbossingJobRepository embossingJobRepository;
     private final EmbossingSimulationProperties simulationProperties;
@@ -45,28 +43,29 @@ public class EmbossingDataInitializer implements CommandLineRunner {
             return;
         }
 
-        List<EmbossingJob> dummyJobs = createDummyJobs();
-        embossingJobRepository.saveAll(dummyJobs);
+        List<EmbossingJob> seededJobs = createSeededJobs();
+        embossingJobRepository.saveAll(seededJobs);
 
-        log.info("Inserted {} dummy embossing jobs for batch {}", dummyJobs.size(),
+        log.info("Inserted {} completed embossing jobs for batch {}", seededJobs.size(),
                 simulationProperties.getActiveBatch());
     }
 
-    private List<EmbossingJob> createDummyJobs() {
+    private List<EmbossingJob> createSeededJobs() {
         List<EmbossingJob> jobs = new ArrayList<>();
-        String batchId = simulationProperties.getActiveBatch();
-        int jobCount = simulationProperties.getDummyJobCount();
+        String batchId = simulationProperties.getActiveBatch() != null ? simulationProperties.getActiveBatch() : "Batch_1";
         LocalDateTime now = LocalDateTime.now();
 
-        for (int i = 0; i < jobCount; i++) {
+        // Seed 100 COMPLETED embossing jobs for Batch_1
+        for (int i = 1; i <= 100; i++) {
             jobs.add(EmbossingJob.builder()
                     .batchId(batchId)
-                    .partNumber("PN" + (PART_NUMBER_BASE + i))
-                    .serialNumber("SR" + (SERIAL_NUMBER_BASE + i))
-                    .embossingStatus(EmbossingStatus.PENDING)
-                    .createdTime(now.minusMinutes(jobCount - i))
-                    .machineStatus(MachineStatus.WAITING)
-                    .remarks("Dummy simulated job from previous production stage")
+                    .partNumber(String.format("Pn%05dc", i))
+                    .serialNumber(String.format("P%07d", 10000 + i))
+                    .embossingStatus(EmbossingStatus.COMPLETED)
+                    .createdTime(now.minusHours(2).plusMinutes(i))
+                    .embossingCompletedTime(now.minusHours(1).plusMinutes(i))
+                    .machineStatus(MachineStatus.IDLE)
+                    .remarks("Embossing completed successfully")
                     .build());
         }
 
