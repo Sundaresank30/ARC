@@ -29,16 +29,16 @@ export interface ProductionBatchResponse {
 }
 
 export async function createProductionBatch(payload: CreateBatchPayload): Promise<ProductionBatchResponse> {
-  const response = await apiClient.post<ProductionBatchResponse>('/data-preparation/batches', payload);
+  const response = await apiClient.post<ProductionBatchResponse>('/api/data-preparation/batches', payload);
   return response.data;
 }
 
 export async function getAllProductionBatches(): Promise<ProductionBatchResponse[]> {
-  const response = await apiClient.get<ProductionBatchResponse[]>('/data-preparation/batches');
+  const response = await apiClient.get<ProductionBatchResponse[]>('/api/data-preparation/batches');
   return response.data;
 }
 
 export async function getProductionBatchDetails(batchId: string): Promise<ProductionBatchResponse> {
-  const response = await apiClient.get<ProductionBatchResponse>(`/data-preparation/batches/${batchId}`);
+  const response = await apiClient.get<ProductionBatchResponse>(`/api/data-preparation/batches/${batchId}`);
   return response.data;
 }

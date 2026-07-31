@@ -92,9 +92,8 @@ public class DataPreparationService {
     }
 
     public String generatePartNumber(String series, int index) {
-        String seq = String.format("%02d", index);
         if (series == null || series.trim().isEmpty()) {
-            return "PN" + seq;
+            return String.format("PN%02d", index);
         }
         String clean = series.trim();
         boolean hasTrailingLetter = Character.isLetter(clean.charAt(clean.length() - 1));
@@ -102,28 +101,52 @@ public class DataPreparationService {
         if (hasTrailingLetter) {
             char suffix = clean.charAt(clean.length() - 1);
             String base = clean.substring(0, clean.length() - 1);
-            if (base.matches(".*\\d{2}$")) {
-                base = base.substring(0, base.length() - 2);
+            int digitLen = getTrailingDigitsLength(base);
+            if (digitLen > 0) {
+                int padLen = Math.max(digitLen, 2);
+                base = base.substring(0, base.length() - digitLen);
+                return base + formatIndex(index, padLen) + suffix;
             }
-            return base + seq + suffix;
+            return base + formatIndex(index, 2) + suffix;
         } else {
-            if (clean.matches(".*\\d{2}$")) {
-                return clean.substring(0, clean.length() - 2) + seq;
+            int digitLen = getTrailingDigitsLength(clean);
+            if (digitLen > 0) {
+                int padLen = Math.max(digitLen, 2);
+                String base = clean.substring(0, clean.length() - digitLen);
+                return base + formatIndex(index, padLen);
             }
-            return clean + seq;
+            return clean + formatIndex(index, 2);
         }
     }
 
     public String generateSerialNumber(String series, int index) {
-        String seq = String.format("%02d", index);
         if (series == null || series.trim().isEmpty()) {
-            return "P" + seq;
+            return String.format("P%02d", index);
         }
         String clean = series.trim();
-        if (clean.matches(".*\\d{2}$")) {
-            return clean.substring(0, clean.length() - 2) + seq;
+        int digitLen = getTrailingDigitsLength(clean);
+        if (digitLen > 0) {
+            int padLen = Math.max(digitLen, 2);
+            String base = clean.substring(0, clean.length() - digitLen);
+            return base + formatIndex(index, padLen);
         }
-        return clean + seq;
+        return clean + formatIndex(index, 2);
+    }
+
+    private int getTrailingDigitsLength(String str) {
+        int count = 0;
+        for (int i = str.length() - 1; i >= 0; i--) {
+            if (Character.isDigit(str.charAt(i))) {
+                count++;
+            } else {
+                break;
+            }
+        }
+        return count;
+    }
+
+    private String formatIndex(int index, int minWidth) {
+        return String.format("%0" + minWidth + "d", index);
     }
 
     private ProductionBatchResponse mapToResponse(ProductionBatch batch, boolean includeItems) {

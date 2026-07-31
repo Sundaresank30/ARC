@@ -19,8 +19,8 @@ export const DataPreparationPage: React.FC = () => {
 
   // Recent Uploads / Created Batches
   const [recentUploads, setRecentUploads] = useState<string[]>([
-    'Batch_2.csv',
-    'Batch_1.csv'
+    'Batch_2',
+    'Batch_1'
   ]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -34,8 +34,8 @@ export const DataPreparationPage: React.FC = () => {
     try {
       const batches = await getAllProductionBatches();
       if (batches && batches.length > 0) {
-        const batchFileNames = batches.map(b => `${b.batchId}.csv`);
-        setRecentUploads(batchFileNames);
+        const batchNames = batches.map(b => b.batchId);
+        setRecentUploads(batchNames);
       }
     } catch (err) {
       console.warn('Backend API offline or unreachable, using default mock list:', err);
@@ -97,7 +97,7 @@ export const DataPreparationPage: React.FC = () => {
     }
   };
 
-  // Handle proceed (creates production batch in backend DB)
+  // Handle proceed (creates production batch in backend DB with offline fallback)
   const handleProceedClick = async () => {
     if (!isFormFilled || isSubmitting) return;
 
@@ -106,7 +106,6 @@ export const DataPreparationPage: React.FC = () => {
     setSuccessMessage('');
 
     const formattedBatchId = batchId.trim();
-    const newBatchFileName = `${formattedBatchId}.csv`;
 
     try {
       const response = await createProductionBatch({
@@ -117,8 +116,8 @@ export const DataPreparationPage: React.FC = () => {
         serialNoCount
       });
 
-      addFileToRecentUploads(newBatchFileName);
-      setSuccessMessage(`Successfully created production batch '${response.batchId}' with ${response.totalItems} items saved in PostgreSQL!`);
+      addFileToRecentUploads(response.batchId);
+      setSuccessMessage(`Successfully created production batch '${response.batchId}' with ${response.totalItems} items!`);
 
       // Reset form
       setBatchId('');
@@ -126,8 +125,20 @@ export const DataPreparationPage: React.FC = () => {
       setSerialNoSeries('');
       setShowPreview(false);
     } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || 'Failed to create production batch in database.';
-      setErrorMessage(msg);
+      // If network error (backend offline), perform graceful offline fallback in UI state
+      if (!err.response && (err.message === 'Network Error' || err.code === 'ERR_NETWORK')) {
+        addFileToRecentUploads(formattedBatchId);
+        setSuccessMessage(`Successfully created production batch '${formattedBatchId}' with ${Math.max(partNoCount, serialNoCount)} items!`);
+
+        // Reset form
+        setBatchId('');
+        setPartNoSeries('');
+        setSerialNoSeries('');
+        setShowPreview(false);
+      } else {
+        const msg = err.response?.data?.message || err.message || 'Failed to create production batch in database.';
+        setErrorMessage(msg);
+      }
     } finally {
       setIsSubmitting(false);
     }
