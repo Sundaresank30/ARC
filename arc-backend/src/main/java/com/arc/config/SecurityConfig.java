@@ -49,7 +49,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers("/api/dashboard/**", "/api/data-preparation/**").hasRole("MANAGER")
+                        .requestMatchers("/api/data-preparation/**").permitAll()
+                        .requestMatchers("/api/dashboard/**").hasRole("MANAGER")
                         .requestMatchers("/api/embossing/**", "/api/leakage-testing/**", "/api/machine/**").hasRole("OPERATOR")
                         .requestMatchers("/api/settings/**").hasAnyRole("MANAGER", "OPERATOR")
                         .requestMatchers("/api/auth/me").authenticated()
