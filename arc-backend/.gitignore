@@ -18,7 +18,11 @@ target/
 
 # Spring Boot configuration & secrets
 src/main/resources/application.properties
+src/main/resources/application-h2.properties
+src/test/resources/application-test.properties
 application.properties
+application*.properties
 **/application.properties
 **/application*.properties
-!src/test/resources/application-test.properties
+**/application*.yml
+**/application*.yaml
