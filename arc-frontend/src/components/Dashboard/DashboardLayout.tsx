@@ -164,6 +164,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
           </div>
         ) : activeTab === 'leakage-testing' ? (
           <LeakageTestingView />
+        ) : activeTab === 'machine' ? (
+          <MachinePage />
         ) : activeTab === 'data-embossing' ? (
           <DataEmbossingPage />
         ) : activeTab === 'machine' ? (
