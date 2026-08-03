@@ -1,0 +1,24 @@
+spring.application.name=arc-backend
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/YOUR_DATABASE_NAME
+spring.datasource.username=YOUR_DB_USERNAME
+spring.datasource.password=YOUR_DB_PASSWORD
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.open-in-view=false
+
+server.port=8080
+
+# Embossing simulation timing (milliseconds)
+embossing.simulation.in-machine-delay-ms=2000
+embossing.simulation.printing-delay-ms=5000
+embossing.simulation.active-batch=Batch_1
+embossing.simulation.dummy-job-count=5
+
+# JWT Configuration
+jwt.secret=YOUR_SECURE_JWT_SECRET
+jwt.expiration-ms=86400000

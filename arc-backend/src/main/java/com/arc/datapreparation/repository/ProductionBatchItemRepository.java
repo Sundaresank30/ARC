@@ -13,5 +13,7 @@ public interface ProductionBatchItemRepository extends JpaRepository<ProductionB
 
     List<ProductionBatchItem> findByStatusOrderByIdAsc(String status);
 
+    List<ProductionBatchItem> findByStatusIgnoreCaseOrderByIdAsc(String status);
+
     Optional<ProductionBatchItem> findBySerialNumberAndPartNumber(String serialNumber, String partNumber);
 }

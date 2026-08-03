@@ -131,7 +131,7 @@ public class EmbossingQueueService {
     // Import pending Data Preparation items into the machine queue.
     // -------------------------------------------------------------------------
     private void synchronizePreparedItems() {
-        List<ProductionBatchItem> preparedItems = productionItemRepository.findByStatusOrderByIdAsc("PREPARED");
+        List<ProductionBatchItem> preparedItems = productionItemRepository.findByStatusIgnoreCaseOrderByIdAsc("PREPARED");
         for (ProductionBatchItem item : preparedItems) {
             if (!repo.existsBySerialNumberAndPartNumber(item.getSerialNumber(), item.getPartNumber())) {
                 repo.save(build(item.getPartNumber(), item.getSerialNumber()));
