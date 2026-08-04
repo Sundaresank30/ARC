@@ -21,6 +21,8 @@ public interface EmbossingJobRepository extends JpaRepository<EmbossingJob, Long
 
     List<EmbossingJob> findByEmbossingStatusOrderByIdAsc(EmbossingStatus embossingStatus);
 
+    List<EmbossingJob> findByBatchIdAndEmbossingStatusOrderByIdAsc(String batchId, EmbossingStatus embossingStatus);
+
     List<EmbossingJob> findByBatchIdOrderByIdAsc(String batchId);
 
     List<EmbossingJob> findByBatchIdAndEmbossingStatusOrderByIdAsc(String batchId, EmbossingStatus embossingStatus);

@@ -110,6 +110,13 @@ public class EmbossingDataInitializer implements CommandLineRunner {
                     .orElse(null);
 
             if (job == null) {
+                ProductionBatchItem item = productionBatchItemRepository
+                        .findBySerialNumberAndPartNumber(qItem.getSerialNumber(), qItem.getPartNumber())
+                        .orElse(null);
+                String batchId = (item != null && item.getProductionBatch() != null)
+                        ? item.getProductionBatch().getBatchId()
+                        : simulationProperties.getActiveBatch();
+
                 EmbossingStatus status = qItem.getStatus() == EmbossingQueueStatus.COMPLETED
                         ? EmbossingStatus.COMPLETED
                         : qItem.getStatus() == EmbossingQueueStatus.IN_PROGRESS
@@ -117,7 +124,7 @@ public class EmbossingDataInitializer implements CommandLineRunner {
                         : EmbossingStatus.PENDING;
 
                 EmbossingJob newJob = EmbossingJob.builder()
-                        .batchId(simulationProperties.getActiveBatch())
+                        .batchId(batchId)
                         .partNumber(qItem.getPartNumber())
                         .serialNumber(qItem.getSerialNumber())
                         .embossingStatus(status)

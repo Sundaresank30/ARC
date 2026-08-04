@@ -25,6 +25,16 @@ const BUFFER_SIZE = 5;
 /** Duration of the existing print routine (kept unchanged). */
 const PRINT_ROUTINE_MS = 1200;
 
+function notifyEmbossingDataUpdated() {
+  window.dispatchEvent(new Event('embossing-data-updated'));
+
+  if ('BroadcastChannel' in window) {
+    const channel = new BroadcastChannel('arc-embossing');
+    channel.postMessage('data-updated');
+    channel.close();
+  }
+}
+
 // ---------------------------------------------------------------------------
 // MachinePage
 // ---------------------------------------------------------------------------
@@ -138,6 +148,7 @@ export const MachinePage: React.FC = () => {
         try {
           const updated = await markQueueItemInProgress(item.id);
           setRecords((prev) => prev.map((r) => (r.id === item.id ? updated : r)));
+          notifyEmbossingDataUpdated();
         } catch (err) {
           console.warn('markInProgress failed:', err);
           setRecords((prev) => prev.map((r) => (r.id === item.id ? { ...r, status: 'IN_PROGRESS' } : r)));
@@ -157,6 +168,7 @@ export const MachinePage: React.FC = () => {
       let completedItem: EmbossingQueueRecord = { ...currentItem, status: 'COMPLETED' };
       try {
         completedItem = await markQueueItemCompleted(currentItem.id);
+        notifyEmbossingDataUpdated();
       } catch (err) {
         console.warn('markCompleted fallback to local state:', err);
       }

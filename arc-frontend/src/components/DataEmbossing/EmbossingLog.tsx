@@ -1,6 +1,6 @@
 import React from 'react';
 import { Info, Clock, Loader2, CheckCircle2 } from 'lucide-react';
-import { EmbossingJob } from '../../types';
+import { BatchProgress, EmbossingJob } from '../../types';
 import { formatDateTime, formatEmbossingStatus } from '../../utils/navigation';
 
 interface EmbossingLogProps {
@@ -8,6 +8,7 @@ interface EmbossingLogProps {
   activeJobs: EmbossingJob[];
   completedJobs: EmbossingJob[];
   totalJobs: number;
+  batchProgress?: BatchProgress[];
   isLoading?: boolean;
 }
 
@@ -72,10 +73,10 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
   activeJobs,
   completedJobs,
   totalJobs,
+  batchProgress,
   isLoading = false,
 }) => {
   const completedCount = completedJobs.length;
-  const progressPercent = totalJobs > 0 ? Math.round((completedCount / totalJobs) * 100) : 0;
   const tableJobs = [...activeJobs, ...pendingJobs];
 
   return (
@@ -108,26 +109,6 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
                 </tr>
               </thead>
               <tbody>
-                <tr className="bg-[#EBFDF5] border-b border-gray-100">
-                  <td colSpan={4} className="px-4 py-3">
-                    <div className="flex items-center space-x-2 text-[#00B074]">
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin text-[#00B074]" />
-                          <span className="text-xs sm:text-sm font-bold">Loading batch progress...</span>
-                        </>
-                      ) : (
-                        <span className="text-xs sm:text-sm font-bold">
-                          Batch Progress: {progressPercent}% Complete ({completedCount} / {totalJobs} Parts)
-                        </span>
-                      )}
-                      {!isLoading && activeJobs.length > 0 && (
-                        <Loader2 className="w-4 h-4 animate-spin text-[#00B074]" />
-                      )}
-                    </div>
-                  </td>
-                </tr>
-
                 {isLoading ? (
                   <tr>
                     <td colSpan={4} className="px-4 py-8 text-center">
