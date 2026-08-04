@@ -71,7 +71,8 @@ public class EmbossingJob {
     private String action;
 
     @PrePersist
-    void onCreate() {
+    @SuppressWarnings("unused")
+    protected void onCreate() {
         if (createdTime == null) {
             createdTime = LocalDateTime.now();
         }

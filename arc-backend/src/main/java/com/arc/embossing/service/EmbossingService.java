@@ -1,6 +1,11 @@
 package com.arc.embossing.service;
 
+import com.arc.datapreparation.entity.ProductionBatch;
+import com.arc.datapreparation.entity.ProductionBatchItem;
+import com.arc.datapreparation.repository.ProductionBatchItemRepository;
+import com.arc.datapreparation.repository.ProductionBatchRepository;
 import com.arc.embossing.config.EmbossingSimulationProperties;
+import com.arc.embossing.dto.BatchProgressResponse;
 import com.arc.embossing.dto.CurrentMachineResponse;
 import com.arc.embossing.dto.EmbossingDashboardResponse;
 import com.arc.embossing.dto.EmbossingJobResponse;
@@ -9,11 +14,15 @@ import com.arc.embossing.enums.EmbossingStatus;
 import com.arc.embossing.enums.MachineStatus;
 import com.arc.embossing.mapper.EmbossingJobMapper;
 import com.arc.embossing.repository.EmbossingJobRepository;
+import com.arc.machine.entity.EmbossingQueueStatus;
+import com.arc.machine.repository.EmbossingQueueRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -22,32 +31,65 @@ public class EmbossingService {
     private final EmbossingJobRepository embossingJobRepository;
     private final EmbossingJobMapper embossingJobMapper;
     private final EmbossingSimulationProperties simulationProperties;
+    private final ProductionBatchItemRepository productionBatchItemRepository;
+    private final EmbossingQueueRepository embossingQueueRepository;
+    private final EmbossingDataInitializer embossingDataInitializer;
+    private final ProductionBatchRepository productionBatchRepository;
 
     public EmbossingService(
             EmbossingJobRepository embossingJobRepository,
             EmbossingJobMapper embossingJobMapper,
-            EmbossingSimulationProperties simulationProperties) {
+            EmbossingSimulationProperties simulationProperties,
+            ProductionBatchItemRepository productionBatchItemRepository,
+            EmbossingQueueRepository embossingQueueRepository,
+            EmbossingDataInitializer embossingDataInitializer) {
+        this(embossingJobRepository, embossingJobMapper, simulationProperties,
+             productionBatchItemRepository, embossingQueueRepository, embossingDataInitializer, null);
+    }
+
+    @Autowired
+    public EmbossingService(
+            EmbossingJobRepository embossingJobRepository,
+            EmbossingJobMapper embossingJobMapper,
+            EmbossingSimulationProperties simulationProperties,
+            ProductionBatchItemRepository productionBatchItemRepository,
+            EmbossingQueueRepository embossingQueueRepository,
+            EmbossingDataInitializer embossingDataInitializer,
+            ProductionBatchRepository productionBatchRepository) {
         this.embossingJobRepository = embossingJobRepository;
         this.embossingJobMapper = embossingJobMapper;
         this.simulationProperties = simulationProperties;
+        this.productionBatchItemRepository = productionBatchItemRepository;
+        this.embossingQueueRepository = embossingQueueRepository;
+        this.embossingDataInitializer = embossingDataInitializer;
+        this.productionBatchRepository = productionBatchRepository;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public EmbossingDashboardResponse getDashboard() {
-        String activeBatch = simulationProperties.getActiveBatch();
-        long pendingCount = embossingJobRepository.countByBatchIdAndEmbossingStatus(
-                activeBatch, EmbossingStatus.PENDING);
+        ensureEmbossingJobsAreSynced();
+        String activeBatch = resolveActiveBatchId();
         List<EmbossingJob> jobs = embossingJobRepository.findByBatchIdOrderByIdAsc(activeBatch);
+        List<BatchProgressResponse> batchProgress = buildBatchProgressForActiveBatch(activeBatch);
+
+        long pendingCount = 0;
+        if (batchProgress != null && !batchProgress.isEmpty()) {
+            pendingCount = batchProgress.get(0).getPendingRecords();
+        } else {
+            pendingCount = jobs.stream().filter(job -> job.getEmbossingStatus() == EmbossingStatus.PENDING).count();
+        }
 
         return EmbossingDashboardResponse.builder()
                 .activeBatch(activeBatch)
                 .pendingCount(pendingCount)
+                .batchProgress(batchProgress)
                 .jobs(embossingJobMapper.toResponseList(jobs))
                 .build();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public CurrentMachineResponse getCurrentMachineJob() {
+        ensureEmbossingJobsAreSynced();
         return embossingJobRepository
                 .findFirstByEmbossingStatusInOrderByIdAsc(
                         List.of(EmbossingStatus.IN_MACHINE, EmbossingStatus.PRINTING))
@@ -59,18 +101,126 @@ public class EmbossingService {
                         .build());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<EmbossingJobResponse> getPendingJobs() {
+        ensureEmbossingJobsAreSynced();
         List<EmbossingJob> pendingJobs = embossingJobRepository
                 .findByEmbossingStatusOrderByIdAsc(EmbossingStatus.PENDING);
         return embossingJobMapper.toResponseList(pendingJobs);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<EmbossingJobResponse> getCompletedJobs() {
-        List<EmbossingJob> completedJobs = embossingJobRepository
-                .findByEmbossingStatusOrderByIdAsc(EmbossingStatus.COMPLETED);
+        return getCompletedJobs(null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EmbossingJobResponse> getCompletedJobs(String batchId) {
+        ensureEmbossingJobsAreSynced();
+        String targetBatch = (batchId != null && !batchId.isBlank()) ? batchId : resolveActiveBatchId();
+        List<EmbossingJob> completedJobs = embossingJobRepository != null
+                ? embossingJobRepository.findByBatchIdAndEmbossingStatusOrderByIdAsc(targetBatch, EmbossingStatus.COMPLETED)
+                : List.of();
         return embossingJobMapper.toResponseList(completedJobs);
+    }
+
+    public List<BatchProgressResponse> buildBatchProgressForActiveBatch(String batchId) {
+        List<ProductionBatchItem> batchItems = productionBatchItemRepository != null
+                ? productionBatchItemRepository.findByProductionBatchBatchIdOrderByItemIndexAsc(batchId)
+                : List.of();
+        if (batchItems.isEmpty()) {
+            List<EmbossingJob> jobs = embossingJobRepository != null
+                    ? embossingJobRepository.findByBatchIdOrderByIdAsc(batchId)
+                    : List.of();
+            if (jobs.isEmpty()) {
+                List<ProductionBatchItem> fallbackItems = productionBatchItemRepository != null
+                        ? productionBatchItemRepository.findAll()
+                        : List.of();
+                if (fallbackItems.isEmpty()) {
+                    return List.of(buildBatchProgress(batchId, List.of()));
+                }
+                String fallbackBatchId = resolveBatchIdFromItem(fallbackItems.get(0));
+                List<ProductionBatchItem> fallbackBatchItems = productionBatchItemRepository
+                        .findByProductionBatchBatchIdOrderByItemIndexAsc(fallbackBatchId);
+                return List.of(buildBatchProgress(fallbackBatchId, fallbackBatchItems));
+            }
+            return List.of(buildBatchProgress(batchId, List.of()));
+        }
+
+        return List.of(buildBatchProgress(batchId, batchItems));
+    }
+
+    public BatchProgressResponse buildBatchProgress(String batchId, List<ProductionBatchItem> items) {
+        List<EmbossingJob> jobs = embossingJobRepository != null
+                ? embossingJobRepository.findByBatchIdOrderByIdAsc(batchId)
+                : List.of();
+
+        long completedFromJobs = jobs.stream()
+                .filter(j -> j.getEmbossingStatus() == EmbossingStatus.COMPLETED)
+                .count();
+        long completedFromItems = items != null ? items.stream()
+                .filter(item -> "COMPLETED".equalsIgnoreCase(item.getStatus()))
+                .count() : 0;
+
+        int totalFromItems = items != null ? items.size() : 0;
+        int totalFromJobs = jobs.size();
+
+        int totalRecords = Math.max(totalFromItems, totalFromJobs);
+        long completedRecords = Math.max(completedFromJobs, completedFromItems);
+        long pendingRecords = Math.max(0, totalRecords - completedRecords);
+        int progressPercent = totalRecords == 0 ? 0 : (int) Math.round((completedRecords * 100.0) / totalRecords);
+        boolean completed = completedRecords >= totalRecords && totalRecords > 0;
+
+        return BatchProgressResponse.builder()
+                .batchId(batchId)
+                .totalRecords(totalRecords)
+                .completedRecords(completedRecords)
+                .pendingRecords(pendingRecords)
+                .progressPercent(progressPercent)
+                .completed(completed)
+                .build();
+    }
+
+    private void ensureEmbossingJobsAreSynced() {
+        if (embossingDataInitializer != null) {
+            embossingDataInitializer.syncEmbossingJobsFromProductionItems();
+            embossingDataInitializer.syncEmbossingJobsFromQueue();
+        }
+    }
+
+    public String resolveActiveBatchId() {
+        if (embossingJobRepository != null) {
+            Optional<EmbossingJob> activeJob = embossingJobRepository.findFirstByEmbossingStatusInOrderByIdAsc(
+                    List.of(EmbossingStatus.IN_MACHINE, EmbossingStatus.PRINTING, EmbossingStatus.PENDING));
+            if (activeJob.isPresent() && activeJob.get().getBatchId() != null && !activeJob.get().getBatchId().isBlank()) {
+                return activeJob.get().getBatchId();
+            }
+        }
+
+        if (productionBatchRepository != null) {
+            List<ProductionBatch> batches = productionBatchRepository.findAllByOrderByCreatedAtDesc();
+            if (!batches.isEmpty()) {
+                return batches.get(0).getBatchId();
+            }
+        }
+
+        String configuredBatch = simulationProperties != null ? simulationProperties.getActiveBatch() : "Batch_1";
+        if (productionBatchItemRepository != null && !productionBatchItemRepository.findByProductionBatchBatchIdOrderByItemIndexAsc(configuredBatch).isEmpty()) {
+            return configuredBatch;
+        }
+
+        if (productionBatchItemRepository != null) {
+            List<ProductionBatchItem> fallbackItems = productionBatchItemRepository.findAll();
+            if (!fallbackItems.isEmpty()) {
+                return resolveBatchIdFromItem(fallbackItems.get(0));
+            }
+        }
+
+        return configuredBatch;
+    }
+
+    private String resolveBatchIdFromItem(ProductionBatchItem item) {
+        return item.getProductionBatch() != null ? item.getProductionBatch().getBatchId() : (simulationProperties != null ? simulationProperties.getActiveBatch() : "Batch_1");
     }
 
     private CurrentMachineResponse toCurrentMachineResponse(EmbossingJob job) {
@@ -85,3 +235,4 @@ public class EmbossingService {
                 .build();
     }
 }
+

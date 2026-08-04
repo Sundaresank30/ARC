@@ -20,11 +20,6 @@ public class MachineService {
 
     public synchronized void initInitialRecords() {
         records.clear();
-        records.put(1L, new MachineRecordDto(1L, "SN-1001", "PN-A89", "waiting"));
-        records.put(2L, new MachineRecordDto(2L, "SN-1002", "PN-A90", "waiting"));
-        records.put(3L, new MachineRecordDto(3L, "SN-1003", "PN-A91", "waiting"));
-        records.put(4L, new MachineRecordDto(4L, "SN-1004", "PN-A92", "waiting"));
-        records.put(5L, new MachineRecordDto(5L, "SN-1005", "PN-A93", "waiting"));
     }
 
     public List<MachineRecordDto> getAllRecords() {

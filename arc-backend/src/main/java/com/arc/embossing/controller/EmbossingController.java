@@ -44,8 +44,8 @@ public class EmbossingController {
     }
 
     @GetMapping("/completed")
-    public ResponseEntity<List<EmbossingJobResponse>> getCompletedJobs() {
-        return ResponseEntity.ok(embossingService.getCompletedJobs());
+    public ResponseEntity<List<EmbossingJobResponse>> getCompletedJobs(@org.springframework.web.bind.annotation.RequestParam(required = false) String batchId) {
+        return ResponseEntity.ok(embossingService.getCompletedJobs(batchId));
     }
 
     @PostMapping("/start")

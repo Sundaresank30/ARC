@@ -38,7 +38,8 @@ public class Role {
     private LocalDateTime createdAt;
 
     @PrePersist
-    void onCreate() {
+    @SuppressWarnings("unused")
+    protected void onCreate() {
         if (createdAt == null) {
             createdAt = LocalDateTime.now();
         }

@@ -16,7 +16,7 @@ import java.util.Optional;
 @Repository
 public interface EmbossingQueueRepository extends JpaRepository<EmbossingQueue, Long> {
 
-    /** Top 5 records that are NOT completed, ordered by id asc — the rolling buffer on load. */
+    /** Top 5 records that are NOT completed, ordered by id desc — newest work first. */
     List<EmbossingQueue> findTop5ByStatusNotOrderByIdAsc(EmbossingQueueStatus status);
 
     /** Next single WAITING record to process. */

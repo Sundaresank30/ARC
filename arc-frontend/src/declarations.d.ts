@@ -11,6 +11,7 @@ interface ImportMeta {
 /// <reference types="vite/client" />
 
 declare module 'lucide-react';
+declare module 'sockjs-client';
 
 interface ImportMetaEnv {
   readonly VITE_API_BASE_URL: string;

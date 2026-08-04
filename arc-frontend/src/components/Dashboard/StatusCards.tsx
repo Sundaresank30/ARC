@@ -18,30 +18,24 @@ export const StatusCards: React.FC<StatusCardProps> = ({
       value: completedCount,
       changeText: '+from this week',
       icon: CheckCircle2,
-      colorClass: 'text-[#00B074]',
-      bgClass: 'bg-[#EBFDF5]',
-      borderClass: 'border-emerald-100',
-      iconColor: '#00B074',
+      subtextColorClass: 'text-[#10b981]',
+      iconBgClass: 'bg-[#0c1f19] border border-[#10b981]/30 text-[#10b981]',
     },
     {
       title: 'Failed',
       value: failedCount,
       changeText: '-from this week',
       icon: AlertCircle,
-      colorClass: 'text-[#FF4D4D]',
-      bgClass: 'bg-[#FFF5F5]',
-      borderClass: 'border-red-100',
-      iconColor: '#FF4D4D',
+      subtextColorClass: 'text-[#ef4444]',
+      iconBgClass: 'bg-[#271012] border border-[#ef4444]/30 text-[#ef4444]',
     },
     {
       title: 'Total batches',
       value: totalBatches,
       changeText: '+from this week',
       icon: FileText,
-      colorClass: 'text-[#5E40FF]',
-      bgClass: 'bg-[#F5F3FF]',
-      borderClass: 'border-indigo-100',
-      iconColor: '#5E40FF',
+      subtextColorClass: 'text-[#6366f1]',
+      iconBgClass: 'bg-[#141235] border border-[#6366f1]/30 text-[#6366f1]',
     },
   ];
 
@@ -52,26 +46,28 @@ export const StatusCards: React.FC<StatusCardProps> = ({
         return (
           <div
             key={idx}
-            className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-150"
+            className="bg-[#0d0b14] border border-[#1c182a] rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-150"
           >
-            {/* Top row: Icon & Title */}
-            <div className="flex items-center space-x-2.5 mb-3">
-              <Icon className="w-5 h-5" style={{ color: card.iconColor }} />
-              <span className={`font-bold text-[15px] ${card.colorClass}`}>
+            {/* Top row: Title (left) & Icon (right) */}
+            <div className="flex items-center justify-between mb-4">
+              <span className="font-bold text-[15px] text-gray-300">
                 {card.title}
               </span>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${card.iconBgClass}`}>
+                <Icon className="w-4.5 h-4.5" />
+              </div>
             </div>
 
             {/* Middle: Large Value */}
-            <div className="mb-2">
-              <span className={`text-[46px] font-bold leading-none tracking-tight ${card.colorClass}`}>
+            <div className="mb-3">
+              <span className="text-[46px] font-bold leading-none tracking-tight text-white">
                 {card.value}
               </span>
             </div>
 
             {/* Bottom: Subtext */}
             <div>
-              <span className={`text-xs font-semibold ${card.colorClass}`}>
+              <span className={`text-xs font-semibold ${card.subtextColorClass}`}>
                 {card.changeText}
               </span>
             </div>

@@ -65,8 +65,9 @@ public class EmbossingSimulationService {
             while (true) {
                 Optional<EmbossingJob> nextJob = findNextPendingJob();
                 if (nextJob.isEmpty()) {
-                    log.info("All embossing jobs completed. Simulation finished.");
-                    break;
+                    log.debug("No pending embossing jobs yet; waiting for new work.");
+                    sleep(1000L);
+                    continue;
                 }
 
                 processJob(nextJob.get());
@@ -82,7 +83,7 @@ public class EmbossingSimulationService {
     }
 
     private Optional<EmbossingJob> findNextPendingJob() {
-        return embossingJobRepository.findFirstByEmbossingStatusOrderByIdAsc(EmbossingStatus.PENDING);
+        return embossingJobRepository.findFirstByEmbossingStatusOrderByIdDesc(EmbossingStatus.PENDING);
     }
 
     private void processJob(EmbossingJob job) throws InterruptedException {

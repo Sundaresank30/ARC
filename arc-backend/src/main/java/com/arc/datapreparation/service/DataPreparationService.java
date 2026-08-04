@@ -7,6 +7,9 @@ import com.arc.datapreparation.entity.ProductionBatch;
 import com.arc.datapreparation.entity.ProductionBatchItem;
 import com.arc.datapreparation.repository.ProductionBatchItemRepository;
 import com.arc.datapreparation.repository.ProductionBatchRepository;
+import com.arc.embossing.entity.EmbossingJob;
+import com.arc.embossing.enums.EmbossingStatus;
+import com.arc.embossing.repository.EmbossingJobRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,7 @@ public class DataPreparationService {
 
     private final ProductionBatchRepository batchRepository;
     private final ProductionBatchItemRepository itemRepository;
+    private final EmbossingJobRepository embossingJobRepository;
 
     @Transactional
     public ProductionBatchResponse createProductionBatch(CreateProductionBatchRequest request) {
@@ -62,23 +66,26 @@ public class DataPreparationService {
         return mapToResponse(savedBatch, true);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<ProductionBatchResponse> getAllBatches() {
+        synchronizeCompletedEmbossingJobs();
         return batchRepository.findAllByOrderByCreatedAtDesc()
                 .stream()
                 .map(batch -> mapToResponse(batch, false))
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ProductionBatchResponse getBatchByBatchId(String batchId) {
+        synchronizeCompletedEmbossingJobs();
         ProductionBatch batch = batchRepository.findByBatchId(batchId)
                 .orElseThrow(() -> new IllegalArgumentException("Batch not found: " + batchId));
         return mapToResponse(batch, true);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<ProductionBatchItemDto> getBatchItems(String batchId) {
+        synchronizeCompletedEmbossingJobs();
         return itemRepository.findByProductionBatchBatchIdOrderByItemIndexAsc(batchId)
                 .stream()
                 .map(item -> ProductionBatchItemDto.builder()
@@ -147,6 +154,35 @@ public class DataPreparationService {
 
     private String formatIndex(int index, int minWidth) {
         return String.format("%0" + minWidth + "d", index);
+    }
+
+    /**
+     * Data Preparation displays the completion state produced by embossing.
+     * Reconcile before every read so an item printed by the machine is shown
+     * as completed even if it was updated by another client or service.
+     */
+    private void synchronizeCompletedEmbossingJobs() {
+        List<ProductionBatchItem> updatedItems = embossingJobRepository
+                .findByEmbossingStatusOrderByIdAsc(EmbossingStatus.COMPLETED)
+                .stream()
+                .map(job -> updateItemFromCompletedJob(job))
+                .filter(java.util.Objects::nonNull)
+                .toList();
+
+        if (!updatedItems.isEmpty()) {
+            itemRepository.saveAll(updatedItems);
+        }
+    }
+
+    private ProductionBatchItem updateItemFromCompletedJob(EmbossingJob job) {
+        return itemRepository
+                .findBySerialNumberAndPartNumber(job.getSerialNumber(), job.getPartNumber())
+                .filter(item -> !"COMPLETED".equalsIgnoreCase(item.getStatus()))
+                .map(item -> {
+                    item.setStatus("COMPLETED");
+                    return item;
+                })
+                .orElse(null);
     }
 
     private ProductionBatchResponse mapToResponse(ProductionBatch batch, boolean includeItems) {
