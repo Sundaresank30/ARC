@@ -4,6 +4,7 @@ export const MODULE_TO_TAB: Record<string, string> = {
   Dashboard: 'dashboard',
   'Data Preparation': 'data-preparation',
   'Data Embossing': 'data-embossing',
+  'Leakage Machine': 'leakage-machine',
   'Leakage Testing': 'leakage-testing',
   Machine: 'machine',
   Settings: 'settings',
