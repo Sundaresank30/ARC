@@ -2,6 +2,7 @@ package com.arc.machine.service;
 
 import com.arc.datapreparation.entity.ProductionBatchItem;
 import com.arc.datapreparation.repository.ProductionBatchItemRepository;
+import com.arc.embossing.service.EmbossingJobService;
 import com.arc.machine.dto.EmbossingQueueDto;
 import com.arc.machine.entity.EmbossingQueue;
 import com.arc.machine.entity.EmbossingQueueStatus;
@@ -19,20 +20,21 @@ import java.util.stream.Collectors;
  * Machine Module Queue Engine — DB is single source of truth.
  *
  * Keeps a rolling buffer of up to 5 non-COMPLETED records on the frontend.
- * The old in-memory ConcurrentHashMap MachineService is left untouched for
- * backward-compatibility with existing /api/machine/records endpoints.
  */
 @Service
 public class EmbossingQueueService {
 
     private final EmbossingQueueRepository repo;
     private final ProductionBatchItemRepository productionItemRepository;
+    private final EmbossingJobService embossingJobService;
 
     public EmbossingQueueService(
             EmbossingQueueRepository repo,
-            ProductionBatchItemRepository productionItemRepository) {
+            ProductionBatchItemRepository productionItemRepository,
+            EmbossingJobService embossingJobService) {
         this.repo = repo;
         this.productionItemRepository = productionItemRepository;
+        this.embossingJobService = embossingJobService;
     }
 
     private EmbossingQueue build(String partNumber, String serialNumber) {
@@ -64,7 +66,9 @@ public class EmbossingQueueService {
                 .orElseThrow(() -> new IllegalArgumentException("Queue item not found: " + id));
         if (item.getStatus() == EmbossingQueueStatus.WAITING) {
             item.setStatus(EmbossingQueueStatus.IN_PROGRESS);
-            return toDto(repo.save(item));
+            EmbossingQueue saved = repo.save(item);
+            embossingJobService.recordEmbossingStarted(saved);
+            return toDto(saved);
         }
         return toDto(item);
     }
@@ -74,21 +78,17 @@ public class EmbossingQueueService {
     // -------------------------------------------------------------------------
     @Transactional
     public EmbossingQueueDto markCompleted(Long id) {
-        EmbossingQueue item = repo.findById(id)
+        EmbossingQueue item = repo.findByIdForUpdate(id)
                 .orElseThrow(() -> new IllegalArgumentException("Queue item not found: " + id));
+        if (item.getStatus() == EmbossingQueueStatus.COMPLETED) {
+            return toDto(item);
+        }
         item.setStatus(EmbossingQueueStatus.COMPLETED);
         item.setPrintedAt(LocalDateTime.now());
         item.setPrintedDate(LocalDate.now());
         EmbossingQueue saved = repo.save(item);
 
-        productionItemRepository
-                .findBySerialNumberAndPartNumber(saved.getSerialNumber(), saved.getPartNumber())
-                .ifPresent(preparedItem -> {
-                    if (!"COMPLETED".equalsIgnoreCase(preparedItem.getStatus())) {
-                        preparedItem.setStatus("COMPLETED");
-                        productionItemRepository.save(preparedItem);
-                    }
-                });
+        embossingJobService.recordSuccessfulEmbossing(saved);
 
         return toDto(saved);
     }
@@ -113,7 +113,9 @@ public class EmbossingQueueService {
         return repo.claimFirstByStatusOrderByIdAsc(EmbossingQueueStatus.WAITING)
                 .map(item -> {
                     item.setStatus(EmbossingQueueStatus.IN_PROGRESS);
-                    return toDto(repo.save(item));
+                    EmbossingQueue saved = repo.save(item);
+                    embossingJobService.recordEmbossingStarted(saved);
+                    return toDto(saved);
                 });
     }
 
@@ -123,7 +125,6 @@ public class EmbossingQueueService {
     @Transactional
     public List<EmbossingQueueDto> resetAll() {
         repo.resetAllToWaiting();
-        // after bulk update, return fresh buffer
         return getQueueBuffer();
     }
 

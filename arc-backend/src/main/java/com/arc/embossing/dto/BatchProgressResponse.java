@@ -6,17 +6,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EmbossingDashboardResponse {
+public class BatchProgressResponse {
 
-    private String activeBatch;
-    private long pendingCount;
-    private List<BatchProgressResponse> batchProgress;
-    private List<EmbossingJobResponse> jobs;
+    private String batchId;
+    private int totalRecords;
+    private long completedRecords;
+    private long pendingRecords;
+    private int progressPercent;
+    private boolean completed;
 }
