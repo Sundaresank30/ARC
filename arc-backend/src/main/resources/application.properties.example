@@ -12,6 +12,7 @@ spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.open-in-view=false
 
 server.port=8080
+app.websocket.allowed-origins=http://localhost:5173
 
 # Embossing simulation timing (milliseconds)
 embossing.simulation.in-machine-delay-ms=2000

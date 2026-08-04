@@ -6,6 +6,7 @@ import com.arc.datapreparation.dto.ProductionBatchResponse;
 import com.arc.datapreparation.entity.ProductionBatch;
 import com.arc.datapreparation.repository.ProductionBatchItemRepository;
 import com.arc.datapreparation.repository.ProductionBatchRepository;
+import com.arc.embossing.repository.EmbossingJobRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ class DataPreparationServiceTest {
 
     @Mock
     private ProductionBatchItemRepository itemRepository;
+
+    @Mock
+    private EmbossingJobRepository embossingJobRepository;
 
     @InjectMocks
     private DataPreparationService dataPreparationService;
