@@ -4,5 +4,6 @@ public enum EmbossingStatus {
     PENDING,
     IN_MACHINE,
     PRINTING,
-    COMPLETED
+    COMPLETED,
+    FAILED
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Calendar, 
   FileText, 
@@ -9,10 +9,12 @@ import {
   Info, 
   ArrowDown, 
   ArrowUp, 
-  Loader2 
+  Loader2,
+  CheckCircle2
 } from 'lucide-react';
 
 export interface LeakageTestRecord {
+  id?: number;
   partNo: string;
   serialNo: string;
   status: 'Failed' | 'Passed';
@@ -20,43 +22,75 @@ export interface LeakageTestRecord {
   direction: 'up' | 'down';
   timestamp: string;
   attempt: string;
-  action: 'Scrap' | 'Pending';
+  action: 'Scrap' | 'Pending' | string;
 }
 
-const mockFailures: LeakageTestRecord[] = [
-  {
-    partNo: 'Pn00111c',
-    serialNo: 'P0011156',
-    status: 'Failed',
-    testValue: 0.42,
-    direction: 'down',
-    timestamp: '17:57, 20 Jul',
-    attempt: '2/2',
-    action: 'Scrap',
-  },
-  {
-    partNo: 'Pn00112c',
-    serialNo: 'P0011157',
-    status: 'Failed',
-    testValue: 1.08,
-    direction: 'up',
-    timestamp: '17:58, 20 Jul',
-    attempt: '1/2',
-    action: 'Pending',
-  },
-  {
-    partNo: 'Pn00113c',
-    serialNo: 'P0011158',
-    status: 'Failed',
-    testValue: 0.48,
-    direction: 'down',
-    timestamp: '18:00, 20 Jul',
-    attempt: '1/2',
-    action: 'Pending',
-  },
-];
+export interface LeakageTestingDashboardData {
+  activeBatch: string;
+  failedCount: number;
+  batchProgressPercent: number;
+  completedCount: number;
+  totalParts: number;
+  dateDisplay: string;
+  failures: LeakageTestRecord[];
+}
 
 export const LeakageTestingView: React.FC = () => {
+  const [data, setData] = useState<LeakageTestingDashboardData>({
+    activeBatch: 'Batch_1',
+    failedCount: 0,
+    batchProgressPercent: 100,
+    completedCount: 100,
+    totalParts: 100,
+    dateDisplay: '20 July, 2026',
+    failures: [],
+  });
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const fetchDashboardData = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/leakage-testing');
+      if (response.ok) {
+        const json: LeakageTestingDashboardData = await response.json();
+        setData(json);
+      }
+    } catch (err) {
+      console.warn('Backend unavailable, using current local view state:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+    const interval = setInterval(fetchDashboardData, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleActionToggle = async (record: LeakageTestRecord) => {
+    if (!record.id) return;
+    const nextAction = record.action === 'Scrap' ? 'Pending' : 'Scrap';
+    
+    // Optimistic UI update
+    setData((prev) => ({
+      ...prev,
+      failures: prev.failures.map((f) =>
+        f.id === record.id ? { ...f, action: nextAction } : f
+      ),
+    }));
+
+    try {
+      await fetch(`http://localhost:8080/api/leakage-testing/jobs/${record.id}/action`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: nextAction }),
+      });
+      fetchDashboardData();
+    } catch (err) {
+      console.error('Failed to update action on backend:', err);
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Top Workspace Header */}
@@ -73,7 +107,7 @@ export const LeakageTestingView: React.FC = () => {
         {/* Date Selector Badge */}
         <div className="flex items-center space-x-2 bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto">
           <Calendar className="w-4 h-4 text-gray-500" />
-          <span className="text-sm font-semibold text-gray-700">20 July, 2026</span>
+          <span className="text-sm font-semibold text-gray-700">{data.dateDisplay}</span>
         </div>
       </div>
 
@@ -89,7 +123,7 @@ export const LeakageTestingView: React.FC = () => {
             {/* Batch Item */}
             <div className="flex items-center space-x-2 text-emerald-600 bg-emerald-50/60 px-3 py-1.5 rounded-lg border border-emerald-100/80">
               <FileText className="w-4 h-4 text-emerald-600" />
-              <span className="text-sm font-semibold">Batch_1</span>
+              <span className="text-sm font-semibold">{data.activeBatch}</span>
             </div>
 
             {/* Stepper Arrow Line */}
@@ -116,7 +150,7 @@ export const LeakageTestingView: React.FC = () => {
 
           <div className="my-2">
             <span className="text-4xl font-extrabold text-red-500 tracking-tight">
-              3
+              {data.failedCount}
             </span>
           </div>
 
@@ -159,7 +193,7 @@ export const LeakageTestingView: React.FC = () => {
           {/* Batch Progress Banner Pill */}
           <div className="bg-emerald-50/80 border border-emerald-100 rounded-xl px-4 py-3 flex items-center justify-between">
             <span className="text-xs sm:text-sm font-semibold text-emerald-800">
-              Batch Progress: 97% Complete (97 / 100 Parts)
+              Batch Progress: {data.batchProgressPercent}% Complete ({data.completedCount} / {data.totalParts} Parts)
             </span>
             <Loader2 className="w-4 h-4 text-emerald-600 animate-spin" />
           </div>
@@ -179,38 +213,64 @@ export const LeakageTestingView: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-xs sm:text-sm font-medium text-gray-700">
-                {mockFailures.map((item, idx) => (
-                  <tr key={idx} className="hover:bg-gray-50/60 transition-colors">
-                    <td className="py-3.5 px-4 font-semibold text-gray-600">
-                      {item.partNo}
-                    </td>
-                    <td className="py-3.5 px-4 text-gray-600">
-                      {item.serialNo}
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <span className="bg-red-50 text-red-500 border border-red-100 px-2.5 py-1 rounded-md text-xs font-semibold">
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 font-bold text-red-500 flex items-center space-x-1">
-                      <span>{item.testValue.toFixed(2)}</span>
-                      {item.direction === 'down' ? (
-                        <ArrowDown className="w-3.5 h-3.5 text-red-500" />
-                      ) : (
-                        <ArrowUp className="w-3.5 h-3.5 text-red-500" />
-                      )}
-                    </td>
-                    <td className="py-3.5 px-4 text-gray-500">
-                      {item.timestamp}
-                    </td>
-                    <td className="py-3.5 px-4 text-gray-500">
-                      {item.attempt}
-                    </td>
-                    <td className="py-3.5 px-4 font-semibold text-gray-600">
-                      {item.action}
+                {data.failures.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-10 text-center text-gray-500 font-medium bg-gray-50/30">
+                      <div className="flex flex-col items-center justify-center space-y-2">
+                        <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                        <span className="text-sm text-gray-600 font-semibold">
+                          No leakage inspection failures recorded for this batch
+                        </span>
+                        <span className="text-xs text-gray-400">
+                          All completed items from data embossing passed quality inspection.
+                        </span>
+                      </div>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  data.failures.map((item, idx) => (
+                    <tr key={item.id ?? idx} className="hover:bg-gray-50/60 transition-colors">
+                      <td className="py-3.5 px-4 font-semibold text-gray-600">
+                        {item.partNo}
+                      </td>
+                      <td className="py-3.5 px-4 text-gray-600">
+                        {item.serialNo}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className="bg-red-50 text-red-500 border border-red-100 px-2.5 py-1 rounded-md text-xs font-semibold">
+                          {item.status}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 font-bold text-red-500 flex items-center space-x-1">
+                        <span>{typeof item.testValue === 'number' ? item.testValue.toFixed(2) : item.testValue}</span>
+                        {item.direction === 'down' ? (
+                          <ArrowDown className="w-3.5 h-3.5 text-red-500" />
+                        ) : (
+                          <ArrowUp className="w-3.5 h-3.5 text-red-500" />
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 text-gray-500">
+                        {item.timestamp}
+                      </td>
+                      <td className="py-3.5 px-4 text-gray-500">
+                        {item.attempt}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <button
+                          onClick={() => handleActionToggle(item)}
+                          className={`font-semibold px-2.5 py-1 rounded-md transition-colors text-xs border ${
+                            item.action === 'Scrap'
+                              ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
+                              : 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100'
+                          }`}
+                          title="Click to toggle action"
+                        >
+                          {item.action}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
