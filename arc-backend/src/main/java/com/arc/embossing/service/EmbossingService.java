@@ -46,7 +46,7 @@ public class EmbossingService {
         this.embossingDataInitializer = embossingDataInitializer;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public EmbossingDashboardResponse getDashboard() {
         ensureEmbossingJobsAreSynced();
         String activeBatch = resolveActiveBatchId();
@@ -68,7 +68,7 @@ public class EmbossingService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public CurrentMachineResponse getCurrentMachineJob() {
         ensureEmbossingJobsAreSynced();
         return embossingJobRepository
@@ -82,7 +82,7 @@ public class EmbossingService {
                         .build());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<EmbossingJobResponse> getPendingJobs() {
         ensureEmbossingJobsAreSynced();
         List<EmbossingJob> pendingJobs = embossingJobRepository
@@ -90,7 +90,7 @@ public class EmbossingService {
         return embossingJobMapper.toResponseList(pendingJobs);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<EmbossingJobResponse> getCompletedJobs() {
         ensureEmbossingJobsAreSynced();
         List<EmbossingJob> completedJobs = embossingJobRepository

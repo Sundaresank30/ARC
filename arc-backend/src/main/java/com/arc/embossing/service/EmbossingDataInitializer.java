@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -54,7 +55,7 @@ public class EmbossingDataInitializer implements CommandLineRunner {
         syncEmbossingJobsFromQueue();
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void syncEmbossingJobsFromProductionItems() {
         List<ProductionBatchItem> batchItems = productionBatchItemRepository.findAll();
         if (batchItems.isEmpty()) {
@@ -96,7 +97,7 @@ public class EmbossingDataInitializer implements CommandLineRunner {
         }
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void syncEmbossingJobsFromQueue() {
         List<EmbossingQueue> queueItems = embossingQueueRepository.findAll();
         if (queueItems.isEmpty()) {
