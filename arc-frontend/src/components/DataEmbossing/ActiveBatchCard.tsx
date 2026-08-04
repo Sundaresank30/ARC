@@ -1,20 +1,30 @@
 import React from 'react';
-import { FileText, Database, Loader2 } from 'lucide-react';
+import { FileText, Database, Loader2, CheckCircle2 } from 'lucide-react';
+import { BatchProgress } from '../../types';
 
 interface ActiveBatchCardProps {
   activeBatch: string;
+  progress?: BatchProgress;
   isLoading?: boolean;
 }
 
 export const ActiveBatchCard: React.FC<ActiveBatchCardProps> = ({
   activeBatch,
+  progress,
   isLoading = false,
 }) => {
   return (
     <div className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm flex flex-col min-h-[135px]">
-      <h3 className="font-bold text-sm text-gray-800 uppercase tracking-wider mb-5">
-        Active Batch
-      </h3>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="font-bold text-sm text-gray-800 uppercase tracking-wider">
+          Active Batch
+        </h3>
+        {progress && (
+          <span className="text-sm font-semibold text-[#00B074]">
+            {progress.progressPercent}% Complete
+          </span>
+        )}
+      </div>
 
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
@@ -41,6 +51,27 @@ export const ActiveBatchCard: React.FC<ActiveBatchCardProps> = ({
           <span className="text-base font-bold text-gray-400">Data Embossing</span>
         </div>
       </div>
+
+      {progress && (
+        <div className="mt-5 rounded-xl border border-gray-100 bg-gray-50 p-4 space-y-2">
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <span>Completed</span>
+            <span className="font-semibold text-gray-900">
+              {progress.completedRecords}/{progress.totalRecords}
+            </span>
+          </div>
+          <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-[#00B074] transition-all"
+              style={{ width: `${progress.progressPercent}%` }}
+            />
+          </div>
+          <div className="flex items-center space-x-2 text-xs font-semibold text-gray-500">
+            {progress.completed ? <CheckCircle2 className="w-4 h-4 text-[#00B074]" /> : null}
+            <span>{progress.completed ? 'Completed' : `${progress.pendingRecords} pending`}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

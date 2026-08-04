@@ -41,19 +41,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
     carryForwardEmbossing: any[];
     leakageTestingFailures: any[];
   }>({
-    completedCount: 460,
-    failedCount: 3,
-    totalBatches: 5,
-    carryForwardEmbossing: [
-      { id: '1', partNo: 'Pn00111c', serialNo: 'P0011156', status: 'Pending', remainingSince: '17:57, 20 Jul', nextShift: '21 Jul', action: 'Queued' },
-      { id: '2', partNo: 'Pn00112c', serialNo: 'P0011157', status: 'Pending', remainingSince: '17:58, 20 Jul', nextShift: '21 Jul', action: 'Queued' },
-      { id: '3', partNo: 'Pn00113c', serialNo: 'P0011158', status: 'Pending', remainingSince: '18:00, 20 Jul', nextShift: '21 Jul', action: 'Queued' },
-    ],
-    leakageTestingFailures: [
-      { id: '1', partNo: 'Pn00111c', serialNo: 'P0011156', status: 'Failed', testValue: 0.42, direction: 'down', timestamp: '17:57, 20 Jul', attempt: '2/2', action: 'Scrap' },
-      { id: '2', partNo: 'Pn00112c', serialNo: 'P0011157', status: 'Failed', testValue: 1.08, direction: 'up', timestamp: '17:58, 20 Jul', attempt: '1/2', action: 'Pending' },
-      { id: '3', partNo: 'Pn00113c', serialNo: 'P0011158', status: 'Failed', testValue: 0.48, direction: 'down', timestamp: '18:00, 20 Jul', attempt: '1/2', action: 'Pending' },
-    ],
+    completedCount: 0,
+    failedCount: 0,
+    totalBatches: 0,
+    carryForwardEmbossing: [],
+    leakageTestingFailures: [],
   });
 
   const fetchDashboardData = async () => {
