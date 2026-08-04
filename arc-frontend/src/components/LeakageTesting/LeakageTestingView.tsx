@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  Calendar, 
-  FileText, 
-  ShieldCheck, 
-  ArrowRight, 
-  AlertCircle, 
-  Clock, 
-  Info, 
-  ArrowDown, 
-  ArrowUp, 
+import {
+  Calendar,
+  FileText,
+  ShieldCheck,
+  ArrowRight,
+  AlertCircle,
+  Clock,
+  Info,
+  ArrowDown,
+  ArrowUp,
   Loader2,
-  CheckCircle2
+  CheckCircle2,
 } from 'lucide-react';
 
 export interface LeakageTestRecord {
@@ -49,7 +49,7 @@ export const LeakageTestingView: React.FC = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/leakage-testing');
+      const response = await fetch('/api/leakage-testing');
       if (response.ok) {
         const json: LeakageTestingDashboardData = await response.json();
         setData(json);
@@ -70,7 +70,7 @@ export const LeakageTestingView: React.FC = () => {
   const handleActionToggle = async (record: LeakageTestRecord) => {
     if (!record.id) return;
     const nextAction = record.action === 'Scrap' ? 'Pending' : 'Scrap';
-    
+
     // Optimistic UI update
     setData((prev) => ({
       ...prev,
@@ -80,7 +80,7 @@ export const LeakageTestingView: React.FC = () => {
     }));
 
     try {
-      await fetch(`http://localhost:8080/api/leakage-testing/jobs/${record.id}/action`, {
+      await fetch(`/api/leakage-testing/jobs/${record.id}/action`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: nextAction }),
@@ -96,113 +96,113 @@ export const LeakageTestingView: React.FC = () => {
       {/* Top Workspace Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold text-gray-900 tracking-tight leading-tight">
+          <h1 className="text-[28px] font-bold text-white tracking-tight leading-tight">
             Leakage Testing
           </h1>
-          <p className="mt-1 text-sm sm:text-base text-gray-500 font-medium">
-            Monitor automated leakage testing and inspection status
+          <p className="mt-1 text-sm sm:text-base text-[#8a8596] font-medium">
+            Review automated leakage inspection failures and take quality actions
           </p>
         </div>
 
-        {/* Date Selector Badge */}
-        <div className="flex items-center space-x-2 bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto">
-          <Calendar className="w-4 h-4 text-gray-500" />
-          <span className="text-sm font-semibold text-gray-700">{data.dateDisplay}</span>
+        {/* Date Badge */}
+        <div className="flex items-center space-x-2 bg-[#13111c] border border-[#221e33] px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto">
+          <Calendar className="w-4 h-4 text-gray-400" />
+          <span className="text-sm font-semibold text-gray-300">{data.dateDisplay}</span>
         </div>
       </div>
 
       {/* Overview Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Active Batch Card */}
-        <div className="md:col-span-2 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
-          <h2 className="text-base font-bold text-gray-900 mb-6">
+        <div className="md:col-span-2 bg-[#0d0b14] border border-[#1b172a] rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+          <h2 className="text-base font-bold text-white mb-6">
             Active Batch
           </h2>
 
           <div className="flex items-center space-x-4 py-2">
             {/* Batch Item */}
-            <div className="flex items-center space-x-2 text-emerald-600 bg-emerald-50/60 px-3 py-1.5 rounded-lg border border-emerald-100/80">
-              <FileText className="w-4 h-4 text-emerald-600" />
+            <div className="flex items-center space-x-2 text-emerald-400 bg-[#0a231b] px-3 py-1.5 rounded-lg border border-emerald-950/40">
+              <FileText className="w-4 h-4 text-emerald-400" />
               <span className="text-sm font-semibold">{data.activeBatch}</span>
             </div>
 
             {/* Stepper Arrow Line */}
             <div className="flex-1 flex items-center justify-center relative">
-              <div className="w-full border-t border-gray-200 flex items-center justify-center">
-                <ArrowRight className="w-4 h-4 text-gray-400 absolute bg-white px-0.5" />
+              <div className="w-full border-t border-[#1b172a] flex items-center justify-center">
+                <ArrowRight className="w-4 h-4 text-gray-500 absolute bg-[#0d0b14] px-0.5" />
               </div>
             </div>
 
             {/* Step Target */}
-            <div className="flex items-center space-x-2 text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200/60">
-              <ShieldCheck className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center space-x-2 text-gray-500 bg-[#13111c] px-3 py-1.5 rounded-lg border border-[#221e33]">
+              <ShieldCheck className="w-4 h-4 text-gray-500" />
               <span className="text-sm font-semibold text-gray-400">Leakage Testing</span>
             </div>
           </div>
         </div>
 
         {/* Failed KPI Card */}
-        <div className="bg-[#FFF5F5] border border-red-100 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
-          <div className="flex items-center space-x-2 text-red-600 font-bold text-base">
+        <div className="bg-[#271012] border border-[#ef4444]/20 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+          <div className="flex items-center space-x-2 text-red-500 font-bold text-base">
             <AlertCircle className="w-5 h-5 text-red-500" />
             <span>Failed</span>
           </div>
 
           <div className="my-2">
-            <span className="text-4xl font-extrabold text-red-500 tracking-tight">
+            <span className="text-4xl font-extrabold text-red-400 tracking-tight">
               {data.failedCount}
             </span>
           </div>
 
-          <div className="text-xs font-semibold text-red-400">
+          <div className="text-xs font-semibold text-red-600/80">
             -from this batch
           </div>
         </div>
       </div>
 
       {/* Main Leakage Inspection Results Card */}
-      <div className="bg-white border border-gray-200/80 rounded-3xl p-6 sm:p-8 shadow-sm">
+      <div className="bg-[#0d0b14] border border-[#1b172a] rounded-3xl p-6 sm:p-8 shadow-sm">
         {/* Card Section Header */}
         <div className="flex items-center space-x-2 mb-6">
-          <h2 className="text-xl font-bold text-gray-900 tracking-tight">
+          <h2 className="text-xl font-bold text-white tracking-tight">
             Leakage Inspection Results
           </h2>
-          <Info className="w-4 h-4 text-gray-400" />
+          <Info className="w-4 h-4 text-gray-500" />
         </div>
 
         {/* Inner Content Area */}
-        <div className="border border-gray-100 rounded-2xl overflow-hidden shadow-sm space-y-4 p-4 sm:p-6 bg-white">
-          
+        <div className="border border-[#1b172a] rounded-2xl overflow-hidden shadow-sm space-y-4 p-4 sm:p-6 bg-[#0d0b14]">
+
           {/* Leaked Testing Failures Red Alert Header */}
-          <div className="bg-red-50 border border-red-100/70 rounded-xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center space-x-2 text-red-600 font-bold text-sm sm:text-base">
+          <div className="bg-[#271012] border border-[#ef4444]/25 rounded-xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center space-x-2 text-red-400 font-bold text-sm sm:text-base">
               <Clock className="w-4 h-4 text-red-500" />
               <span>Leaked Testing Failures</span>
             </div>
 
             <div className="flex items-center flex-wrap gap-2 text-xs font-semibold">
-              <span className="text-red-500 bg-red-100/60 px-3 py-1 rounded-md">
+              <span className="text-red-400 bg-[#ef4444]/15 px-3 py-1 rounded-md border border-[#ef4444]/20">
                 Requires quality action
               </span>
-              <span className="text-red-500 bg-red-100/60 px-3 py-1 rounded-md">
+              <span className="text-red-400 bg-[#ef4444]/15 px-3 py-1 rounded-md border border-[#ef4444]/20">
                 Threshold Range: 0.50 – 1.00
               </span>
             </div>
           </div>
 
           {/* Batch Progress Banner Pill */}
-          <div className="bg-emerald-50/80 border border-emerald-100 rounded-xl px-4 py-3 flex items-center justify-between">
-            <span className="text-xs sm:text-sm font-semibold text-emerald-800">
+          <div className="bg-[#0a231b] border border-emerald-950/40 rounded-xl px-4 py-3 flex items-center justify-between">
+            <span className="text-xs sm:text-sm font-semibold text-emerald-400">
               Batch Progress: {data.batchProgressPercent}% Complete ({data.completedCount} / {data.totalParts} Parts)
             </span>
-            <Loader2 className="w-4 h-4 text-emerald-600 animate-spin" />
+            <Loader2 className="w-4 h-4 text-emerald-400 animate-spin" />
           </div>
 
           {/* Table Container */}
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-gray-200/80 text-xs font-semibold text-gray-500 bg-gray-50/50">
+                <tr className="border-b border-[#221e33] text-xs font-semibold text-gray-500 bg-[#13111c]/30">
                   <th className="py-3 px-4">Part no.</th>
                   <th className="py-3 px-4">Serial no.</th>
                   <th className="py-3 px-4">Status</th>
@@ -212,16 +212,16 @@ export const LeakageTestingView: React.FC = () => {
                   <th className="py-3 px-4">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 text-xs sm:text-sm font-medium text-gray-700">
+              <tbody className="divide-y divide-[#1b172a] text-xs sm:text-sm font-medium text-gray-300">
                 {data.failures.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-10 text-center text-gray-500 font-medium bg-gray-50/30">
+                    <td colSpan={7} className="py-10 text-center text-gray-500 font-medium bg-[#13111c]/10">
                       <div className="flex flex-col items-center justify-center space-y-2">
                         <CheckCircle2 className="w-8 h-8 text-emerald-500" />
-                        <span className="text-sm text-gray-600 font-semibold">
+                        <span className="text-sm text-gray-400 font-semibold">
                           No leakage inspection failures recorded for this batch
                         </span>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-gray-600">
                           All completed items from data embossing passed quality inspection.
                         </span>
                       </div>
@@ -229,19 +229,19 @@ export const LeakageTestingView: React.FC = () => {
                   </tr>
                 ) : (
                   data.failures.map((item, idx) => (
-                    <tr key={item.id ?? idx} className="hover:bg-gray-50/60 transition-colors">
-                      <td className="py-3.5 px-4 font-semibold text-gray-600">
+                    <tr key={item.id ?? idx} className="hover:bg-[#151221]/30 transition-colors">
+                      <td className="py-3.5 px-4 font-semibold text-white">
                         {item.partNo}
                       </td>
-                      <td className="py-3.5 px-4 text-gray-600">
+                      <td className="py-3.5 px-4 text-gray-400">
                         {item.serialNo}
                       </td>
                       <td className="py-3.5 px-4">
-                        <span className="bg-red-50 text-red-500 border border-red-100 px-2.5 py-1 rounded-md text-xs font-semibold">
+                        <span className="bg-[#271012] text-red-400 border border-[#ef4444]/20 px-2.5 py-1 rounded-md text-xs font-semibold">
                           {item.status}
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 font-bold text-red-500 flex items-center space-x-1">
+                      <td className="py-3.5 px-4 font-bold text-red-400 flex items-center space-x-1">
                         <span>{typeof item.testValue === 'number' ? item.testValue.toFixed(2) : item.testValue}</span>
                         {item.direction === 'down' ? (
                           <ArrowDown className="w-3.5 h-3.5 text-red-500" />
@@ -258,10 +258,10 @@ export const LeakageTestingView: React.FC = () => {
                       <td className="py-3.5 px-4">
                         <button
                           onClick={() => handleActionToggle(item)}
-                          className={`font-semibold px-2.5 py-1 rounded-md transition-colors text-xs border ${
+                          className={`font-bold px-2.5 py-1 rounded-md transition-colors text-xs border ${
                             item.action === 'Scrap'
-                              ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
-                              : 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100'
+                              ? 'bg-[#271012] text-red-400 border-[#ef4444]/20 hover:bg-[#3d1317]'
+                              : 'bg-[#20150b] text-[#f59e0b] border-[#f59e0b]/20 hover:bg-[#301b0c]'
                           }`}
                           title="Click to toggle action"
                         >

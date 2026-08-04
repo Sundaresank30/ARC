@@ -216,18 +216,18 @@ export const DataPreparationPage: React.FC = () => {
       {/* Top Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold text-gray-900 tracking-tight leading-tight">
+          <h1 className="text-[28px] font-bold text-white tracking-tight leading-tight">
             Data Preparation
           </h1>
-          <p className="mt-1 text-sm sm:text-base text-gray-500 font-medium">
+          <p className="mt-1 text-sm sm:text-base text-[#8a8596] font-medium">
             Securely upload documents and serial lists to begin the verification pipeline.
           </p>
         </div>
 
         {/* Date Widget */}
-        <div className="flex items-center space-x-2 bg-white border border-gray-150 px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto hover:bg-gray-50 cursor-pointer transition-colors duration-150">
-          <Calendar className="w-4 h-4 text-gray-500" />
-          <span className="text-sm font-semibold text-gray-700 select-none">
+        <div className="flex items-center space-x-2 bg-[#13111c] border border-[#221e33] px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto hover:bg-[#1a1726] cursor-pointer transition-colors duration-150">
+          <Calendar className="w-4 h-4 text-gray-400" />
+          <span className="text-sm font-semibold text-gray-300 select-none">
             20 July, 2026
           </span>
         </div>
@@ -235,7 +235,7 @@ export const DataPreparationPage: React.FC = () => {
 
       {/* Success Notification Toast */}
       {successMessage && (
-        <div className="bg-[#EBFDF5] border border-[#00B074]/30 rounded-xl p-4 flex items-center space-x-3 text-[#00B074] shadow-sm animate-fade-in">
+        <div className="bg-[#0c1f19] border border-[#10b981]/30 rounded-xl p-4 flex items-center space-x-3 text-[#10b981] shadow-sm animate-fade-in">
           <CheckCircle className="w-5 h-5 flex-shrink-0" />
           <span className="text-sm font-semibold">{successMessage}</span>
         </div>
@@ -243,7 +243,7 @@ export const DataPreparationPage: React.FC = () => {
 
       {/* Error Notification Toast */}
       {errorMessage && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center space-x-3 text-red-600 shadow-sm animate-fade-in">
+        <div className="bg-[#271012] border border-[#ef4444]/30 rounded-xl p-4 flex items-center space-x-3 text-[#ef4444] shadow-sm animate-fade-in">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <span className="text-sm font-semibold">{errorMessage}</span>
         </div>
@@ -262,9 +262,9 @@ export const DataPreparationPage: React.FC = () => {
             onDragLeave={handleDrag}
             onDrop={handleDrop}
             onClick={triggerFileInput}
-            className={`border-2 border-dashed rounded-3xl p-10 bg-white flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 select-none min-h-[220px] ${dragActive
-              ? 'border-[#5E40FF] bg-[#5E40FF]/5 scale-[0.99]'
-              : 'border-gray-200 hover:border-[#5E40FF] hover:bg-indigo-50/5'
+            className={`border-2 border-dashed rounded-3xl p-10 bg-[#0d0b14] flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 select-none min-h-[220px] ${dragActive
+              ? 'border-[#7c3aed] bg-[#7c3aed]/5 scale-[0.99]'
+              : 'border-[#221c37] hover:border-[#7c3aed] hover:bg-[#120e21]/40'
               }`}
           >
             <input
@@ -275,40 +275,40 @@ export const DataPreparationPage: React.FC = () => {
               accept=".csv,.pdf,image/*"
             />
 
-            <div className="w-14 h-14 rounded-2xl bg-[#EEF2FF] text-[#5E40FF] flex items-center justify-center mb-4 shadow-sm">
+            <div className="w-14 h-14 rounded-2xl bg-[#19122a] text-[#8b5cf6] flex items-center justify-center mb-4 shadow-sm">
               <Upload className="w-6 h-6 stroke-[2]" />
             </div>
 
-            <h3 className="text-lg font-bold text-gray-900 mb-1.5">
+            <h3 className="text-lg font-bold text-white mb-1.5">
               Upload Source Documents
             </h3>
 
-            <p className="text-xs text-gray-500 max-w-sm leading-relaxed">
+            <p className="text-xs text-gray-400 max-w-sm leading-relaxed">
               Upload your PDF or Image files. serial numbers will be automatically generated upon processing.
             </p>
           </div>
 
           {/* OR Divider Line */}
-          <div className="flex items-center text-gray-400 text-xs font-bold tracking-wider my-6 uppercase select-none">
-            <div className="flex-1 border-t border-gray-200"></div>
-            <span className="px-4 text-gray-400 font-semibold normal-case text-sm">or</span>
-            <div className="flex-1 border-t border-gray-200"></div>
+          <div className="flex items-center text-gray-600 text-xs font-bold tracking-wider my-6 uppercase select-none">
+            <div className="flex-1 border-t border-[#1b172a]"></div>
+            <span className="px-4 text-gray-500 font-semibold normal-case text-sm">or</span>
+            <div className="flex-1 border-t border-[#1b172a]"></div>
           </div>
 
           {/* Create Batch Card */}
-          <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm space-y-6">
-            <h2 className="text-xl font-bold text-gray-900 tracking-tight select-none">
+          <div className="bg-[#0d0b14] rounded-3xl p-8 border border-[#1b172a] shadow-sm space-y-6">
+            <h2 className="text-xl font-bold text-white tracking-tight select-none">
               Create Production Batch
             </h2>
 
             <div className="space-y-5">
-              <h3 className="text-base font-bold text-gray-800 select-none">
+              <h3 className="text-base font-bold text-white select-none">
                 Add batch
               </h3>
 
               {/* Batch ID Input */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#5A6E85] block">
+                <label className="text-xs font-semibold text-[#8a8596] block">
                   Add batch ID:
                 </label>
                 <input
@@ -316,13 +316,13 @@ export const DataPreparationPage: React.FC = () => {
                   value={batchId}
                   onChange={(e) => setBatchId(e.target.value)}
                   placeholder="eg: Batch_1"
-                  className="w-full bg-[#F4F5F8] border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5E40FF]/15 focus:border-[#5E40FF] transition-all duration-150"
+                  className="w-full bg-[#13111c] border border-[#221e33] rounded-xl px-4 py-3 text-sm font-medium text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/15 focus:border-[#7c3aed] transition-all duration-150"
                 />
               </div>
 
               {/* Part Number Series Input */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#5A6E85] block">
+                <label className="text-xs font-semibold text-[#8a8596] block">
                   Add part no. series:
                 </label>
                 <div className="flex space-x-3 items-center">
@@ -330,27 +330,26 @@ export const DataPreparationPage: React.FC = () => {
                     type="text"
                     value={partNoSeries}
                     onChange={(e) => setPartNoSeries(e.target.value)}
-                    placeholder="eg: Pn00111c"
-                    className="flex-1 bg-[#F4F5F8] border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5E40FF]/15 focus:border-[#5E40FF] transition-all duration-150"
+                    placeholder="eg: PH0156"
+                    className="flex-1 bg-[#13111c] border border-[#221e33] rounded-xl px-4 py-3 text-sm font-medium text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/15 focus:border-[#7c3aed] transition-all duration-150"
                   />
-                  {/* Counter widget */}
-                  <div className="flex items-center space-x-3 bg-[#F4F5F8] border border-gray-200 rounded-xl p-1 px-2 select-none h-11 shrink-0">
+                  <div className="flex items-center space-x-3 bg-[#13111c] border border-[#221e33] rounded-xl p-1 px-2 select-none h-11 shrink-0">
                     <button
                       type="button"
                       onClick={() => setPartNoCount(prev => Math.max(1, prev - 1))}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-gray-200 active:bg-gray-300 transition-colors"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors"
                     >
-                      <Minus className="w-4 h-4 stroke-[2.5]" />
+                      <Minus className="w-4 h-4 text-gray-300 stroke-[2.5]" />
                     </button>
-                    <span className="text-sm font-bold text-gray-700 w-6 text-center">
+                    <span className="text-sm font-bold text-white w-6 text-center">
                       {partNoCount}
                     </span>
                     <button
                       type="button"
                       onClick={() => setPartNoCount(prev => prev + 1)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-gray-200 active:bg-gray-300 transition-colors"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors"
                     >
-                      <Plus className="w-4 h-4 stroke-[2.5]" />
+                      <Plus className="w-4 h-4 text-gray-300 stroke-[2.5]" />
                     </button>
                   </div>
                 </div>
@@ -358,7 +357,7 @@ export const DataPreparationPage: React.FC = () => {
 
               {/* Serial Number Series Input */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#5A6E85] block">
+                <label className="text-xs font-semibold text-[#8a8596] block">
                   Add serial no. series:
                 </label>
                 <div className="flex space-x-3 items-center">
@@ -366,27 +365,26 @@ export const DataPreparationPage: React.FC = () => {
                     type="text"
                     value={serialNoSeries}
                     onChange={(e) => setSerialNoSeries(e.target.value)}
-                    placeholder="eg: P0011156"
-                    className="flex-1 bg-[#F4F5F8] border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5E40FF]/15 focus:border-[#5E40FF] transition-all duration-150"
+                    placeholder="eg: SR0200"
+                    className="flex-1 bg-[#13111c] border border-[#221e33] rounded-xl px-4 py-3 text-sm font-medium text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/15 focus:border-[#7c3aed] transition-all duration-150"
                   />
-                  {/* Counter widget */}
-                  <div className="flex items-center space-x-3 bg-[#F4F5F8] border border-gray-200 rounded-xl p-1 px-2 select-none h-11 shrink-0">
+                  <div className="flex items-center space-x-3 bg-[#13111c] border border-[#221e33] rounded-xl p-1 px-2 select-none h-11 shrink-0">
                     <button
                       type="button"
                       onClick={() => setSerialNoCount(prev => Math.max(1, prev - 1))}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-gray-200 active:bg-gray-300 transition-colors"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors"
                     >
-                      <Minus className="w-4 h-4 stroke-[2.5]" />
+                      <Minus className="w-4 h-4 text-gray-300 stroke-[2.5]" />
                     </button>
-                    <span className="text-sm font-bold text-gray-700 w-6 text-center">
+                    <span className="text-sm font-bold text-white w-6 text-center">
                       {serialNoCount}
                     </span>
                     <button
                       type="button"
                       onClick={() => setSerialNoCount(prev => prev + 1)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-gray-200 active:bg-gray-300 transition-colors"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors"
                     >
-                      <Plus className="w-4 h-4 stroke-[2.5]" />
+                      <Plus className="w-4 h-4 text-gray-300 stroke-[2.5]" />
                     </button>
                   </div>
                 </div>
@@ -394,71 +392,71 @@ export const DataPreparationPage: React.FC = () => {
 
               {/* Dynamic Preview Section */}
               {showPreview && isFormFilled && (
-                <div className="bg-[#F5F7FF] rounded-2xl p-6 border border-[#E0E5FF] mt-6 animate-fade-in">
+                <div className="bg-[#131128] rounded-2xl p-6 border border-[#272352] mt-6 animate-fade-in">
                   <div className="flex items-start space-x-2.5 mb-4">
-                    <Eye className="w-5 h-5 text-[#5E40FF] mt-0.5" />
+                    <Eye className="w-5 h-5 text-[#8b5cf6] mt-0.5" />
                     <div>
-                      <h4 className="text-sm font-bold text-[#5E40FF]">
+                      <h4 className="text-sm font-bold text-[#8b5cf6]">
                         Preview
                       </h4>
-                      <p className="text-xs font-semibold text-[#8B98E3]">
+                      <p className="text-xs font-semibold text-[#5c65a3]">
                         Preview of generated part and serial numbers
                       </p>
                     </div>
                   </div>
 
                   {/* Table */}
-                  <div className="border border-[#E0E5FF] bg-white rounded-xl overflow-hidden shadow-sm">
+                  <div className="border border-[#272352] bg-[#0d0b14] rounded-xl overflow-hidden shadow-sm">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#F9FAFB] border-b border-[#E0E5FF] text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                        <tr className="bg-[#131128] border-b border-[#272352] text-[11px] font-bold text-[#8a8596] uppercase tracking-wider">
                           <th className="py-2.5 px-4 w-16">#</th>
                           <th className="py-2.5 px-4">Part no.</th>
                           <th className="py-2.5 px-4">Serial no.</th>
                         </tr>
                       </thead>
-                      <tbody className="text-sm font-semibold text-gray-700 divide-y divide-gray-50">
+                      <tbody className="text-sm font-semibold divide-y divide-[#1b1735]">
                         {visibleRowsData.showEllipsis ? (
                           <>
                             {/* First Row */}
                             <tr>
-                              <td className="py-2.5 px-4 text-gray-500">
+                              <td className="py-2.5 px-4 text-gray-400">
                                 {visibleRowsData.firstRow?.index}
                               </td>
-                              <td className="py-2.5 px-4 font-mono text-gray-800">
+                              <td className="py-2.5 px-4 font-mono text-white">
                                 {visibleRowsData.firstRow?.partNo}
                               </td>
-                              <td className="py-2.5 px-4 font-mono text-gray-800">
+                              <td className="py-2.5 px-4 font-mono text-white">
                                 {visibleRowsData.firstRow?.serialNo}
                               </td>
                             </tr>
                             {/* Ellipsis Row */}
-                            <tr className="bg-gray-50/50">
-                              <td className="py-2 px-4 text-gray-400">...</td>
-                              <td className="py-2 px-4 text-gray-400">...</td>
-                              <td className="py-2 px-4 text-gray-400">...</td>
+                            <tr className="bg-[#131128]/50 text-gray-500">
+                              <td className="py-2 px-4">...</td>
+                              <td className="py-2 px-4">...</td>
+                              <td className="py-2 px-4">...</td>
                             </tr>
                             {/* Second to Last Row */}
                             <tr>
-                              <td className="py-2.5 px-4 text-gray-500">
+                              <td className="py-2.5 px-4 text-gray-400">
                                 {visibleRowsData.secondToLast?.index}
                               </td>
-                              <td className="py-2.5 px-4 font-mono text-gray-800">
+                              <td className="py-2.5 px-4 font-mono text-white">
                                 {visibleRowsData.secondToLast?.partNo}
                               </td>
-                              <td className="py-2.5 px-4 font-mono text-gray-800">
+                              <td className="py-2.5 px-4 font-mono text-white">
                                 {visibleRowsData.secondToLast?.serialNo}
                               </td>
                             </tr>
                             {/* Last Row */}
                             <tr>
-                              <td className="py-2.5 px-4 text-gray-500">
+                              <td className="py-2.5 px-4 text-gray-400">
                                 {visibleRowsData.lastRow?.index}
                               </td>
-                              <td className="py-2.5 px-4 font-mono text-gray-800">
+                              <td className="py-2.5 px-4 font-mono text-white">
                                 {visibleRowsData.lastRow?.partNo}
                               </td>
-                              <td className="py-2.5 px-4 font-mono text-gray-800">
+                              <td className="py-2.5 px-4 font-mono text-white">
                                 {visibleRowsData.lastRow?.serialNo}
                               </td>
                             </tr>
@@ -466,9 +464,9 @@ export const DataPreparationPage: React.FC = () => {
                         ) : (
                           visibleRowsData.rows.map((row) => (
                             <tr key={row.index}>
-                              <td className="py-2.5 px-4 text-gray-500">{row.index}</td>
-                              <td className="py-2.5 px-4 font-mono text-gray-800">{row.partNo}</td>
-                              <td className="py-2.5 px-4 font-mono text-gray-800">{row.serialNo}</td>
+                              <td className="py-2.5 px-4 text-gray-400">{row.index}</td>
+                              <td className="py-2.5 px-4 font-mono text-white">{row.partNo}</td>
+                              <td className="py-2.5 px-4 font-mono text-white">{row.serialNo}</td>
                             </tr>
                           ))
                         )}
@@ -479,18 +477,18 @@ export const DataPreparationPage: React.FC = () => {
               )}
 
               {/* Form Action Buttons */}
-              <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-100">
+              <div className="flex items-center justify-end space-x-4 pt-6 border-t border-[#1b172a]">
                 {/* Preview Button */}
                 <button
                   type="button"
                   onClick={handlePreviewClick}
                   disabled={!isFormFilled || isSubmitting}
                   className={`px-8 py-3 rounded-xl font-bold text-sm transition-all duration-150 ${isFormFilled && !isSubmitting
-                    ? 'bg-[#F4F5F8] text-gray-700 hover:bg-gray-200 active:scale-[0.98]'
-                    : 'bg-[#F4F5F8] text-gray-400 opacity-60 cursor-not-allowed'
+                    ? 'bg-[#13111c] border border-[#221e33] text-gray-300 hover:bg-[#201d2d] active:scale-[0.98]'
+                    : 'bg-[#13111c] border border-[#221e33]/50 text-gray-600 opacity-60 cursor-not-allowed'
                     }`}
                 >
-                  preview
+                  Preview
                 </button>
 
                 {/* Proceed Button */}
@@ -499,12 +497,12 @@ export const DataPreparationPage: React.FC = () => {
                   onClick={handleProceedClick}
                   disabled={!isFormFilled || isSubmitting}
                   className={`px-9 py-3 rounded-xl font-bold text-sm text-white shadow-md transition-all duration-150 flex items-center space-x-2 ${isFormFilled && !isSubmitting
-                    ? 'bg-[#5E40FF] hover:bg-[#4b2bee] active:scale-[0.98] shadow-indigo-500/20'
-                    : 'bg-gray-300 cursor-not-allowed shadow-none'
+                    ? 'bg-[#7c3aed] hover:bg-[#6d28d9] active:scale-[0.98] shadow-purple-500/20'
+                    : 'bg-[#1e1a2f] text-gray-500 cursor-not-allowed shadow-none'
                     }`}
                 >
                   {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                  <span>proceed</span>
+                  <span>Proceed</span>
                 </button>
               </div>
 
@@ -515,8 +513,8 @@ export const DataPreparationPage: React.FC = () => {
 
         {/* Right Column: Recent Uploads (Span 1) */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm min-h-[500px]">
-            <h2 className="text-lg font-bold text-gray-900 mb-6 select-none">
+          <div className="bg-[#0d0b14] rounded-3xl p-6 border border-[#1b172a] shadow-sm min-h-[500px]">
+            <h2 className="text-lg font-bold text-white mb-6 select-none">
               Recent uploads
             </h2>
 
@@ -524,16 +522,16 @@ export const DataPreparationPage: React.FC = () => {
             <div className="space-y-3.5">
               {recentUploads.length === 0 ? (
                 <div className="text-center py-10">
-                  <p className="text-xs text-gray-400 font-semibold">No recent uploads</p>
+                  <p className="text-xs text-gray-500 font-semibold">No recent uploads</p>
                 </div>
               ) : (
                 recentUploads.map((fileName, idx) => (
                   <div
                     key={`${fileName}-${idx}`}
-                    className="flex items-center space-x-3 bg-[#EBFDF5] border border-[#00B074]/10 rounded-xl p-3.5 px-4 transition-all duration-150 hover:shadow-sm animate-fade-in group select-none"
+                    className="flex items-center space-x-3 bg-[#0a231b] border border-[#10b981]/20 rounded-xl p-3.5 px-4 transition-all duration-150 hover:shadow-sm animate-fade-in group select-none"
                   >
-                    <FileText className="w-5 h-5 text-[#00B074] shrink-0" />
-                    <span className="text-[#00B074] font-bold text-sm truncate" title={fileName}>
+                    <FileText className="w-5 h-5 text-[#10b981] shrink-0" />
+                    <span className="text-[#10b981] font-bold text-sm truncate" title={fileName}>
                       {fileName}
                     </span>
                   </div>
