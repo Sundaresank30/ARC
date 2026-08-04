@@ -4,6 +4,7 @@ import { Sidebar } from './Sidebar';
 import { StatusCards } from './StatusCards';
 import { ProductionExceptions } from './ProductionExceptions';
 import { LeakageTestingView } from '../LeakageTesting/LeakageTestingView';
+import { LeakageMachinePage } from '../LeakageTesting/LeakageMachinePage';
 import { DataEmbossingPage } from '../DataEmbossing/DataEmbossingPage';
 import { MachinePage } from '../Machine/MachinePage';
 import { useAuthStore } from '../../store/authStore';
@@ -19,12 +20,27 @@ interface DashboardLayoutProps {
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: propRole, onSignOut }) => {
   const { role: storeRole, modules } = useAuthStore();
   const effectiveRole = storeRole || propRole || 'manager';
-  
-  const allowedTabs = modules.length > 0
+
+  const rawTabs = modules.length > 0
     ? modulesToTabs(modules)
     : effectiveRole === 'operator'
-      ? ['data-embossing', 'leakage-testing', 'machine', 'settings']
+      ? ['data-embossing', 'leakage-machine', 'leakage-testing', 'machine', 'settings']
       : ['dashboard', 'data-preparation', 'settings'];
+
+  // Always inject leakage-machine for operators right after data-embossing,
+  // even if the cached session modules don't include it yet.
+  const allowedTabs = (() => {
+    if (effectiveRole !== 'operator' || rawTabs.includes('leakage-machine')) {
+      return rawTabs;
+    }
+    const idx = rawTabs.indexOf('data-embossing');
+    if (idx !== -1) {
+      const updated = [...rawTabs];
+      updated.splice(idx + 1, 0, 'leakage-machine');
+      return updated;
+    }
+    return [...rawTabs, 'leakage-machine'];
+  })();
 
   const defaultTab = getDefaultTab ? getDefaultTab(effectiveRole) : (effectiveRole === 'operator' ? 'machine' : 'dashboard');
   const [currentTab, setCurrentTab] = useState(defaultTab);
@@ -58,7 +74,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
 
   const fetchDashboardData = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/dashboard');
+      const res = await fetch('/api/dashboard');
       if (res.ok) {
         const data = await res.json();
         setDashboardData(data);
@@ -78,8 +94,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
 
   const handleResolveCarryForward = async (id: string, partNo: string) => {
     try {
-      await fetch(`http://localhost:8080/api/dashboard/carry-forward/${id}/resolve`, { method: 'POST' });
-    } catch (e) {}
+      await fetch(`/api/dashboard/carry-forward/${id}/resolve`, { method: 'POST' });
+    } catch (e) { }
 
     setDashboardData((prev) => {
       const newCarryForward = prev.carryForwardEmbossing.filter((item) => item.id !== id);
@@ -95,8 +111,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
 
   const handleResolveLeakage = async (id: string, partNo: string) => {
     try {
-      await fetch(`http://localhost:8080/api/dashboard/leakage-failures/${id}/resolve`, { method: 'POST' });
-    } catch (e) {}
+      await fetch(`/api/dashboard/leakage-failures/${id}/resolve`, { method: 'POST' });
+    } catch (e) { }
 
     setDashboardData((prev) => {
       const newLeakage = prev.leakageTestingFailures.filter((item) => item.id !== id);
@@ -116,7 +132,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F5F8] flex w-full">
+    <div className="min-h-screen bg-[#06020c] flex w-full">
       <Sidebar
         currentTab={activeTab}
         setCurrentTab={setCurrentTab}
@@ -130,22 +146,22 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
           <div className="animate-fade-in space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-[28px] font-bold text-gray-900 tracking-tight leading-tight">
+                <h1 className="text-[28px] font-bold text-white tracking-tight leading-tight">
                   Welcome Back
                 </h1>
-                <p className="mt-1 text-sm sm:text-base text-gray-500 font-medium">
+                <p className="mt-1 text-sm sm:text-base text-[#8a8596] font-medium">
                   Monitor production, track batches, and review automated process updates
                 </p>
               </div>
 
-              <div className="flex items-center space-x-2 bg-white border border-gray-150 px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto">
-                <Calendar className="w-4 h-4 text-gray-500" />
-                <span className="text-sm font-semibold text-gray-700">{getFormattedDate()}</span>
+              <div className="flex items-center space-x-2 bg-[#13111c] border border-[#221e33] px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto">
+                <Calendar className="w-4 h-4 text-gray-400" />
+                <span className="text-sm font-semibold text-gray-300">{getFormattedDate()}</span>
               </div>
             </div>
 
             <div>
-              <h2 className="text-lg font-bold text-gray-800 tracking-tight mb-4">
+              <h2 className="text-lg font-bold text-white tracking-tight mb-4">
                 Production Status
               </h2>
               <StatusCards
@@ -162,19 +178,19 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
               onResolveLeakage={handleResolveLeakage}
             />
           </div>
-        ) : activeTab === 'leakage-testing' ? (
-          <LeakageTestingView />
-        ) : activeTab === 'machine' ? (
-          <MachinePage />
         ) : activeTab === 'data-embossing' ? (
           <DataEmbossingPage />
+        ) : activeTab === 'leakage-machine' ? (
+          <LeakageMachinePage />
+        ) : activeTab === 'leakage-testing' ? (
+          <LeakageTestingView />
         ) : activeTab === 'machine' ? (
           <MachinePage />
         ) : activeTab === 'data-preparation' ? (
           <DataPreparationPage />
         ) : (
-          <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-150 animate-fade-in">
-            <h1 className="text-2xl font-bold text-gray-900 capitalize mb-4">
+          <div className="bg-[#0d0b14] rounded-3xl p-8 shadow-sm border border-[#1b172a] animate-fade-in">
+            <h1 className="text-2xl font-bold text-white capitalize mb-4">
               {activeTab.replace('-', ' ')}
             </h1>
             <p className="text-gray-500">

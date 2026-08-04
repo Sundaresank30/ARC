@@ -139,35 +139,35 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-150 shadow-sm relative">
+    <div className="bg-[#0d0b14] rounded-3xl p-6 sm:p-8 border border-[#1b172a] shadow-sm relative">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="absolute top-4 right-4 bg-gray-900 text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-lg z-50 animate-fade-in">
+        <div className="absolute top-4 right-4 bg-[#1a162b] text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-lg border border-[#3b2d6a] z-50 animate-fade-in">
           {toastMessage}
         </div>
       )}
 
       {/* Main Title Header */}
       <div className="flex items-center space-x-2 mb-6">
-        <h2 className="text-xl font-bold text-gray-900 tracking-tight">
+        <h2 className="text-xl font-bold text-white tracking-tight">
           Production Exceptions
         </h2>
-        <Info className="w-4 h-4 text-gray-400 cursor-pointer hover:text-gray-600" />
+        <Info className="w-4 h-4 text-gray-500 cursor-pointer hover:text-gray-300" />
       </div>
 
       <div className="space-y-8">
         
         {/* Section 1: Carry Forward (Embossing) */}
-        <div className="border border-amber-100 rounded-2xl overflow-hidden shadow-sm">
+        <div className="border border-[#2d1c0c] rounded-2xl overflow-hidden shadow-sm">
           {/* Section Header */}
-          <div className="bg-[#FFFDF5] border-b border-amber-100 px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-amber-700">
+          <div className="bg-[#20150b] border-b border-[#2d1c0c] px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center space-x-2 text-[#f59e0b]">
               <Clock className="w-4.5 h-4.5 stroke-[2.5]" />
               <span className="font-bold text-sm sm:text-base">
                 Carry Forward (Embossing)
               </span>
             </div>
-            <span className="text-xs sm:text-sm font-semibold text-amber-600/90">
+            <span className="text-xs sm:text-sm font-semibold text-[#f59e0b]/90">
               Scheduled for next shift
             </span>
           </div>
@@ -176,31 +176,31 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
-                <tr className="bg-white text-gray-400 font-semibold border-b border-gray-100">
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Part no.</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Serial no.</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Status</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Remaining Since</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Next Shift</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Action</th>
+                <tr className="bg-[#0d0b14] text-[#8a8596] font-semibold border-b border-[#2d1c0c]">
+                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Part no.</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Serial no.</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Status</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Remaining Since</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Next Shift</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 bg-white">
+              <tbody className="divide-y divide-[#1c182a] bg-[#0d0b14]">
                 {carryForwardData.map((row) => (
-                  <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-4 py-4 font-semibold text-gray-600">{row.partNo}</td>
-                    <td className="px-4 py-4 text-gray-600 font-medium">{row.serialNo}</td>
+                  <tr key={row.id} className="hover:bg-[#120e21]/50 transition-colors">
+                    <td className="px-4 py-4 font-semibold text-white">{row.partNo}</td>
+                    <td className="px-4 py-4 text-gray-300 font-medium">{row.serialNo}</td>
                     <td className="px-4 py-4">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-[#FEF3C7] text-[#D97706]">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-[#2d1c0b] text-[#f59e0b] border border-[#f59e0b]/20">
                         {row.status}
                       </span>
                     </td>
-                    <td className="px-4 py-4 text-gray-500 font-medium">{row.remainingSince}</td>
-                    <td className="px-4 py-4 text-gray-500 font-medium">{row.nextShift}</td>
+                    <td className="px-4 py-4 text-gray-400 font-medium">{row.remainingSince}</td>
+                    <td className="px-4 py-4 text-gray-400 font-medium">{row.nextShift}</td>
                     <td className="px-4 py-4">
                       <button
                         onClick={() => handleCarryForwardAction(row.id, row.partNo, row.action)}
-                        className="font-bold text-gray-600 hover:text-indigo-600 transition-colors"
+                        className="font-bold text-gray-400 hover:text-[#8b5cf6] transition-colors"
                       >
                         {row.action}
                       </button>
@@ -213,20 +213,20 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
         </div>
 
         {/* Section 2: Leaked Testing Failures */}
-        <div className="border border-red-100 rounded-2xl overflow-hidden shadow-sm">
+        <div className="border border-[#3a1515] rounded-2xl overflow-hidden shadow-sm">
           {/* Section Header */}
-          <div className="bg-[#FFF5F5] border-b border-red-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center space-x-2 text-red-700">
+          <div className="bg-[#271012] border-b border-[#3a1515] px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center space-x-2 text-[#ef4444]">
               <AlertTriangle className="w-4.5 h-4.5 stroke-[2.5]" />
               <span className="font-bold text-sm sm:text-base">
                 Leaked Testing Failures
               </span>
             </div>
             <div className="flex items-center space-x-3">
-              <span className="text-xs sm:text-sm font-semibold text-red-600/90">
+              <span className="text-xs sm:text-sm font-semibold text-[#ef4444]/90">
                 Requires quality action
               </span>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#FEE2E2] text-red-700 border border-red-200">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#3a1012] text-[#ef4444] border border-[#ef4444]/30">
                 Threshold Range: 0.50 – 1.00
               </span>
             </div>
@@ -236,42 +236,42 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
-                <tr className="bg-white text-gray-400 font-semibold border-b border-gray-100">
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Part no.</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Serial no.</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Status</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Test Value</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Timestamp</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Attempt</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Action</th>
+                <tr className="bg-[#0d0b14] text-[#8a8596] font-semibold border-b border-[#3a1515]">
+                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Part no.</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Serial no.</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Status</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Test Value</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Timestamp</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Attempt</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 bg-white">
+              <tbody className="divide-y divide-[#1c182a] bg-[#0d0b14]">
                 {leakageFailuresData.map((row) => (
-                  <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-4 py-4 font-semibold text-gray-600">{row.partNo}</td>
-                    <td className="px-4 py-4 text-gray-600 font-medium">{row.serialNo}</td>
+                  <tr key={row.id} className="hover:bg-[#120e21]/50 transition-colors">
+                    <td className="px-4 py-4 font-semibold text-white">{row.partNo}</td>
+                    <td className="px-4 py-4 text-gray-300 font-medium">{row.serialNo}</td>
                     <td className="px-4 py-4">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-[#FEE2E2] text-red-700">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-[#3a1012] text-[#ef4444] border border-[#ef4444]/20">
                         {row.status}
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                      <div className="flex items-center space-x-1 text-red-600 font-bold">
+                      <div className="flex items-center space-x-1 text-[#ef4444] font-bold">
                         <span>{row.testValue.toFixed(2)}</span>
                         {row.direction === 'up' ? (
-                          <ChevronUp className="w-4 h-4 text-red-600 stroke-[3]" />
+                          <ChevronUp className="w-4 h-4 text-[#ef4444] stroke-[3]" />
                         ) : (
-                          <ChevronDown className="w-4 h-4 text-red-600 stroke-[3]" />
+                          <ChevronDown className="w-4 h-4 text-[#ef4444] stroke-[3]" />
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-4 text-gray-500 font-medium">{row.timestamp}</td>
-                    <td className="px-4 py-4 text-gray-500 font-semibold">{row.attempt}</td>
+                    <td className="px-4 py-4 text-gray-400 font-medium">{row.timestamp}</td>
+                    <td className="px-4 py-4 text-gray-400 font-semibold">{row.attempt}</td>
                     <td className="px-4 py-4">
                       <button
                         onClick={() => handleLeakageAction(row.id, row.partNo, row.action)}
-                        className="font-bold text-gray-600 hover:text-indigo-600 transition-colors"
+                        className="font-bold text-gray-400 hover:text-[#8b5cf6] transition-colors"
                       >
                         {row.action}
                       </button>
