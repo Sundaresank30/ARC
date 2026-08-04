@@ -31,10 +31,33 @@ export interface EmbossingJob {
   remarks: string | null;
 }
 
+export interface BatchProgress {
+  batchId: string;
+  totalRecords: number;
+  completedRecords: number;
+  pendingRecords: number;
+  progressPercent: number;
+  completed: boolean;
+}
+
 export interface EmbossingDashboard {
   activeBatch: string;
   pendingCount: number;
+  batchProgress: BatchProgress[];
   jobs: EmbossingJob[];
+}
+
+export interface EmbossingProgress {
+  jobId: number;
+  batchId: string;
+  jobStatus: EmbossingStatus;
+  totalCount: number;
+  completedCount: number;
+  pendingCount: number;
+  progressPercent: number;
+  completed: boolean;
+  job: EmbossingJob;
+  batchProgress: BatchProgress;
 }
 
 export interface CurrentMachine {

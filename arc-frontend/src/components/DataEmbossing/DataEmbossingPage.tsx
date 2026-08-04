@@ -5,14 +5,18 @@ import { EmbossingLog } from './EmbossingLog';
 import {
   useCompletedJobs,
   useEmbossingDashboard,
+  useEmbossingProgressSocket,
   useEmbossingSimulationStarter,
 } from '../../hooks/useEmbossing';
 
 export const DataEmbossingPage: React.FC = () => {
-  useEmbossingSimulationStarter(true);
+  useEmbossingSimulationStarter(false);
+  useEmbossingProgressSocket(true);
 
   const { data: dashboard, isLoading, isError, error } = useEmbossingDashboard(true);
   const { data: completedJobs = [] } = useCompletedJobs(true);
+
+  const activeBatch = dashboard?.activeBatch;
 
   const pendingJobs =
     dashboard?.jobs.filter((job) => job.embossingStatus === 'PENDING') ?? [];
@@ -21,6 +25,17 @@ export const DataEmbossingPage: React.FC = () => {
     dashboard?.jobs.filter((job) =>
       ['IN_MACHINE', 'PRINTING'].includes(job.embossingStatus)
     ) ?? [];
+
+  const currentBatchCompletedJobs = React.useMemo(() => {
+    if (!activeBatch) {
+      return completedJobs;
+    }
+    const filteredFromCompletedApi = completedJobs.filter((job) => job.batchId === activeBatch);
+    if (filteredFromCompletedApi.length > 0) {
+      return filteredFromCompletedApi;
+    }
+    return dashboard?.jobs.filter((job) => job.embossingStatus === 'COMPLETED' && (job.batchId === activeBatch || !job.batchId)) ?? [];
+  }, [completedJobs, dashboard?.jobs, activeBatch]);
 
   const getFormattedDate = () => {
     return new Date().toLocaleDateString(undefined, {
@@ -58,6 +73,7 @@ export const DataEmbossingPage: React.FC = () => {
         <div className="lg:col-span-2">
           <ActiveBatchCard
             activeBatch={dashboard?.activeBatch ?? 'Batch_1'}
+            progress={dashboard?.batchProgress?.[0]}
             isLoading={isLoading}
           />
         </div>
@@ -89,8 +105,9 @@ export const DataEmbossingPage: React.FC = () => {
       <EmbossingLog
         pendingJobs={pendingJobs}
         activeJobs={activeJobs}
-        completedJobs={completedJobs}
+        completedJobs={currentBatchCompletedJobs}
         totalJobs={dashboard?.jobs.length ?? 0}
+        batchProgress={dashboard?.batchProgress}
         isLoading={isLoading}
       />
     </div>
