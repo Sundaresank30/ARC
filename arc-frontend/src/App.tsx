@@ -47,7 +47,7 @@ export function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#06020c] flex flex-col items-center justify-center p-4 sm:p-6 select-none relative overflow-hidden">
+    <div className="min-h-screen bg-[#09040A] flex flex-col items-center justify-center p-4 sm:p-6 select-none relative overflow-hidden">
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
 
