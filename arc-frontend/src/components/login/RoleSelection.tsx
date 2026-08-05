@@ -19,7 +19,7 @@ export const RoleSelection: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-[780px] bg-[#0d0b14] rounded-3xl p-8 sm:p-12 shadow-[0_0_40px_rgba(139,92,246,0.15)] border border-[#1b172a] animate-fade-in relative overflow-hidden">
+    <div className="w-full max-w-[780px] bg-[#111827]/30 rounded-3xl p-8 sm:p-12 shadow-[0_0_50px_rgba(139,92,246,0.25)] border border-[#201538] animate-fade-in relative overflow-hidden">
       <div className="mb-8">
         <h1 className="text-3xl sm:text-3xl font-bold text-white tracking-tight">
           Choose Your Role
@@ -39,17 +39,17 @@ export const RoleSelection: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         <div
           onClick={() => !isLoading && setSelectedRole('manager')}
-          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-200 ${
+          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-300 bg-gradient-to-b from-[#09040A] to-[#111827] hover:from-[#170e2b] hover:to-[#1b253b] hover:shadow-[0_0_25px_rgba(139,92,246,0.25)] hover:border-[#8b5cf6]/50 opacity-100 ${
             selectedRole === 'manager'
-              ? 'border-[#7c3aed] bg-[#120e24] shadow-lg shadow-purple-500/5 ring-1 ring-[#7c3aed]/20'
-              : 'border-[#1c1827] bg-[#07050d] hover:border-[#2b243d] hover:bg-[#0c0914]'
-          } ${isLoading ? 'pointer-events-none opacity-70' : ''}`}
+              ? 'border-[#7c3aed] shadow-lg shadow-purple-500/10 ring-1 ring-[#7c3aed]/30'
+              : 'border-[#1e1b29]'
+          } ${isLoading ? 'pointer-events-none' : ''}`}
         >
           <div className="h-44 flex items-center justify-center mb-4 w-full">
             <ManagerIllustration />
           </div>
 
-          <div className="w-12 h-12 rounded-xl bg-[#19122a] flex items-center justify-center text-[#8b5cf6] mb-4 shadow-sm">
+          <div className="w-12 h-12 rounded-xl bg-[#1F2937] flex items-center justify-center text-[#a855f7] mb-4 shadow-sm">
             <Briefcase className="w-6 h-6 stroke-[2]" />
           </div>
 
@@ -61,17 +61,17 @@ export const RoleSelection: React.FC = () => {
 
         <div
           onClick={() => !isLoading && setSelectedRole('operator')}
-          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-200 ${
+          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-300 bg-gradient-to-b from-[#09040A] to-[#111827] hover:from-[#170e2b] hover:to-[#1b253b] hover:shadow-[0_0_25px_rgba(139,92,246,0.25)] hover:border-[#8b5cf6]/50 opacity-100 ${
             selectedRole === 'operator'
-              ? 'border-[#7c3aed] bg-[#120e24] shadow-lg shadow-purple-500/5 ring-1 ring-[#7c3aed]/20'
-              : 'border-[#1c1827] bg-[#07050d] hover:border-[#2b243d] hover:bg-[#0c0914]'
-          } ${isLoading ? 'pointer-events-none opacity-70' : ''}`}
+              ? 'border-[#7c3aed] shadow-lg shadow-purple-500/10 ring-1 ring-[#7c3aed]/30'
+              : 'border-[#1e1b29]'
+          } ${isLoading ? 'pointer-events-none' : ''}`}
         >
           <div className="h-44 flex items-center justify-center mb-4 w-full">
             <OperatorIllustration />
           </div>
 
-          <div className="w-12 h-12 rounded-xl bg-[#19122a] flex items-center justify-center text-[#8b5cf6] mb-4 shadow-sm">
+          <div className="w-12 h-12 rounded-xl bg-[#1F2937] flex items-center justify-center text-[#a855f7] mb-4 shadow-sm">
             <Settings className="w-6 h-6 stroke-[2]" />
           </div>
 
@@ -86,7 +86,7 @@ export const RoleSelection: React.FC = () => {
         <button
           type="button"
           disabled={isLoading}
-          className="px-8 py-3 rounded-xl bg-[#13111c] hover:bg-[#1a1726] border border-[#221e33] text-gray-300 font-semibold text-base transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-purple-900 disabled:opacity-50"
+          className="px-8 py-3 rounded-xl bg-[#111827] hover:bg-[#1a2333] border border-[#2e2443] text-gray-300 font-semibold text-base transition-colors duration-150 focus:outline-none disabled:opacity-50"
         >
           Back
         </button>
@@ -95,7 +95,7 @@ export const RoleSelection: React.FC = () => {
           type="button"
           onClick={handleContinue}
           disabled={!selectedRole || isLoading}
-          className="px-9 py-3 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] active:bg-[#5b21b6] text-white font-semibold text-base transition-all duration-150 shadow-lg shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-purple-400 flex items-center space-x-2"
+          className="px-9 py-3 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] active:bg-[#5b21b6] text-white font-semibold text-base transition-all duration-150 shadow-[0_0_20px_rgba(124,58,237,0.5)] border border-[#a855f7]/30 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none flex items-center space-x-2"
         >
           {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
           <span>{isLoading ? 'Signing in...' : 'Continue'}</span>
