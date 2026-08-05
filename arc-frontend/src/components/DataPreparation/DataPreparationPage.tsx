@@ -1,6 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Calendar, Upload, Plus, Minus, Eye, FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
-import { createProductionBatch, getAllProductionBatches } from '../../api/dataPreparation';
+import { createProductionBatch, getAllProductionBatches, uploadSourceDocument, getServerDate } from '../../api/dataPreparation';
+
+const formatLocalFallbackDate = (dateObj: Date): string => {
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const month = months[dateObj.getMonth()];
+  const year = dateObj.getFullYear();
+  return `${day} ${month} ${year}`;
+};
 
 export const DataPreparationPage: React.FC = () => {
   // Form input states
@@ -10,6 +18,12 @@ export const DataPreparationPage: React.FC = () => {
   const [serialNoSeries, setSerialNoSeries] = useState('');
   const [serialNoCount, setSerialNoCount] = useState(99);
 
+  // Dynamic Server Date
+  const [currentDate, setCurrentDate] = useState<string>(() => formatLocalFallbackDate(new Date()));
+
+  // Uploaded PDF file state
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   // UI state
   const [showPreview, setShowPreview] = useState(false);
   const [dragActive, setDragActive] = useState(false);
@@ -17,36 +31,49 @@ export const DataPreparationPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Recent Uploads / Created Batches
-  const [recentUploads, setRecentUploads] = useState<string[]>([
-    'Batch_2',
-    'Batch_1'
-  ]);
+  // Recent Uploads / Created Batches (Real DB data only, default empty)
+  const [recentUploads, setRecentUploads] = useState<string[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load existing production batches from backend API on mount
+  // Load dynamic server date and existing production batches from backend API on mount
   useEffect(() => {
+    fetchServerDate();
     fetchRecentBatches();
   }, []);
+
+  const fetchServerDate = async () => {
+    try {
+      const res = await getServerDate();
+      if (res && res.formattedDate) {
+        setCurrentDate(res.formattedDate);
+      }
+    } catch (err) {
+      console.warn('Could not fetch server date, using local clock fallback:', err);
+    }
+  };
 
   const fetchRecentBatches = async () => {
     try {
       const batches = await getAllProductionBatches();
       if (batches && batches.length > 0) {
-        const batchNames = batches.map(b => b.batchId);
+        const batchNames = batches.map(b => b.batchId).filter(Boolean);
         setRecentUploads(batchNames);
+      } else {
+        setRecentUploads([]);
       }
     } catch (err) {
-      console.warn('Backend API offline or unreachable, using default mock list:', err);
+      console.warn('Could not load production batches from database:', err);
+      setRecentUploads([]);
     }
   };
 
-  // Add item to recent uploads (max 5 files, newest first)
-  const addFileToRecentUploads = (fileName: string) => {
+  // Add created batch ID to recent uploads (max 5 items, newest first)
+  const addBatchToRecentUploads = (batchName: string) => {
+    if (!batchName) return;
     setRecentUploads((prev) => {
-      const filtered = prev.filter((item) => item !== fileName);
-      const updated = [fileName, ...filtered];
+      const filtered = prev.filter((item) => item !== batchName);
+      const updated = [batchName, ...filtered];
       return updated.slice(0, 5);
     });
   };
@@ -97,7 +124,30 @@ export const DataPreparationPage: React.FC = () => {
     }
   };
 
-  // Handle proceed (creates production batch in backend DB with offline fallback)
+  // Process file upload directly to backend
+  const handleFileUpload = async (file: File) => {
+    setSelectedFile(file);
+    setIsSubmitting(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+    try {
+      const doc = await uploadSourceDocument(file, batchId.trim() || undefined);
+      if (doc.batchId) {
+        if (!batchId.trim()) {
+          setBatchId(doc.batchId);
+        }
+        addBatchToRecentUploads(doc.batchId);
+      }
+      setSuccessMessage(`Source document '${file.name}' uploaded and saved to database!`);
+    } catch (err: any) {
+      const msg = err.response?.data?.message || err.message || 'Failed to upload source document to database.';
+      setErrorMessage(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handle proceed (creates production batch in backend DB)
   const handleProceedClick = async () => {
     if (!isFormFilled || isSubmitting) return;
 
@@ -116,29 +166,27 @@ export const DataPreparationPage: React.FC = () => {
         serialNoCount
       });
 
-      addFileToRecentUploads(response.batchId);
+      // If a file was uploaded, ensure it is linked to this batch ID in source_documents
+      if (selectedFile) {
+        try {
+          await uploadSourceDocument(selectedFile, formattedBatchId);
+        } catch (uploadErr) {
+          console.warn('Error linking PDF to batch ID:', uploadErr);
+        }
+      }
+
+      addBatchToRecentUploads(response.batchId);
       setSuccessMessage(`Successfully created production batch '${response.batchId}' with ${response.totalItems} items!`);
 
       // Reset form
       setBatchId('');
       setPartNoSeries('');
       setSerialNoSeries('');
+      setSelectedFile(null);
       setShowPreview(false);
     } catch (err: any) {
-      // If network error (backend offline), perform graceful offline fallback in UI state
-      if (!err.response && (err.message === 'Network Error' || err.code === 'ERR_NETWORK')) {
-        addFileToRecentUploads(formattedBatchId);
-        setSuccessMessage(`Successfully created production batch '${formattedBatchId}' with ${Math.max(partNoCount, serialNoCount)} items!`);
-
-        // Reset form
-        setBatchId('');
-        setPartNoSeries('');
-        setSerialNoSeries('');
-        setShowPreview(false);
-      } else {
-        const msg = err.response?.data?.message || err.message || 'Failed to create production batch in database.';
-        setErrorMessage(msg);
-      }
+      const msg = err.response?.data?.message || err.message || 'Failed to create production batch in database.';
+      setErrorMessage(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -148,7 +196,7 @@ export const DataPreparationPage: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      addFileToRecentUploads(file.name);
+      handleFileUpload(file);
     }
   };
 
@@ -169,7 +217,7 @@ export const DataPreparationPage: React.FC = () => {
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
-      addFileToRecentUploads(file.name);
+      handleFileUpload(file);
     }
   };
 
@@ -224,11 +272,11 @@ export const DataPreparationPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Date Widget */}
+        {/* Dynamic Server Date Widget */}
         <div className="flex items-center space-x-2 bg-[#13111c] border border-[#221e33] px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto hover:bg-[#1a1726] cursor-pointer transition-colors duration-150">
           <Calendar className="w-4 h-4 text-gray-400" />
           <span className="text-sm font-semibold text-gray-300 select-none">
-            20 July, 2026
+            {currentDate}
           </span>
         </div>
       </div>
@@ -280,11 +328,13 @@ export const DataPreparationPage: React.FC = () => {
             </div>
 
             <h3 className="text-lg font-bold text-white mb-1.5">
-              Upload Source Documents
+              {selectedFile ? `Selected: ${selectedFile.name}` : 'Upload Source Documents'}
             </h3>
 
             <p className="text-xs text-gray-400 max-w-sm leading-relaxed">
-              Upload your PDF or Image files. serial numbers will be automatically generated upon processing.
+              {selectedFile
+                ? 'Operational parameters extracted. Enter batch details below and click Proceed.'
+                : 'Upload your PDF or Image files. serial numbers will be automatically generated upon processing.'}
             </p>
           </div>
 

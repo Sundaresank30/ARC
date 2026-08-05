@@ -22,6 +22,9 @@ public class ProductionBatchItem {
     @JsonIgnore
     private ProductionBatch productionBatch;
 
+    @Column(name = "batch_id")
+    private String batchId;
+
     @Column(name = "item_index", nullable = false)
     private Integer itemIndex;
 
