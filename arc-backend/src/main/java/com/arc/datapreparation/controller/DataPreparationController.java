@@ -10,7 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/data-preparation")
@@ -18,6 +22,17 @@ import java.util.List;
 public class DataPreparationController {
 
     private final DataPreparationService dataPreparationService;
+
+    @GetMapping("/server-date")
+    public ResponseEntity<Map<String, String>> getServerDate() {
+        LocalDate now = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH);
+        String formattedDate = now.format(formatter);
+        return ResponseEntity.ok(Map.of(
+                "formattedDate", formattedDate,
+                "isoDate", now.toString()
+        ));
+    }
 
     @PostMapping("/batches")
     public ResponseEntity<ProductionBatchResponse> createProductionBatch(@Valid @RequestBody CreateProductionBatchRequest request) {
