@@ -118,7 +118,7 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center">
+                    <td colSpan={5} className="px-4 py-8 text-center">
                       <Loader2 className="w-6 h-6 animate-spin text-gray-400 mx-auto" />
                     </td>
                   </tr>
@@ -191,7 +191,7 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center">
+                    <td colSpan={5} className="px-4 py-8 text-center">
                       <Loader2 className="w-6 h-6 animate-spin text-gray-400 mx-auto" />
                     </td>
                   </tr>

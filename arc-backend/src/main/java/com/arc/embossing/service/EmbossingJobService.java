@@ -39,26 +39,30 @@ public class EmbossingJobService {
 
     @Transactional
     public void recordEmbossingStarted(EmbossingQueue queueItem) {
-        EmbossingJob job = jobRepository.findBySerialNumberAndPartNumberForUpdate(
-                        queueItem.getSerialNumber(), queueItem.getPartNumber())
-                .orElseGet(() -> {
-                    ProductionBatchItem item = productionItemRepository
-                            .findBySerialNumberAndPartNumber(queueItem.getSerialNumber(), queueItem.getPartNumber())
-                            .orElse(null);
-                    String batchId = (item != null && item.getProductionBatch() != null)
-                            ? item.getProductionBatch().getBatchId()
-                            : "Batch_1";
+        List<EmbossingJob> existingJobs = jobRepository.findBySerialNumberAndPartNumberForUpdate(
+                queueItem.getSerialNumber(), queueItem.getPartNumber());
 
-                    return EmbossingJob.builder()
-                            .batchId(batchId)
-                            .partNumber(queueItem.getPartNumber())
-                            .serialNumber(queueItem.getSerialNumber())
-                            .embossingStatus(EmbossingStatus.PENDING)
-                            .createdTime(LocalDateTime.now())
-                            .machineStatus(MachineStatus.WAITING)
-                            .remarks("Created on machine in-progress")
-                            .build();
-                });
+        EmbossingJob job;
+        if (!existingJobs.isEmpty()) {
+            job = existingJobs.get(0);
+        } else {
+            List<ProductionBatchItem> items = productionItemRepository
+                    .findBySerialNumberAndPartNumber(queueItem.getSerialNumber(), queueItem.getPartNumber());
+            ProductionBatchItem item = items.isEmpty() ? null : items.get(0);
+            String batchId = (item != null && item.getProductionBatch() != null)
+                    ? item.getProductionBatch().getBatchId()
+                    : "Batch_1";
+
+            job = EmbossingJob.builder()
+                    .batchId(batchId)
+                    .partNumber(queueItem.getPartNumber())
+                    .serialNumber(queueItem.getSerialNumber())
+                    .embossingStatus(EmbossingStatus.PENDING)
+                    .createdTime(LocalDateTime.now())
+                    .machineStatus(MachineStatus.WAITING)
+                    .remarks("Created on machine in-progress")
+                    .build();
+        }
 
         if (job.getEmbossingStatus() == EmbossingStatus.COMPLETED) {
             return;
@@ -103,26 +107,30 @@ public class EmbossingJobService {
      */
     @Transactional
     public void recordSuccessfulEmbossing(EmbossingQueue queueItem) {
-        EmbossingJob job = jobRepository.findBySerialNumberAndPartNumberForUpdate(
-                        queueItem.getSerialNumber(), queueItem.getPartNumber())
-                .orElseGet(() -> {
-                    ProductionBatchItem item = productionItemRepository
-                            .findBySerialNumberAndPartNumber(queueItem.getSerialNumber(), queueItem.getPartNumber())
-                            .orElse(null);
-                    String batchId = (item != null && item.getProductionBatch() != null)
-                            ? item.getProductionBatch().getBatchId()
-                            : "Batch_1";
+        List<EmbossingJob> existingJobs = jobRepository.findBySerialNumberAndPartNumberForUpdate(
+                queueItem.getSerialNumber(), queueItem.getPartNumber());
 
-                    return EmbossingJob.builder()
-                            .batchId(batchId)
-                            .partNumber(queueItem.getPartNumber())
-                            .serialNumber(queueItem.getSerialNumber())
-                            .embossingStatus(EmbossingStatus.PENDING)
-                            .createdTime(LocalDateTime.now())
-                            .machineStatus(MachineStatus.WAITING)
-                            .remarks("Created on machine printing")
-                            .build();
-                });
+        EmbossingJob job;
+        if (!existingJobs.isEmpty()) {
+            job = existingJobs.get(0);
+        } else {
+            List<ProductionBatchItem> items = productionItemRepository
+                    .findBySerialNumberAndPartNumber(queueItem.getSerialNumber(), queueItem.getPartNumber());
+            ProductionBatchItem item = items.isEmpty() ? null : items.get(0);
+            String batchId = (item != null && item.getProductionBatch() != null)
+                    ? item.getProductionBatch().getBatchId()
+                    : "Batch_1";
+
+            job = EmbossingJob.builder()
+                    .batchId(batchId)
+                    .partNumber(queueItem.getPartNumber())
+                    .serialNumber(queueItem.getSerialNumber())
+                    .embossingStatus(EmbossingStatus.PENDING)
+                    .createdTime(LocalDateTime.now())
+                    .machineStatus(MachineStatus.WAITING)
+                    .remarks("Created on machine printing")
+                    .build();
+        }
 
         if (job.getEmbossingStatus() == EmbossingStatus.COMPLETED) {
             return;
@@ -136,11 +144,10 @@ public class EmbossingJobService {
         job.setMachineStatus(MachineStatus.IDLE);
         EmbossingJob savedJob = jobRepository.save(job);
 
-        ProductionBatchItem preparedItem = productionItemRepository
-                .findBySerialNumberAndPartNumber(queueItem.getSerialNumber(), queueItem.getPartNumber())
-                .orElse(null);
+        List<ProductionBatchItem> preparedItems = productionItemRepository
+                .findBySerialNumberAndPartNumber(queueItem.getSerialNumber(), queueItem.getPartNumber());
 
-        if (preparedItem != null) {
+        for (ProductionBatchItem preparedItem : preparedItems) {
             preparedItem.setStatus("COMPLETED");
             productionItemRepository.save(preparedItem);
         }

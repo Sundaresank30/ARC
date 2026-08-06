@@ -51,11 +51,14 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/api/data-preparation/**").permitAll()
-                        .requestMatchers("/api/dashboard/**").hasAnyRole("MANAGER", "OPERATOR")
-                        .requestMatchers("/api/embossing/**", "/api/leakage-testing/**", "/api/machine/**").hasAnyRole("MANAGER", "OPERATOR")
-                        .requestMatchers("/api/settings/**").hasAnyRole("MANAGER", "OPERATOR")
+                        .requestMatchers("/api/source-documents/**").permitAll()
+                        .requestMatchers("/api/machine/**").permitAll()
+                        .requestMatchers("/api/embossing/**").permitAll()
+                        .requestMatchers("/api/leakage-testing/**").permitAll()
+                        .requestMatchers("/api/dashboard/**").permitAll()
+                        .requestMatchers("/api/settings/**").permitAll()
                         .requestMatchers("/api/auth/me").authenticated()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
