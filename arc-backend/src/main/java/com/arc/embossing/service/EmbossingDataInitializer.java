@@ -18,14 +18,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 /**
- * Syncs embossing jobs with production batch items and machine queue records in the database.
+ * Syncs embossing jobs strictly with machine queue records in the database.
  */
 @Component
 @Order(2)
@@ -51,50 +47,7 @@ public class EmbossingDataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        syncEmbossingJobsFromProductionItems();
         syncEmbossingJobsFromQueue();
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void syncEmbossingJobsFromProductionItems() {
-        List<ProductionBatchItem> batchItems = productionBatchItemRepository.findAll();
-        if (batchItems.isEmpty()) {
-            log.info("No production batch items found for active batch {}. The module will wait for real production data.",
-                    simulationProperties.getActiveBatch());
-            return;
-        }
-
-        Set<String> seenPartNumbers = new HashSet<>();
-        Set<String> seenSerialNumbers = new HashSet<>();
-        embossingJobRepository.findAll().forEach(job -> {
-            seenPartNumbers.add(normalizeIdentifier(job.getPartNumber()));
-            seenSerialNumbers.add(normalizeIdentifier(job.getSerialNumber()));
-        });
-        List<EmbossingJob> initializationJobs = new ArrayList<>();
-
-        for (ProductionBatchItem item : batchItems) {
-            String partNumber = item.getPartNumber();
-            String serialNumber = item.getSerialNumber();
-            if (!seenPartNumbers.add(normalizeIdentifier(partNumber))
-                    || !seenSerialNumbers.add(normalizeIdentifier(serialNumber))) {
-                log.warn("Skipping duplicate production item for part number {} and serial number {}", partNumber, serialNumber);
-                continue;
-            }
-
-            boolean alreadyExists = embossingJobRepository.existsByPartNumber(partNumber)
-                    || embossingJobRepository.existsBySerialNumber(serialNumber);
-            if (alreadyExists) {
-                continue;
-            }
-
-            initializationJobs.add(toEmbossingJob(item));
-        }
-
-        if (!initializationJobs.isEmpty()) {
-            embossingJobRepository.saveAll(initializationJobs);
-            log.info("Synced {} embossing jobs from production batch items for active batch {}",
-                    initializationJobs.size(), simulationProperties.getActiveBatch());
-        }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -105,14 +58,14 @@ public class EmbossingDataInitializer implements CommandLineRunner {
         }
 
         for (EmbossingQueue qItem : queueItems) {
-            EmbossingJob job = embossingJobRepository
-                    .findBySerialNumberAndPartNumber(qItem.getSerialNumber(), qItem.getPartNumber())
-                    .orElse(null);
+            List<EmbossingJob> existingJobs = embossingJobRepository
+                    .findBySerialNumberAndPartNumber(qItem.getSerialNumber(), qItem.getPartNumber());
+            EmbossingJob job = existingJobs.isEmpty() ? null : existingJobs.get(0);
 
             if (job == null) {
-                ProductionBatchItem item = productionBatchItemRepository
-                        .findBySerialNumberAndPartNumber(qItem.getSerialNumber(), qItem.getPartNumber())
-                        .orElse(null);
+                List<ProductionBatchItem> items = productionBatchItemRepository
+                        .findBySerialNumberAndPartNumber(qItem.getSerialNumber(), qItem.getPartNumber());
+                ProductionBatchItem item = items.isEmpty() ? null : items.get(0);
                 String batchId = (item != null && item.getProductionBatch() != null)
                         ? item.getProductionBatch().getBatchId()
                         : simulationProperties.getActiveBatch();
@@ -146,25 +99,5 @@ public class EmbossingDataInitializer implements CommandLineRunner {
                 embossingJobRepository.save(job);
             }
         }
-    }
-
-    private EmbossingJob toEmbossingJob(ProductionBatchItem item) {
-        EmbossingStatus status = "COMPLETED".equalsIgnoreCase(item.getStatus())
-                ? EmbossingStatus.COMPLETED
-                : EmbossingStatus.PENDING;
-
-        return EmbossingJob.builder()
-                .batchId(item.getProductionBatch() != null ? item.getProductionBatch().getBatchId() : simulationProperties.getActiveBatch())
-                .partNumber(item.getPartNumber())
-                .serialNumber(item.getSerialNumber())
-                .embossingStatus(status)
-                .createdTime(LocalDateTime.now())
-                .machineStatus(status == EmbossingStatus.COMPLETED ? MachineStatus.IDLE : MachineStatus.WAITING)
-                .remarks("Synced from production batch item")
-                .build();
-    }
-
-    private String normalizeIdentifier(String value) {
-        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
     }
 }
