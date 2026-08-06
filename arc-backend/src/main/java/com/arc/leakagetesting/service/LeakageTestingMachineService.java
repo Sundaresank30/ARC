@@ -39,6 +39,8 @@ public class LeakageTestingMachineService {
     private final ProductionBatchRepository productionBatchRepository;
     private final SourceDocumentRepository sourceDocumentRepository;
     private final LeakageTestResultRepository resultRepository;
+    private final com.arc.leakagetesting.repository.PassedLeakageTestResultRepository passedResultRepository;
+    private final com.arc.leakagetesting.repository.FailedLeakageTestResultRepository failedResultRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
@@ -55,12 +57,16 @@ public class LeakageTestingMachineService {
             ProductionBatchRepository productionBatchRepository,
             SourceDocumentRepository sourceDocumentRepository,
             LeakageTestResultRepository resultRepository,
+            com.arc.leakagetesting.repository.PassedLeakageTestResultRepository passedResultRepository,
+            com.arc.leakagetesting.repository.FailedLeakageTestResultRepository failedResultRepository,
             @Autowired(required = false) SimpMessagingTemplate messagingTemplate) {
         this.embossingJobRepository = embossingJobRepository;
         this.productionItemRepository = productionItemRepository;
         this.productionBatchRepository = productionBatchRepository;
         this.sourceDocumentRepository = sourceDocumentRepository;
         this.resultRepository = resultRepository;
+        this.passedResultRepository = passedResultRepository;
+        this.failedResultRepository = failedResultRepository;
         this.messagingTemplate = messagingTemplate;
     }
 
@@ -152,6 +158,8 @@ public class LeakageTestingMachineService {
         if (batchId != null) {
             List<LeakageTestResult> results = resultRepository.findByBatchIdOrderByIdAsc(batchId);
             resultRepository.deleteAll(results);
+            passedResultRepository.deleteAll(passedResultRepository.findByBatchIdOrderByIdAsc(batchId));
+            failedResultRepository.deleteAll(failedResultRepository.findByBatchIdOrderByIdAsc(batchId));
             log.info("Reset leakage test results for batch {}", batchId);
         }
 
@@ -216,29 +224,26 @@ public class LeakageTestingMachineService {
             EmbossingJob jobToTest = nextJobOpt.get();
             currentProcessingJobId = jobToTest.getId();
 
-            // Evaluate test pressure reading: prioritize explicit database job value, or
-            // generate within DBL range (75.0 - 80.0 kPa)
+            // Evaluate test pressure reading within DBL range (75.0 - 80.0 kPa)
             double simulatedPressure;
-            if (jobToTest.getTestValue() != null && jobToTest.getTestValue() > 0) {
-                simulatedPressure = jobToTest.getTestValue();
+            boolean pass = ThreadLocalRandom.current().nextDouble() > 0.15;
+            double minVac = Math.min(thresholds.warningThreshold != null ? thresholds.warningThreshold : 75.0, thresholds.alarmThreshold != null ? thresholds.alarmThreshold : 80.0);
+            double maxVac = Math.max(thresholds.warningThreshold != null ? thresholds.warningThreshold : 75.0, thresholds.alarmThreshold != null ? thresholds.alarmThreshold : 80.0);
+            if (pass) {
+                simulatedPressure = Math.round(
+                        (minVac + ThreadLocalRandom.current().nextDouble() * (maxVac - minVac)) * 10.0) / 10.0;
             } else {
-                boolean pass = ThreadLocalRandom.current().nextDouble() > 0.15;
-                double minVac = Math.min(thresholds.warningThreshold != null ? thresholds.warningThreshold : 75.0, thresholds.alarmThreshold != null ? thresholds.alarmThreshold : 80.0);
-                double maxVac = Math.max(thresholds.warningThreshold != null ? thresholds.warningThreshold : 75.0, thresholds.alarmThreshold != null ? thresholds.alarmThreshold : 80.0);
-                if (pass) {
-                    simulatedPressure = Math.round(
-                            (minVac + ThreadLocalRandom.current().nextDouble() * (maxVac - minVac)) * 10.0) / 10.0;
-                } else {
-                    simulatedPressure = Math
-                            .round((maxVac + 0.5 + ThreadLocalRandom.current().nextDouble() * 4.5) * 10.0) / 10.0;
-                }
+                simulatedPressure = Math
+                        .round((maxVac + 0.5 + ThreadLocalRandom.current().nextDouble() * 4.5) * 10.0) / 10.0;
             }
 
             livePressure = simulatedPressure;
-            double minVac = Math.min(thresholds.warningThreshold != null ? thresholds.warningThreshold : 75.0, thresholds.alarmThreshold != null ? thresholds.alarmThreshold : 80.0);
-            double maxVac = Math.max(thresholds.warningThreshold != null ? thresholds.warningThreshold : 75.0, thresholds.alarmThreshold != null ? thresholds.alarmThreshold : 80.0);
             boolean isPass = simulatedPressure >= minVac && simulatedPressure <= maxVac;
             String status = isPass ? "PASSED" : "FAILED";
+
+            String direction = simulatedPressure < minVac ? "down" : (simulatedPressure > maxVac ? "up" : "down");
+            String attempt = "1/2";
+            String action = isPass ? "Passed" : "Pending";
 
             // Save result to PostgreSQL table
             LeakageTestResult result = LeakageTestResult.builder()
@@ -251,10 +256,50 @@ public class LeakageTestingMachineService {
                     .alarmThreshold(thresholds.alarmThreshold)
                     .status(status)
                     .cycleTimeSeconds(12.8)
+                    .attempt(attempt)
+                    .action(action)
+                    .direction(direction)
                     .testedAt(LocalDateTime.now())
                     .build();
 
             resultRepository.save(result);
+
+            if (isPass) {
+                com.arc.leakagetesting.entity.PassedLeakageTestResult pResult = com.arc.leakagetesting.entity.PassedLeakageTestResult.builder()
+                        .batchId(batchId)
+                        .partNumber(jobToTest.getPartNumber())
+                        .serialNumber(jobToTest.getSerialNumber())
+                        .pressureValue(simulatedPressure)
+                        .unit(thresholds.unit)
+                        .warningThreshold(thresholds.warningThreshold)
+                        .alarmThreshold(thresholds.alarmThreshold)
+                        .status("PASSED")
+                        .cycleTimeSeconds(12.8)
+                        .attempt(attempt)
+                        .action(action)
+                        .direction(direction)
+                        .testedAt(LocalDateTime.now())
+                        .build();
+                passedResultRepository.save(pResult);
+            } else {
+                com.arc.leakagetesting.entity.FailedLeakageTestResult fResult = com.arc.leakagetesting.entity.FailedLeakageTestResult.builder()
+                        .batchId(batchId)
+                        .partNumber(jobToTest.getPartNumber())
+                        .serialNumber(jobToTest.getSerialNumber())
+                        .pressureValue(simulatedPressure)
+                        .unit(thresholds.unit)
+                        .warningThreshold(thresholds.warningThreshold)
+                        .alarmThreshold(thresholds.alarmThreshold)
+                        .status("FAILED")
+                        .cycleTimeSeconds(12.8)
+                        .attempt(attempt)
+                        .action(action)
+                        .direction(direction)
+                        .testedAt(LocalDateTime.now())
+                        .build();
+                failedResultRepository.save(fResult);
+            }
+
             log.info("Leakage tested part {} / {}: {} kPa [{}]", jobToTest.getPartNumber(), jobToTest.getSerialNumber(),
                     simulatedPressure, status);
 
@@ -281,43 +326,54 @@ public class LeakageTestingMachineService {
     // -------------------------------------------------------------------------
     // Helper Methods & Resolvers
     // -------------------------------------------------------------------------
-    private String resolveActiveBatchId() {
-        if (activeBatchId != null) {
-            return activeBatchId;
-        }
-
-        // 1. Check completed embossing jobs starting from most recent (ID desc)
+    public String resolveActiveBatchId() {
+        // 1. Get all completed embossing jobs ordered by most recent job ID desc
         List<EmbossingJob> completedJobsDesc = embossingJobRepository
                 .findByEmbossingStatusOrderByIdDesc(EmbossingStatus.COMPLETED);
-        for (EmbossingJob job : completedJobsDesc) {
-            String bId = job.getBatchId();
+
+        List<String> distinctBatches = completedJobsDesc.stream()
+                .map(EmbossingJob::getBatchId)
+                .filter(b -> b != null && !b.isBlank())
+                .distinct()
+                .collect(Collectors.toList());
+
+        // Find the first (most recent) batch that has untested embossed items
+        for (String bId : distinctBatches) {
             long totalBatchEmbossed = embossingJobRepository
                     .findByBatchIdAndEmbossingStatusOrderByIdAsc(bId, EmbossingStatus.COMPLETED).size();
             long totalBatchTested = resultRepository.countByBatchId(bId);
             if (totalBatchTested < totalBatchEmbossed) {
+                activeBatchId = bId;
                 return bId;
             }
         }
 
-        // 2. Latest batch from completed embossing jobs
-        if (!completedJobsDesc.isEmpty()) {
-            return completedJobsDesc.get(0).getBatchId();
+        // 2. If all embossed batches are fully tested, return the LATEST embossed batch ID
+        if (!distinctBatches.isEmpty()) {
+            activeBatchId = distinctBatches.get(0);
+            return distinctBatches.get(0);
         }
 
-        // 3. Fallback to latest production batch
+        // 3. Fallback to latest production batch created in Data Preparation
         List<ProductionBatch> batches = productionBatchRepository.findAllByOrderByCreatedAtDesc();
         if (!batches.isEmpty()) {
+            activeBatchId = batches.get(0).getBatchId();
             return batches.get(0).getBatchId();
         }
 
+        activeBatchId = null;
         return null;
     }
 
     private String findNextBatchWithEmbossedItems() {
         List<EmbossingJob> completedJobsDesc = embossingJobRepository
                 .findByEmbossingStatusOrderByIdDesc(EmbossingStatus.COMPLETED);
-        for (EmbossingJob job : completedJobsDesc) {
-            String batchId = job.getBatchId();
+        List<String> distinctBatches = completedJobsDesc.stream()
+                .map(EmbossingJob::getBatchId)
+                .filter(b -> b != null && !b.isBlank())
+                .distinct()
+                .collect(Collectors.toList());
+        for (String batchId : distinctBatches) {
             long embossedCount = embossingJobRepository
                     .findByBatchIdAndEmbossingStatusOrderByIdAsc(batchId, EmbossingStatus.COMPLETED).size();
             long testedCount = resultRepository.countByBatchId(batchId);
