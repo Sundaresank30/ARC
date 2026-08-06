@@ -185,7 +185,7 @@ export const LeakageTestingView: React.FC = () => {
                 Requires quality action
               </span>
               <span className="text-red-400 bg-[#ef4444]/15 px-3 py-1 rounded-md border border-[#ef4444]/20">
-                Threshold Range: 0.50 – 1.00
+                Threshold Range: 75.0 – 80.0 kPa
               </span>
             </div>
           </div>

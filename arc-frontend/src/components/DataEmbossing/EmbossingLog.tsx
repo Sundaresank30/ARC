@@ -40,7 +40,7 @@ function JobTable({
   if (jobs.length === 0) {
     return (
       <tr>
-        <td colSpan={4} className="px-4 py-6 text-center text-sm text-gray-400 font-medium">
+        <td colSpan={5} className="px-4 py-6 text-center text-sm text-gray-400 font-medium">
           {emptyMessage}
         </td>
       </tr>
@@ -54,6 +54,7 @@ function JobTable({
           key={job.id}
           className="bg-white hover:bg-gray-50/50 transition-colors border-b border-gray-100 last:border-b-0"
         >
+          <td className="px-4 py-4 font-semibold text-gray-800">{job.batchId || '-'}</td>
           <td className="px-4 py-4 font-semibold text-gray-600">{job.partNumber}</td>
           <td className="px-4 py-4 text-gray-600 font-medium">{job.serialNumber}</td>
           <td className="px-4 py-4">
@@ -102,6 +103,7 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
                 <tr className="bg-white text-gray-400 font-semibold border-b border-gray-100">
+                  <th className="px-4 py-3.5 font-semibold text-gray-500">Batch ID</th>
                   <th className="px-4 py-3.5 font-semibold text-gray-500">Part no.</th>
                   <th className="px-4 py-3.5 font-semibold text-gray-500">Serial no.</th>
                   <th className="px-4 py-3.5 font-semibold text-gray-500">Status</th>
@@ -111,7 +113,7 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center">
+                    <td colSpan={5} className="px-4 py-8 text-center">
                       <Loader2 className="w-6 h-6 animate-spin text-gray-400 mx-auto" />
                     </td>
                   </tr>
@@ -136,6 +138,7 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
                 <tr className="bg-white text-gray-400 font-semibold border-b border-gray-100">
+                  <th className="px-4 py-3.5 font-semibold text-gray-500">Batch ID</th>
                   <th className="px-4 py-3.5 font-semibold text-gray-500">Part no.</th>
                   <th className="px-4 py-3.5 font-semibold text-gray-500">Serial no.</th>
                   <th className="px-4 py-3.5 font-semibold text-gray-500">Status</th>
@@ -145,13 +148,13 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center">
+                    <td colSpan={5} className="px-4 py-8 text-center">
                       <Loader2 className="w-6 h-6 animate-spin text-gray-400 mx-auto" />
                     </td>
                   </tr>
                 ) : completedJobs.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-6 text-center text-sm text-gray-400 font-medium">
+                    <td colSpan={5} className="px-4 py-6 text-center text-sm text-gray-400 font-medium">
                       No completed jobs yet
                     </td>
                   </tr>
@@ -161,6 +164,7 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
                       key={job.id}
                       className="bg-white hover:bg-gray-50/50 transition-colors border-b border-gray-100 last:border-b-0"
                     >
+                      <td className="px-4 py-4 font-semibold text-gray-800">{job.batchId || '-'}</td>
                       <td className="px-4 py-4 font-semibold text-gray-600">{job.partNumber}</td>
                       <td className="px-4 py-4 text-gray-600 font-medium">{job.serialNumber}</td>
                       <td className="px-4 py-4">

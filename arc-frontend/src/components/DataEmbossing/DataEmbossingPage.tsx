@@ -18,23 +18,25 @@ export const DataEmbossingPage: React.FC = () => {
 
   const activeBatch = dashboard?.activeBatch;
 
-  const pendingJobs =
-    dashboard?.jobs.filter((job) => job.embossingStatus === 'PENDING') ?? [];
+  const pendingJobs = React.useMemo(() => {
+    if (!activeBatch) return [];
+    return dashboard?.jobs.filter((job) => job.embossingStatus === 'PENDING' && job.batchId === activeBatch) ?? [];
+  }, [dashboard?.jobs, activeBatch]);
 
-  const activeJobs =
-    dashboard?.jobs.filter((job) =>
-      ['IN_MACHINE', 'PRINTING'].includes(job.embossingStatus)
+  const activeJobs = React.useMemo(() => {
+    if (!activeBatch) return [];
+    return dashboard?.jobs.filter((job) =>
+      ['IN_MACHINE', 'PRINTING'].includes(job.embossingStatus) && job.batchId === activeBatch
     ) ?? [];
+  }, [dashboard?.jobs, activeBatch]);
 
   const currentBatchCompletedJobs = React.useMemo(() => {
-    if (!activeBatch) {
-      return completedJobs;
+    if (!activeBatch) return [];
+    const filtered = completedJobs.filter((job) => job.batchId === activeBatch);
+    if (filtered.length > 0) {
+      return filtered;
     }
-    const filteredFromCompletedApi = completedJobs.filter((job) => job.batchId === activeBatch);
-    if (filteredFromCompletedApi.length > 0) {
-      return filteredFromCompletedApi;
-    }
-    return dashboard?.jobs.filter((job) => job.embossingStatus === 'COMPLETED' && (job.batchId === activeBatch || !job.batchId)) ?? [];
+    return dashboard?.jobs.filter((job) => job.embossingStatus === 'COMPLETED' && job.batchId === activeBatch) ?? [];
   }, [completedJobs, dashboard?.jobs, activeBatch]);
 
   const getFormattedDate = () => {
@@ -72,7 +74,7 @@ export const DataEmbossingPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <ActiveBatchCard
-            activeBatch={dashboard?.activeBatch ?? 'Batch_1'}
+            activeBatch={dashboard?.activeBatch || 'No Active Batch'}
             progress={dashboard?.batchProgress?.[0]}
             isLoading={isLoading}
           />
