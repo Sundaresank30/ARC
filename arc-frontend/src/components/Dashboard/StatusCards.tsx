@@ -46,7 +46,7 @@ export const StatusCards: React.FC<StatusCardProps> = ({
         return (
           <div
             key={idx}
-            className="bg-[#0D0E19] border border-[#1c182a] rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-150"
+            className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1c182a] rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-150"
           >
             {/* Top row: Title (left) & Icon (right) */}
             <div className="flex items-center justify-between mb-4">
