@@ -270,7 +270,7 @@ export const LeakageMachinePage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Details & Controls Bar */}
-      <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 bg-[#0d0b14] border border-[#1b172a] p-6 rounded-3xl">
+      <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 bg-[#0D0E19] border border-[#1b172a] p-6 rounded-3xl">
         <div className="space-y-2">
           <div className="flex items-center space-x-3">
             <span className="text-xs font-bold uppercase tracking-wider text-[#8b5cf6] bg-[#19122a] border border-[#3c1e6d] px-3 py-1 rounded-full">
@@ -295,11 +295,10 @@ export const LeakageMachinePage: React.FC = () => {
             <button
               onClick={() => setIsRunning(true)}
               disabled={isRunning || totalEmbossed === testedCount}
-              className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg font-bold text-xs transition-all duration-150 ${
-                isRunning || totalEmbossed === testedCount
-                  ? 'text-gray-600 cursor-not-allowed'
-                  : 'bg-[#7c3aed] text-white hover:bg-[#6d28d9]'
-              }`}
+              className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg font-bold text-xs transition-all duration-150 ${isRunning || totalEmbossed === testedCount
+                ? 'text-gray-600 cursor-not-allowed'
+                : 'bg-[#7c3aed] text-white hover:bg-[#6d28d9]'
+                }`}
             >
               <Play className="w-3.5 h-3.5" />
               <span>Start</span>
@@ -307,11 +306,10 @@ export const LeakageMachinePage: React.FC = () => {
             <button
               onClick={() => setIsRunning(false)}
               disabled={!isRunning}
-              className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg font-bold text-xs transition-all duration-150 ${
-                !isRunning
-                  ? 'text-gray-600 cursor-not-allowed'
-                  : 'bg-amber-600/25 text-amber-450 border border-amber-500/25 hover:bg-amber-600/40'
-              }`}
+              className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg font-bold text-xs transition-all duration-150 ${!isRunning
+                ? 'text-gray-600 cursor-not-allowed'
+                : 'bg-amber-600/25 text-amber-450 border border-amber-500/25 hover:bg-amber-600/40'
+                }`}
             >
               <Pause className="w-3.5 h-3.5" />
               <span>Pause</span>
@@ -345,26 +343,26 @@ export const LeakageMachinePage: React.FC = () => {
       {/* KPI Counters Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1 */}
-        <div className="bg-[#0d0b14] border border-[#1b172a] rounded-2xl p-5 shadow-sm">
+        <div className="bg-[#0D0E19] border border-[#1b172a] rounded-2xl p-5 shadow-sm">
           <span className="text-xs font-bold text-[#8a8596]">Total Embossed</span>
           <div className="text-3xl font-extrabold text-white mt-1">{totalEmbossed}</div>
           <div className="text-[10px] text-gray-500 mt-0.5">Ready for testing</div>
         </div>
         {/* KPI 2 */}
-        <div className="bg-[#0d0b14] border border-[#1b172a] rounded-2xl p-5 shadow-sm">
+        <div className="bg-[#0D0E19] border border-[#1b172a] rounded-2xl p-5 shadow-sm">
           <span className="text-xs font-bold text-[#8a8596]">Total Tested</span>
           <div className="text-3xl font-extrabold text-white mt-1">{testedCount}</div>
           <div className="text-[10px] text-gray-500 mt-0.5">Tested items</div>
         </div>
         {/* KPI 3 */}
-        <div className="bg-[#0d0b14] border border-emerald-950/40 rounded-2xl p-5 shadow-sm relative overflow-hidden">
+        <div className="bg-[#0D0E19] border border-emerald-950/40 rounded-2xl p-5 shadow-sm relative overflow-hidden">
           <span className="text-xs font-bold text-emerald-500">Passed Parts</span>
           <div className="text-3xl font-extrabold text-emerald-400 mt-1">{passedCount}</div>
           <div className="text-[10px] text-emerald-600 mt-0.5">Leakage ≤ {threshold}</div>
           <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
         </div>
         {/* KPI 4 */}
-        <div className="bg-[#0d0b14] border border-red-950/40 rounded-2xl p-5 shadow-sm relative overflow-hidden">
+        <div className="bg-[#0D0E19] border border-red-950/40 rounded-2xl p-5 shadow-sm relative overflow-hidden">
           <span className="text-xs font-bold text-red-500">Failed Parts</span>
           <div className="text-3xl font-extrabold text-red-400 mt-1">{failedCount}</div>
           <div className="text-[10px] text-red-650 mt-0.5">Exceeds {threshold} sccm</div>
@@ -377,7 +375,7 @@ export const LeakageMachinePage: React.FC = () => {
       {/* Live Testing Monitor Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Visual Inspection Panel */}
-        <div className="lg:col-span-1 bg-[#0d0b14] border border-[#1b172a] rounded-3xl p-6 flex flex-col justify-between min-h-[350px]">
+        <div className="lg:col-span-1 bg-[#0D0E19] border border-[#1b172a] rounded-3xl p-6 flex flex-col justify-between min-h-[350px]">
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-bold uppercase tracking-wider text-white">
@@ -387,11 +385,10 @@ export const LeakageMachinePage: React.FC = () => {
             </div>
 
             {/* Chamber Box Graphic */}
-            <div className={`relative border-2 rounded-2xl p-5 text-center flex flex-col items-center justify-center transition-all duration-300 min-h-[180px] bg-[#07050a] ${
-              isRunning
-                ? 'border-[#7c3aed] shadow-[0_0_20px_rgba(124,58,237,0.15)] animate-pulse'
-                : 'border-[#221e33]'
-            }`}>
+            <div className={`relative border-2 rounded-2xl p-5 text-center flex flex-col items-center justify-center transition-all duration-300 min-h-[180px] bg-[#07050a] ${isRunning
+              ? 'border-[#7c3aed] shadow-[0_0_20px_rgba(124,58,237,0.15)] animate-pulse'
+              : 'border-[#221e33]'
+              }`}>
               {currentJob ? (
                 <div className="space-y-3 w-full">
                   <div className="space-y-1">
@@ -410,9 +407,8 @@ export const LeakageMachinePage: React.FC = () => {
                     </div>
                     <div className="w-full bg-[#13111c] h-3 rounded-full overflow-hidden border border-[#221e33] relative">
                       <div
-                        className={`h-full transition-all duration-200 ${
-                          currentTestValue && currentTestValue > threshold ? 'bg-red-500' : 'bg-emerald-500'
-                        }`}
+                        className={`h-full transition-all duration-200 ${currentTestValue && currentTestValue > threshold ? 'bg-red-500' : 'bg-emerald-500'
+                          }`}
                         style={{ width: `${Math.min(100, (currentTestValue || 0) / 1.2 * 100)}%` }}
                       />
                       {/* Threshold marker */}
@@ -452,8 +448,8 @@ export const LeakageMachinePage: React.FC = () => {
                     {totalEmbossed === testedCount && testedCount > 0
                       ? 'Testing Complete'
                       : isRunning
-                      ? 'Waiting for Next Item...'
-                      : 'Chamber Offline'}
+                        ? 'Waiting for Next Item...'
+                        : 'Chamber Offline'}
                   </div>
                   <p className="text-[10px] text-gray-500 max-w-[180px] mx-auto">
                     {totalEmbossed === testedCount && testedCount > 0
@@ -471,7 +467,7 @@ export const LeakageMachinePage: React.FC = () => {
         </div>
 
         {/* Graphical Representation Panel */}
-        <div className="lg:col-span-2 bg-[#0d0b14] border border-[#1b172a] rounded-3xl p-6 min-h-[350px]">
+        <div className="lg:col-span-2 bg-[#0D0E19] border border-[#1b172a] rounded-3xl p-6 min-h-[350px]">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
               <TrendingUp className="w-4 h-4 text-[#8b5cf6]" />
@@ -511,7 +507,7 @@ export const LeakageMachinePage: React.FC = () => {
                     tickLine={false}
                   />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0d0b14', border: '1px solid #1b172a', borderRadius: '10px' }}
+                    contentStyle={{ backgroundColor: '#0D0E19', border: '1px solid #1b172a', borderRadius: '10px' }}
                     labelStyle={{ color: '#fff', fontFamily: 'monospace', fontSize: 11 }}
                     itemStyle={{ color: '#8b5cf6', fontSize: 12 }}
                     formatter={(value: any) => [`${value} sccm`, 'Leakage']}
@@ -559,7 +555,7 @@ export const LeakageMachinePage: React.FC = () => {
       </div>
 
       {/* Production Inspection Log Table */}
-      <div className="bg-[#0d0b14] border border-[#1b172a] rounded-3xl p-6">
+      <div className="bg-[#0D0E19] border border-[#1b172a] rounded-3xl p-6">
         <h2 className="text-base font-bold text-white mb-4 select-none">
           Leakage Inspection Results (Batch Status)
         </h2>
@@ -618,19 +614,17 @@ export const LeakageMachinePage: React.FC = () => {
                   return (
                     <tr
                       key={job.id}
-                      className={`hover:bg-[#151221]/30 transition-colors ${
-                        currentIndex === idx ? 'bg-[#1e1430]/40' : ''
-                      }`}
+                      className={`hover:bg-[#151221]/30 transition-colors ${currentIndex === idx ? 'bg-[#1e1430]/40' : ''
+                        }`}
                     >
                       <td className="py-3 px-4 text-gray-500">{idx + 1}</td>
                       <td className="py-3 px-4 text-white font-mono">{job.partNumber}</td>
                       <td className="py-3 px-4 text-white font-mono">{job.serialNumber}</td>
                       <td className="py-3 px-4">
-                        <span className={`text-[10px] px-2 py-0.5 rounded ${
-                          isEmbossed
-                            ? 'bg-blue-950/40 text-blue-400 border border-blue-900/40'
-                            : 'bg-[#181524] text-gray-500 border border-[#2c283d]'
-                        }`}>
+                        <span className={`text-[10px] px-2 py-0.5 rounded ${isEmbossed
+                          ? 'bg-blue-950/40 text-blue-400 border border-blue-900/40'
+                          : 'bg-[#181524] text-gray-500 border border-[#2c283d]'
+                          }`}>
                           {job.embossingStatus}
                         </span>
                       </td>

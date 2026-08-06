@@ -14,11 +14,11 @@ export const ActiveBatchCard: React.FC<ActiveBatchCardProps> = ({
   isLoading = false,
 }) => {
   return (
-    <div className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm flex flex-col min-h-[135px]">
+    <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-6 shadow-sm flex flex-col justify-between h-full">
       <div className="flex items-center justify-between mb-5">
-        <h3 className="font-bold text-sm text-gray-800 uppercase tracking-wider">
+        <h2 className="text-base font-semibold text-white">
           Active Batch
-        </h3>
+        </h2>
         {progress && (
           <span className="text-sm font-semibold text-[#00B074]">
             {progress.progressPercent}% Complete
@@ -27,51 +27,28 @@ export const ActiveBatchCard: React.FC<ActiveBatchCardProps> = ({
       </div>
 
       <div className="flex items-center space-x-4">
-        <div className="flex items-center space-x-2">
-          <div className="w-9 h-9 rounded-lg bg-[#EBFDF5] flex items-center justify-center text-[#00B074]">
-            <FileText className="w-5 h-5 stroke-[2]" />
-          </div>
+        <div className="flex items-center space-x-2 text-emerald-400 bg-[#0a231b] px-3 py-1.5 rounded-lg border border-emerald-950/40">
+          <FileText className="w-4 h-4 text-emerald-400" />
           {isLoading ? (
-            <Loader2 className="w-5 h-5 animate-spin text-[#00B074]" />
+            <Loader2 className="w-4 h-4 animate-spin text-emerald-400" />
           ) : (
-            <span className="text-base font-bold text-[#00B074]">{activeBatch}</span>
+            <span className="text-sm font-semibold">{activeBatch}</span>
           )}
         </div>
 
         <div className="flex-1 flex items-center max-w-[180px]">
-          <div className="w-1.5 h-1.5 rounded-full bg-gray-300 shrink-0" />
-          <div className="flex-1 h-[1.5px] bg-gray-300" />
-          <div className="w-2 h-2 border-t-[1.5px] border-r-[1.5px] border-gray-300 transform rotate-45 -ml-1 shrink-0" />
+          <div className="w-1.5 h-1.5 rounded-full bg-[#1e1b29] shrink-0" />
+          <div className="flex-1 h-[1.5px] bg-[#1e1b29]" />
+          <div className="w-2 h-2 border-t-[1.5px] border-r-[1.5px] border-[#1e1b29] transform rotate-45 -ml-1 shrink-0" />
         </div>
 
         <div className="flex items-center space-x-2">
-          <div className="w-9 h-9 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400">
+          <div className="w-9 h-9 rounded-lg bg-[#13111c] border border-[#221e33] flex items-center justify-center text-gray-500">
             <Database className="w-5 h-5 stroke-[2]" />
           </div>
-          <span className="text-base font-bold text-gray-400">Data Embossing</span>
+          <span className="text-base font-bold text-gray-500">Data Embossing</span>
         </div>
       </div>
-
-      {progress && (
-        <div className="mt-5 rounded-xl border border-gray-100 bg-gray-50 p-4 space-y-2">
-          <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>Completed</span>
-            <span className="font-semibold text-gray-900">
-              {progress.completedRecords}/{progress.totalRecords}
-            </span>
-          </div>
-          <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
-            <div
-              className="h-full rounded-full bg-[#00B074] transition-all"
-              style={{ width: `${progress.progressPercent}%` }}
-            />
-          </div>
-          <div className="flex items-center space-x-2 text-xs font-semibold text-gray-500">
-            {progress.completed ? <CheckCircle2 className="w-4 h-4 text-[#00B074]" /> : null}
-            <span>{progress.completed ? 'Completed' : `${progress.pendingRecords} pending`}</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

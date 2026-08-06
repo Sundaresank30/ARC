@@ -139,7 +139,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
   };
 
   return (
-    <div className="bg-[#0d0b14] rounded-3xl p-6 sm:p-8 border border-[#1b172a] shadow-sm relative">
+    <div className="bg-[#0D0E19] rounded-3xl p-6 sm:p-8 border border-[#1b172a] shadow-sm relative">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="absolute top-4 right-4 bg-[#1a162b] text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-lg border border-[#3b2d6a] z-50 animate-fade-in">
@@ -176,7 +176,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
-                <tr className="bg-[#0d0b14] text-[#8a8596] font-semibold border-b border-[#2d1c0c]">
+                <tr className="bg-[#0D0E19] text-[#8a8596] font-semibold border-b border-[#2d1c0c]">
                   <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Part no.</th>
                   <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Serial no.</th>
                   <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Status</th>
@@ -185,7 +185,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
                   <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1c182a] bg-[#0d0b14]">
+              <tbody className="divide-y divide-[#1c182a] bg-[#0D0E19]">
                 {carryForwardData.map((row) => (
                   <tr key={row.id} className="hover:bg-[#120e21]/50 transition-colors">
                     <td className="px-4 py-4 font-semibold text-white">{row.partNo}</td>
@@ -236,7 +236,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
-                <tr className="bg-[#0d0b14] text-[#8a8596] font-semibold border-b border-[#3a1515]">
+                <tr className="bg-[#0D0E19] text-[#8a8596] font-semibold border-b border-[#3a1515]">
                   <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Part no.</th>
                   <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Serial no.</th>
                   <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Status</th>
@@ -246,7 +246,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
                   <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1c182a] bg-[#0d0b14]">
+              <tbody className="divide-y divide-[#1c182a] bg-[#0D0E19]">
                 {leakageFailuresData.map((row) => (
                   <tr key={row.id} className="hover:bg-[#120e21]/50 transition-colors">
                     <td className="px-4 py-4 font-semibold text-white">{row.partNo}</td>

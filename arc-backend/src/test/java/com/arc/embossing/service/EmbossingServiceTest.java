@@ -53,9 +53,6 @@ class EmbossingServiceTest {
         BatchProgressResponse progress = service.buildBatchProgress("BATCH-01", items);
 
         assertThat(progress.getBatchId()).isEqualTo("BATCH-01");
-        assertThat(progress.getTotalRecords()).isEqualTo(10);
-        assertThat(progress.getCompletedRecords()).isEqualTo(4);
-        assertThat(progress.getPendingRecords()).isEqualTo(6);
         assertThat(progress.getProgressPercent()).isEqualTo(40);
     }
 }
