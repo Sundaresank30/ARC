@@ -78,8 +78,14 @@ public class EmbossingJobService {
         List<ProductionBatchItem> batchItems = productionItemRepository
                 .findByProductionBatchBatchIdOrderByItemIndexAsc(savedJob.getBatchId());
         BatchProgressResponse batchProgress = embossingService.buildBatchProgress(savedJob.getBatchId(), batchItems);
-        long total = batchProgress.getTotalRecords();
-        long completed = batchProgress.getCompletedRecords();
+        long completedFromJobs = jobRepository.countByBatchIdAndEmbossingStatus(savedJob.getBatchId(), EmbossingStatus.COMPLETED);
+        long completedFromItems = batchItems != null ? batchItems.stream()
+                .filter(item -> "COMPLETED".equalsIgnoreCase(item.getStatus()))
+                .count() : 0;
+        long totalFromItems = batchItems != null ? batchItems.size() : 0;
+        long totalFromJobs = jobRepository.countByBatchId(savedJob.getBatchId());
+        long total = Math.max(totalFromItems, totalFromJobs);
+        long completed = Math.max(completedFromJobs, completedFromItems);
 
         progressPublisher.publishAfterCommit(EmbossingProgressDTO.builder()
                 .jobId(savedJob.getId())
@@ -149,8 +155,14 @@ public class EmbossingJobService {
         List<ProductionBatchItem> batchItems = productionItemRepository
                 .findByProductionBatchBatchIdOrderByItemIndexAsc(savedJob.getBatchId());
         BatchProgressResponse batchProgress = embossingService.buildBatchProgress(savedJob.getBatchId(), batchItems);
-        long total = batchProgress.getTotalRecords();
-        long completed = batchProgress.getCompletedRecords();
+        long completedFromJobs = jobRepository.countByBatchIdAndEmbossingStatus(savedJob.getBatchId(), EmbossingStatus.COMPLETED);
+        long completedFromItems = batchItems != null ? batchItems.stream()
+                .filter(item -> "COMPLETED".equalsIgnoreCase(item.getStatus()))
+                .count() : 0;
+        long totalFromItems = batchItems != null ? batchItems.size() : 0;
+        long totalFromJobs = jobRepository.countByBatchId(savedJob.getBatchId());
+        long total = Math.max(totalFromItems, totalFromJobs);
+        long completed = Math.max(completedFromJobs, completedFromItems);
 
         progressPublisher.publishAfterCommit(EmbossingProgressDTO.builder()
                 .jobId(savedJob.getId())

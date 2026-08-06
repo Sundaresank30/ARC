@@ -310,7 +310,7 @@ export const DataPreparationPage: React.FC = () => {
             onDragLeave={handleDrag}
             onDrop={handleDrop}
             onClick={triggerFileInput}
-            className={`border-2 border-dashed rounded-3xl p-10 bg-[#0d0b14] flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 select-none min-h-[220px] ${dragActive
+            className={`border-2 border-dashed rounded-3xl p-10 bg-[#0D0E19] flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 select-none min-h-[220px] ${dragActive
               ? 'border-[#7c3aed] bg-[#7c3aed]/5 scale-[0.99]'
               : 'border-[#221c37] hover:border-[#7c3aed] hover:bg-[#120e21]/40'
               }`}
@@ -346,7 +346,7 @@ export const DataPreparationPage: React.FC = () => {
           </div>
 
           {/* Create Batch Card */}
-          <div className="bg-[#0d0b14] rounded-3xl p-8 border border-[#1b172a] shadow-sm space-y-6">
+          <div className="bg-[#0D0E19] rounded-3xl p-8 border border-[#1b172a] shadow-sm space-y-6">
             <h2 className="text-xl font-bold text-white tracking-tight select-none">
               Create Production Batch
             </h2>
@@ -456,7 +456,7 @@ export const DataPreparationPage: React.FC = () => {
                   </div>
 
                   {/* Table */}
-                  <div className="border border-[#272352] bg-[#0d0b14] rounded-xl overflow-hidden shadow-sm">
+                  <div className="border border-[#272352] bg-[#0D0E19] rounded-xl overflow-hidden shadow-sm">
                     <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="bg-[#131128] border-b border-[#272352] text-[11px] font-bold text-[#8a8596] uppercase tracking-wider">
@@ -563,7 +563,7 @@ export const DataPreparationPage: React.FC = () => {
 
         {/* Right Column: Recent Uploads (Span 1) */}
         <div className="lg:col-span-1">
-          <div className="bg-[#0d0b14] rounded-3xl p-6 border border-[#1b172a] shadow-sm min-h-[500px]">
+          <div className="bg-[#0D0E19] rounded-3xl p-6 border border-[#1b172a] shadow-sm min-h-[500px]">
             <h2 className="text-lg font-bold text-white mb-6 select-none">
               Recent uploads
             </h2>

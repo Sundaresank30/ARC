@@ -14,9 +14,6 @@ import lombok.Setter;
 public class BatchProgressResponse {
 
     private String batchId;
-    private int totalRecords;
-    private long completedRecords;
-    private long pendingRecords;
     private int progressPercent;
     private boolean completed;
 }

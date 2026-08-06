@@ -81,11 +81,25 @@ public class EmbossingService {
         List<EmbossingJob> jobs = embossingJobRepository.findByBatchIdOrderByIdAsc(activeBatch);
         List<BatchProgressResponse> batchProgress = buildBatchProgressForActiveBatch(activeBatch);
 
-        long pendingCount = jobs.stream()
-                .filter(job -> job.getEmbossingStatus() == EmbossingStatus.PENDING
-                            || job.getEmbossingStatus() == EmbossingStatus.PRINTING
-                            || job.getEmbossingStatus() == EmbossingStatus.IN_MACHINE)
-                .count();
+        long pendingCount = 0;
+        if (batchProgress != null && !batchProgress.isEmpty()) {
+            List<ProductionBatchItem> batchItems = productionBatchItemRepository != null
+                    ? productionBatchItemRepository.findByProductionBatchBatchIdOrderByItemIndexAsc(activeBatch)
+                    : List.of();
+            long completedFromJobs = jobs.stream()
+                    .filter(j -> j.getEmbossingStatus() == EmbossingStatus.COMPLETED)
+                    .count();
+            long completedFromItems = batchItems != null ? batchItems.stream()
+                    .filter(item -> "COMPLETED".equalsIgnoreCase(item.getStatus()))
+                    .count() : 0;
+            int totalFromItems = batchItems != null ? batchItems.size() : 0;
+            int totalFromJobs = jobs.size();
+            int totalRecords = Math.max(totalFromItems, totalFromJobs);
+            long completedRecords = Math.max(completedFromJobs, completedFromItems);
+            pendingCount = Math.max(0, totalRecords - completedRecords);
+        } else {
+            pendingCount = jobs.stream().filter(job -> job.getEmbossingStatus() == EmbossingStatus.PENDING).count();
+        }
 
         return EmbossingDashboardResponse.builder()
                 .activeBatch(activeBatch)
@@ -178,9 +192,6 @@ public class EmbossingService {
 
         return BatchProgressResponse.builder()
                 .batchId(batchId)
-                .totalRecords(totalRecords)
-                .completedRecords(completedRecords)
-                .pendingRecords(pendingRecords)
                 .progressPercent(progressPercent)
                 .completed(completed)
                 .build();

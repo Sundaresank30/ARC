@@ -51,17 +51,17 @@ export const DataEmbossingPage: React.FC = () => {
     <div className="animate-fade-in space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold text-gray-900 tracking-tight leading-tight">
+          <h1 className="text-[28px] font-semibold text-white tracking-tight leading-tight">
             Data Embossing
           </h1>
-          <p className="mt-1 text-sm sm:text-base text-gray-500 font-medium">
+          <p className="mt-1 text-sm sm:text-base text-[#8a8596] font-medium">
             Monitor automated data embossing and production status
           </p>
         </div>
 
-        <div className="flex items-center space-x-2 bg-white border border-gray-150 px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto">
-          <Calendar className="w-4 h-4 text-gray-500" />
-          <span className="text-sm font-semibold text-gray-700">{getFormattedDate()}</span>
+        <div className="flex items-center space-x-2 bg-[#13111c] border border-[#221e33] px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto">
+          <Calendar className="w-4 h-4 text-gray-400" />
+          <span className="text-sm font-semibold text-gray-300">{getFormattedDate()}</span>
         </div>
       </div>
 
@@ -81,24 +81,26 @@ export const DataEmbossingPage: React.FC = () => {
         </div>
 
         <div className="lg:col-span-1">
-          <div className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm flex flex-col justify-between min-h-[135px] hover:shadow-md transition-shadow duration-150">
-            <div className="flex items-center space-x-2">
-              <AlertCircle className="w-5 h-5 text-[#D97706]" />
-              <span className="font-bold text-[15px] text-[#D97706]">Pending</span>
+          <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-6 shadow-sm flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-150">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-[15px] text-gray-300">Pending</span>
+              <div className="w-8 h-8 rounded-lg bg-[#20150b] border border-[#f59e0b]/20 flex items-center justify-center text-[#f59e0b]">
+                <AlertCircle className="w-4.5 h-4.5" />
+              </div>
             </div>
 
             <div className="my-1">
               {isLoading ? (
-                <Loader2 className="w-10 h-10 animate-spin text-[#D97706]" />
+                <Loader2 className="w-10 h-10 animate-spin text-[#f59e0b]" />
               ) : (
-                <span className="text-[44px] font-bold leading-none tracking-tight text-[#D97706]">
+                <span className="text-[44px] font-bold leading-none tracking-tight text-white">
                   {dashboard?.pendingCount ?? 0}
                 </span>
               )}
             </div>
 
             <div>
-              <span className="text-xs font-semibold text-[#D97706]/85">-from this batch</span>
+              <span className="text-xs font-semibold text-[#f59e0b]">-from this batch</span>
             </div>
           </div>
         </div>
