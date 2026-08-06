@@ -177,14 +177,17 @@ public class DataPreparationService {
     }
 
     private ProductionBatchItem updateItemFromCompletedJob(EmbossingJob job) {
-        return itemRepository
-                .findBySerialNumberAndPartNumber(job.getSerialNumber(), job.getPartNumber())
-                .filter(item -> !"COMPLETED".equalsIgnoreCase(item.getStatus()))
-                .map(item -> {
-                    item.setStatus("COMPLETED");
-                    return item;
-                })
-                .orElse(null);
+        List<ProductionBatchItem> items = itemRepository
+                .findBySerialNumberAndPartNumber(job.getSerialNumber(), job.getPartNumber());
+        if (items.isEmpty()) return null;
+
+        for (ProductionBatchItem item : items) {
+            if (!"COMPLETED".equalsIgnoreCase(item.getStatus())) {
+                item.setStatus("COMPLETED");
+                return item;
+            }
+        }
+        return null;
     }
 
     private ProductionBatchResponse mapToResponse(ProductionBatch batch, boolean includeItems) {

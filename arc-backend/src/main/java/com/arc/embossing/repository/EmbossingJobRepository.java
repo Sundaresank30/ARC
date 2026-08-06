@@ -21,6 +21,8 @@ public interface EmbossingJobRepository extends JpaRepository<EmbossingJob, Long
 
     List<EmbossingJob> findByEmbossingStatusOrderByIdAsc(EmbossingStatus embossingStatus);
 
+    List<EmbossingJob> findByEmbossingStatusOrderByIdDesc(EmbossingStatus embossingStatus);
+
     List<EmbossingJob> findByBatchIdAndEmbossingStatusOrderByIdAsc(String batchId, EmbossingStatus embossingStatus);
 
     List<EmbossingJob> findByBatchIdOrderByIdAsc(String batchId);
@@ -33,11 +35,11 @@ public interface EmbossingJobRepository extends JpaRepository<EmbossingJob, Long
 
     Optional<EmbossingJob> findFirstByEmbossingStatusOrderByIdDesc(EmbossingStatus embossingStatus);
 
-    Optional<EmbossingJob> findBySerialNumberAndPartNumber(String serialNumber, String partNumber);
+    List<EmbossingJob> findBySerialNumberAndPartNumber(String serialNumber, String partNumber);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT e FROM EmbossingJob e WHERE e.serialNumber = :serialNumber AND e.partNumber = :partNumber")
-    Optional<EmbossingJob> findBySerialNumberAndPartNumberForUpdate(
+    @Query("SELECT e FROM EmbossingJob e WHERE e.serialNumber = :serialNumber AND e.partNumber = :partNumber ORDER BY e.id DESC")
+    List<EmbossingJob> findBySerialNumberAndPartNumberForUpdate(
             @Param("serialNumber") String serialNumber,
             @Param("partNumber") String partNumber);
 
