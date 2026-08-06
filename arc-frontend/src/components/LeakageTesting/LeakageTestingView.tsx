@@ -114,7 +114,7 @@ export const LeakageTestingView: React.FC = () => {
       {/* Overview Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Active Batch Card */}
-        <div className="md:col-span-2 bg-[#0D0E19] border border-[#1b172a] rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+        <div className="md:col-span-2 bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-150">
           <h2 className="text-base font-semibold text-white mb-6">
             Active Batch
           </h2>
@@ -142,20 +142,22 @@ export const LeakageTestingView: React.FC = () => {
         </div>
 
         {/* Failed KPI Card */}
-        <div className="bg-[#271012] border border-[#ef4444]/20 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
-          <div className="flex items-center space-x-2 text-red-500 font-bold text-base">
-            <AlertCircle className="w-5 h-5 text-red-500" />
-            <span>Failed</span>
+        <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-150">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold text-[15px] text-gray-300">Failed</span>
+            <div className="w-8 h-8 rounded-lg bg-[#271012] border border-[#ef4444]/20 flex items-center justify-center text-red-500">
+              <AlertCircle className="w-4.5 h-4.5" />
+            </div>
           </div>
 
-          <div className="my-2">
-            <span className="text-4xl font-extrabold text-red-400 tracking-tight">
+          <div className="my-1">
+            <span className="text-[44px] font-bold leading-none tracking-tight text-red-400">
               {data.failedCount}
             </span>
           </div>
 
-          <div className="text-xs font-semibold text-red-600/80">
-            -from this batch
+          <div>
+            <span className="text-xs font-semibold text-red-500">-from this batch</span>
           </div>
         </div>
       </div>

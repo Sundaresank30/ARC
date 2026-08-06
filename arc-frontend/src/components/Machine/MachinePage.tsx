@@ -249,15 +249,12 @@ export const MachinePage: React.FC = () => {
   return (
     <div className="animate-fade-in space-y-6">
       {/* Header Bar */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-6 rounded-3xl border border-gray-150 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#5E40FF] text-white flex items-center justify-center shadow-lg shadow-indigo-500/30">
-              <Cpu className="w-6 h-6 stroke-[2.5]" />
-            </div>
+          <h1 className="text-[28px] font-semibold text-white tracking-tight leading-tight flex items-center space-x-3">
             <span>Machine Module</span>
           </h1>
-          <p className="mt-1 text-sm text-gray-500 font-medium">
+          <p className="mt-1 text-sm sm:text-base text-[#8a8596] font-medium">
             Industrial Marking Chamber Workpiece &amp; Sequential Embossing Controller
           </p>
         </div>
@@ -266,7 +263,7 @@ export const MachinePage: React.FC = () => {
           <button
             onClick={loadRecords}
             disabled={loading || isRunning}
-            className="p-2.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2.5 rounded-xl border border-[#221e33] bg-[#13111c] hover:bg-[#1a1726] text-gray-300 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             title="Refresh buffer from DB"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -278,15 +275,15 @@ export const MachinePage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
         {/* LEFT PANEL: Machine Module List (5 Columns) */}
-        <div className="lg:col-span-5 bg-white rounded-3xl border border-gray-150 shadow-md p-6 space-y-5">
-          <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+        <div className="lg:col-span-5 bg-[#0D0E19] rounded-3xl border border-[#1b172a] shadow-sm p-6 space-y-5">
+          <div className="flex items-center justify-between pb-4 border-b border-[#1b172a]">
             <div className="flex items-center space-x-2.5">
-              <Layers className="w-5 h-5 text-[#5E40FF]" />
-              <h2 className="text-base font-bold text-gray-900 uppercase tracking-wider">
+              <Layers className="w-5 h-5 text-[#8b5cf6]" />
+              <h2 className="text-base font-bold text-white uppercase tracking-wider">
                 Machine Module List
               </h2>
             </div>
-            <span className="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">
+            <span className="text-xs font-bold text-[#8b5cf6] bg-[#19122a] border border-[#3c1e6d]/30 px-3 py-1 rounded-full">
               {records.length} Records Loaded
             </span>
           </div>
@@ -304,37 +301,37 @@ export const MachinePage: React.FC = () => {
                   key={item.id}
                   className={`p-4 rounded-2xl border transition-all duration-200 flex items-center justify-between ${
                     isInProgress
-                      ? 'bg-indigo-50/80 border-[#5E40FF] shadow-md ring-2 ring-[#5E40FF]/20'
+                      ? 'bg-indigo-950/30 border-[#5E40FF]/80 shadow-md ring-2 ring-[#5E40FF]/20'
                       : isNextToMark
-                      ? 'bg-amber-50/40 border-amber-200 hover:border-amber-300 shadow-sm'
+                      ? 'bg-[#20150b]/40 border-amber-500/30 hover:border-amber-500/50 shadow-sm'
                       : isCompleted
-                      ? 'bg-emerald-50/30 border-emerald-100 opacity-90'
-                      : 'bg-gray-50 border-gray-200'
+                      ? 'bg-emerald-950/20 border-emerald-900/30 opacity-90'
+                      : 'bg-[#13111c] border-[#221e33]'
                   }`}
                 >
                   <div className="flex items-center space-x-3.5">
                     <div
                       className={`w-9 h-9 rounded-xl flex items-center justify-center font-mono text-xs font-black shadow-sm ${
                         isCompleted
-                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                          ? 'bg-emerald-950/40 text-emerald-450 border border-emerald-900/40'
                           : isInProgress
-                          ? 'bg-indigo-100 text-indigo-900 border border-indigo-300 animate-pulse'
+                          ? 'bg-indigo-950/40 text-indigo-400 border border-indigo-900/60 animate-pulse'
                           : isNextToMark
-                          ? 'bg-amber-100 text-amber-900 border border-amber-300 animate-pulse'
-                          : 'bg-gray-200 text-gray-700'
+                          ? 'bg-amber-950/40 text-amber-500 border border-amber-900/60 animate-pulse'
+                          : 'bg-[#13111c] text-gray-400 border border-[#221e33]'
                       }`}
                     >
                       #{item.id}
                     </div>
 
                     <div>
-                      <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                      <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">
                         Workpiece {item.id}
                       </div>
-                      <div className="text-sm font-bold text-gray-900 font-mono flex items-center space-x-2 mt-0.5">
-                        <span className="text-gray-900">{item.serialNumber}</span>
-                        <span className="text-gray-400 font-normal">&bull;</span>
-                        <span className="text-indigo-600">{item.partNumber}</span>
+                      <div className="text-sm font-bold text-white font-mono flex items-center space-x-2 mt-0.5">
+                        <span className="text-white">{item.serialNumber}</span>
+                        <span className="text-gray-500 font-normal">&bull;</span>
+                        <span className="text-[#8b5cf6]">{item.partNumber}</span>
                       </div>
                     </div>
                   </div>
@@ -342,18 +339,18 @@ export const MachinePage: React.FC = () => {
                   {/* Status Badge */}
                   <div>
                     {isInProgress ? (
-                      <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-300 uppercase tracking-wider shadow-xs animate-pulse">
-                        <Zap className="w-3.5 h-3.5 text-indigo-600" />
+                      <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-950/40 text-indigo-400 border border-[#5e40ff]/30 uppercase tracking-wider shadow-xs animate-pulse">
+                        <Zap className="w-3.5 h-3.5 text-indigo-400" />
                         <span>In Progress</span>
                       </span>
                     ) : isWaiting ? (
-                      <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300 uppercase tracking-wider shadow-xs">
-                        <Clock className="w-3.5 h-3.5 text-amber-600 animate-spin-slow" />
+                      <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#20150b] text-[#f59e0b] border border-[#f59e0b]/20 uppercase tracking-wider shadow-xs">
+                        <Clock className="w-3.5 h-3.5 text-[#f59e0b] animate-spin-slow" />
                         <span>Waiting</span>
                       </span>
                     ) : (
-                      <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 uppercase tracking-wider shadow-xs">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-950/40 text-emerald-450 border border-emerald-900/40 uppercase tracking-wider shadow-xs">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-450" />
                         <span>Completed</span>
                       </span>
                     )}
@@ -364,16 +361,16 @@ export const MachinePage: React.FC = () => {
           </div>
 
           {/* Queue summary footer */}
-          <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-medium">
+          <div className="pt-3 border-t border-[#1b172a] flex items-center justify-between text-xs text-gray-400 font-medium">
             <span>
               Completed:{' '}
-              <strong className="text-emerald-600">
+              <strong className="text-emerald-450">
                 {records.filter((r) => r.status === 'COMPLETED').length} / {records.length}
               </strong>
             </span>
             <span>
               Waiting:{' '}
-              <strong className="text-amber-600">
+              <strong className="text-[#f59e0b]">
                 {records.filter((r) => r.status === 'WAITING').length}
               </strong>
             </span>
@@ -384,17 +381,17 @@ export const MachinePage: React.FC = () => {
         <div className="lg:col-span-7 space-y-5">
 
           {/* Machine Chamber Main Container */}
-          <div className="bg-white rounded-3xl border border-gray-150 shadow-md p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+          <div className="bg-[#0D0E19] rounded-3xl border border-[#1b172a] shadow-sm p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#1b172a]">
               <div className="flex items-center space-x-2.5">
-                <Zap className="w-5 h-5 text-[#5E40FF]" />
-                <h2 className="text-base font-bold text-gray-900 uppercase tracking-wider">
+                <Zap className="w-5 h-5 text-[#8b5cf6]" />
+                <h2 className="text-base font-bold text-white uppercase tracking-wider">
                   Industrial Marking Chamber
                 </h2>
               </div>
 
               {isProcessing && (
-                <span className="flex items-center space-x-1.5 text-xs font-extrabold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 animate-pulse">
+                <span className="flex items-center space-x-1.5 text-xs font-extrabold text-[#f59e0b] bg-[#20150b] px-3 py-1 rounded-full border border-[#f59e0b]/20 animate-pulse">
                   <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
                   <span>EMBOSSING IN PROGRESS</span>
                 </span>
@@ -522,8 +519,8 @@ export const MachinePage: React.FC = () => {
                 disabled={isRunning || !nextWaitingItem}
                 className={`w-full sm:w-auto flex items-center justify-center space-x-2.5 px-8 py-3.5 rounded-2xl font-extrabold text-base shadow-lg transition-all duration-200 ${
                   isRunning || !nextWaitingItem
-                    ? 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed shadow-none'
-                    : 'bg-[#5E40FF] hover:bg-[#4d32e6] text-white shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-[1.02] active:scale-[0.98]'
+                    ? 'bg-[#13111c] text-gray-500 border border-[#221e33] cursor-not-allowed shadow-none'
+                    : 'bg-[#7c3aed] hover:bg-[#6d28d9] text-white shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-[1.02] active:scale-[0.98]'
                 }`}
               >
                 <Play className={`w-5 h-5 fill-current ${isProcessing ? 'animate-bounce' : ''}`} />
@@ -539,24 +536,24 @@ export const MachinePage: React.FC = () => {
               </button>
 
               {/* Status helper text */}
-              <div className="text-right text-xs font-semibold text-gray-500">
+              <div className="text-right text-xs font-semibold text-gray-400">
                 {noDataAvailable ? (
-                  <span className="text-amber-600 font-bold flex items-center justify-end space-x-1">
+                  <span className="text-[#f59e0b] font-bold flex items-center justify-end space-x-1">
                     <CheckCheck className="w-4 h-4" />
                     <span>No data available for printing.</span>
                   </span>
                 ) : isRunning ? (
-                  <span className="text-indigo-600 font-bold">
+                  <span className="text-[#8b5cf6] font-bold">
                     Processing queue continuously...
                   </span>
                 ) : activeItem || pausedItemFromBuffer ? (
-                  <span className="text-amber-600 font-bold">
+                  <span className="text-[#f59e0b] font-bold">
                     Paused at workpiece #{(activeItem || pausedItemFromBuffer)?.id}
                   </span>
                 ) : nextWaitingItem ? (
                   <span>
                     Next in queue:{' '}
-                    <strong className="text-gray-900 font-mono">{nextWaitingItem.serialNumber}</strong>{' '}
+                    <strong className="text-white font-mono">{nextWaitingItem.serialNumber}</strong>{' '}
                     ({nextWaitingItem.partNumber})
                   </span>
                 ) : (
@@ -568,12 +565,12 @@ export const MachinePage: React.FC = () => {
           </div>
 
           {/* Instruction Note */}
-          <div className="bg-indigo-50/50 border border-indigo-100 p-4 rounded-2xl flex items-start space-x-3">
-            <AlertCircle className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
-            <p className="text-xs text-indigo-900 leading-relaxed font-medium">
+          <div className="bg-indigo-950/20 border border-[#5e40ff]/10 p-4 rounded-2xl flex items-start space-x-3">
+            <AlertCircle className="w-5 h-5 text-[#8b5cf6] shrink-0 mt-0.5" />
+            <p className="text-xs text-indigo-300 leading-relaxed font-medium">
               Click <strong>&quot;Start Embossing&quot;</strong> to process all items sequentially from{' '}
-              <span className="font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded">Waiting</span> to{' '}
-              <span className="font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded">Completed</span>.
+              <span className="font-bold text-[#f59e0b] bg-[#20150b] px-1.5 py-0.5 rounded">Waiting</span> to{' '}
+              <span className="font-bold text-emerald-450 bg-emerald-950/40 px-1.5 py-0.5 rounded">Completed</span>.
               The loop runs continuously through the rolling 5-item buffer until all database records are finished.
             </p>
           </div>
