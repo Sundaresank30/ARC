@@ -18,6 +18,47 @@ export const DataPreparationPage: React.FC = () => {
   const [serialNoSeries, setSerialNoSeries] = useState('');
   const [serialNoCount, setSerialNoCount] = useState(99);
 
+  // Helper to handle long press on increment/decrement buttons
+  const startCounterAction = (
+    e: React.MouseEvent | React.TouchEvent,
+    actionType: 'inc' | 'dec',
+    stateType: 'part' | 'serial'
+  ) => {
+    e.preventDefault();
+    const isPart = stateType === 'part';
+    const setCount = isPart ? setPartNoCount : setSerialNoCount;
+    
+    // Perform initial click action
+    if (actionType === 'inc') {
+      setCount(prev => prev + 1);
+    } else {
+      setCount(prev => Math.max(1, prev - 1));
+    }
+
+    let timeoutId: any = null;
+    let intervalId: any = null;
+
+    const clearTimers = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      if (intervalId) clearInterval(intervalId);
+      window.removeEventListener('mouseup', clearTimers);
+      window.removeEventListener('touchend', clearTimers);
+    };
+
+    window.addEventListener('mouseup', clearTimers);
+    window.addEventListener('touchend', clearTimers);
+
+    timeoutId = setTimeout(() => {
+      intervalId = setInterval(() => {
+        if (actionType === 'inc') {
+          setCount(prev => prev + 1);
+        } else {
+          setCount(prev => Math.max(1, prev - 1));
+        }
+      }, 50); // fast change every 50ms
+    }, 400); // 400ms delay to start long press
+  };
+
   // Dynamic Server Date
   const [currentDate, setCurrentDate] = useState<string>(() => formatLocalFallbackDate(new Date()));
 
@@ -310,9 +351,9 @@ export const DataPreparationPage: React.FC = () => {
             onDragLeave={handleDrag}
             onDrop={handleDrop}
             onClick={triggerFileInput}
-            className={`border-2 border-dashed rounded-3xl p-10 bg-[#0D0E19] flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 select-none min-h-[220px] ${dragActive
+            className={`border-2 border-dashed rounded-3xl p-10 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 select-none min-h-[220px] shadow-[0_0_50px_rgba(139,92,246,0.25)] ${dragActive
               ? 'border-[#7c3aed] bg-[#7c3aed]/5 scale-[0.99]'
-              : 'border-[#221c37] hover:border-[#7c3aed] hover:bg-[#120e21]/40'
+              : 'border-[#201538] bg-[#111827]/30 hover:border-[#7c3aed] hover:bg-[#111827]/50'
               }`}
           >
             <input
@@ -386,18 +427,26 @@ export const DataPreparationPage: React.FC = () => {
                   <div className="flex items-center space-x-3 bg-[#13111c] border border-[#221e33] rounded-xl p-1 px-2 select-none h-11 shrink-0">
                     <button
                       type="button"
-                      onClick={() => setPartNoCount(prev => Math.max(1, prev - 1))}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors"
+                      onMouseDown={(e) => startCounterAction(e, 'dec', 'part')}
+                      onTouchStart={(e) => startCounterAction(e, 'dec', 'part')}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors select-none"
                     >
                       <Minus className="w-4 h-4 text-gray-300 stroke-[2.5]" />
                     </button>
-                    <span className="text-sm font-bold text-white w-6 text-center">
-                      {partNoCount}
-                    </span>
+                    <input
+                      type="number"
+                      value={partNoCount === 0 ? '' : partNoCount}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        setPartNoCount(isNaN(val) ? 0 : Math.max(0, val));
+                      }}
+                      className="text-sm font-bold text-white bg-transparent border border-[#221e33] focus:border-[#7c3aed] focus:outline-none rounded w-12 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
                     <button
                       type="button"
-                      onClick={() => setPartNoCount(prev => prev + 1)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors"
+                      onMouseDown={(e) => startCounterAction(e, 'inc', 'part')}
+                      onTouchStart={(e) => startCounterAction(e, 'inc', 'part')}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors select-none"
                     >
                       <Plus className="w-4 h-4 text-gray-300 stroke-[2.5]" />
                     </button>
@@ -421,18 +470,26 @@ export const DataPreparationPage: React.FC = () => {
                   <div className="flex items-center space-x-3 bg-[#13111c] border border-[#221e33] rounded-xl p-1 px-2 select-none h-11 shrink-0">
                     <button
                       type="button"
-                      onClick={() => setSerialNoCount(prev => Math.max(1, prev - 1))}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors"
+                      onMouseDown={(e) => startCounterAction(e, 'dec', 'serial')}
+                      onTouchStart={(e) => startCounterAction(e, 'dec', 'serial')}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors select-none"
                     >
                       <Minus className="w-4 h-4 text-gray-300 stroke-[2.5]" />
                     </button>
-                    <span className="text-sm font-bold text-white w-6 text-center">
-                      {serialNoCount}
-                    </span>
+                    <input
+                      type="number"
+                      value={serialNoCount === 0 ? '' : serialNoCount}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        setSerialNoCount(isNaN(val) ? 0 : Math.max(0, val));
+                      }}
+                      className="text-sm font-bold text-white bg-transparent border border-[#221e33] focus:border-[#7c3aed] focus:outline-none rounded w-12 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
                     <button
                       type="button"
-                      onClick={() => setSerialNoCount(prev => prev + 1)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors"
+                      onMouseDown={(e) => startCounterAction(e, 'inc', 'serial')}
+                      onTouchStart={(e) => startCounterAction(e, 'inc', 'serial')}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors select-none"
                     >
                       <Plus className="w-4 h-4 text-gray-300 stroke-[2.5]" />
                     </button>
