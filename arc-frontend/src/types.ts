@@ -33,9 +33,6 @@ export interface EmbossingJob {
 
 export interface BatchProgress {
   batchId: string;
-  totalRecords: number;
-  completedRecords: number;
-  pendingRecords: number;
   progressPercent: number;
   completed: boolean;
 }

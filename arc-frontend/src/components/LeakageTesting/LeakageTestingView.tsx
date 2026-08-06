@@ -114,8 +114,8 @@ export const LeakageTestingView: React.FC = () => {
       {/* Overview Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Active Batch Card */}
-        <div className="md:col-span-2 bg-[#0d0b14] border border-[#1b172a] rounded-2xl p-6 shadow-sm flex flex-col justify-between">
-          <h2 className="text-base font-bold text-white mb-6">
+        <div className="md:col-span-2 bg-[#0D0E19] border border-[#1b172a] rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+          <h2 className="text-base font-semibold text-white mb-6">
             Active Batch
           </h2>
 
@@ -129,7 +129,7 @@ export const LeakageTestingView: React.FC = () => {
             {/* Stepper Arrow Line */}
             <div className="flex-1 flex items-center justify-center relative">
               <div className="w-full border-t border-[#1b172a] flex items-center justify-center">
-                <ArrowRight className="w-4 h-4 text-gray-500 absolute bg-[#0d0b14] px-0.5" />
+                <ArrowRight className="w-4 h-4 text-gray-500 absolute bg-[#0D0E19] px-0.5" />
               </div>
             </div>
 
@@ -161,7 +161,7 @@ export const LeakageTestingView: React.FC = () => {
       </div>
 
       {/* Main Leakage Inspection Results Card */}
-      <div className="bg-[#0d0b14] border border-[#1b172a] rounded-3xl p-6 sm:p-8 shadow-sm">
+      <div className="bg-[#0D0E19] border border-[#1b172a] rounded-3xl p-6 sm:p-8 shadow-sm">
         {/* Card Section Header */}
         <div className="flex items-center space-x-2 mb-6">
           <h2 className="text-xl font-bold text-white tracking-tight">
@@ -171,7 +171,7 @@ export const LeakageTestingView: React.FC = () => {
         </div>
 
         {/* Inner Content Area */}
-        <div className="border border-[#1b172a] rounded-2xl overflow-hidden shadow-sm space-y-4 p-4 sm:p-6 bg-[#0d0b14]">
+        <div className="border border-[#1b172a] rounded-2xl overflow-hidden shadow-sm space-y-4 p-4 sm:p-6 bg-[#0D0E19]">
 
           {/* Leaked Testing Failures Red Alert Header */}
           <div className="bg-[#271012] border border-[#ef4444]/25 rounded-xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -258,11 +258,10 @@ export const LeakageTestingView: React.FC = () => {
                       <td className="py-3.5 px-4">
                         <button
                           onClick={() => handleActionToggle(item)}
-                          className={`font-bold px-2.5 py-1 rounded-md transition-colors text-xs border ${
-                            item.action === 'Scrap'
-                              ? 'bg-[#271012] text-red-400 border-[#ef4444]/20 hover:bg-[#3d1317]'
-                              : 'bg-[#20150b] text-[#f59e0b] border-[#f59e0b]/20 hover:bg-[#301b0c]'
-                          }`}
+                          className={`font-bold px-2.5 py-1 rounded-md transition-colors text-xs border ${item.action === 'Scrap'
+                            ? 'bg-[#271012] text-red-400 border-[#ef4444]/20 hover:bg-[#3d1317]'
+                            : 'bg-[#20150b] text-[#f59e0b] border-[#f59e0b]/20 hover:bg-[#301b0c]'
+                            }`}
                           title="Click to toggle action"
                         >
                           {item.action}

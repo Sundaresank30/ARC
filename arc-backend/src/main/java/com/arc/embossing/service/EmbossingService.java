@@ -74,7 +74,20 @@ public class EmbossingService {
 
         long pendingCount = 0;
         if (batchProgress != null && !batchProgress.isEmpty()) {
-            pendingCount = batchProgress.get(0).getPendingRecords();
+            List<ProductionBatchItem> batchItems = productionBatchItemRepository != null
+                    ? productionBatchItemRepository.findByProductionBatchBatchIdOrderByItemIndexAsc(activeBatch)
+                    : List.of();
+            long completedFromJobs = jobs.stream()
+                    .filter(j -> j.getEmbossingStatus() == EmbossingStatus.COMPLETED)
+                    .count();
+            long completedFromItems = batchItems != null ? batchItems.stream()
+                    .filter(item -> "COMPLETED".equalsIgnoreCase(item.getStatus()))
+                    .count() : 0;
+            int totalFromItems = batchItems != null ? batchItems.size() : 0;
+            int totalFromJobs = jobs.size();
+            int totalRecords = Math.max(totalFromItems, totalFromJobs);
+            long completedRecords = Math.max(completedFromJobs, completedFromItems);
+            pendingCount = Math.max(0, totalRecords - completedRecords);
         } else {
             pendingCount = jobs.stream().filter(job -> job.getEmbossingStatus() == EmbossingStatus.PENDING).count();
         }
@@ -173,9 +186,6 @@ public class EmbossingService {
 
         return BatchProgressResponse.builder()
                 .batchId(batchId)
-                .totalRecords(totalRecords)
-                .completedRecords(completedRecords)
-                .pendingRecords(pendingRecords)
                 .progressPercent(progressPercent)
                 .completed(completed)
                 .build();
