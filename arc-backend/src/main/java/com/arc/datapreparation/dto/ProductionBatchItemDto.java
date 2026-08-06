@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProductionBatchItemDto {
     private Long id;
+    private String batchId;
     private Integer itemIndex;
     private String partNumber;
     private String serialNumber;

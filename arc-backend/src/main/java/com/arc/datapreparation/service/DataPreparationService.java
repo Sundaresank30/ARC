@@ -51,6 +51,7 @@ public class DataPreparationService {
             String serialNumber = generateSerialNumber(request.getSerialNoSeries().trim(), i);
 
             ProductionBatchItem item = ProductionBatchItem.builder()
+                    .batchId(batchId)
                     .itemIndex(i)
                     .partNumber(partNumber)
                     .serialNumber(serialNumber)
@@ -90,6 +91,7 @@ public class DataPreparationService {
                 .stream()
                 .map(item -> ProductionBatchItemDto.builder()
                         .id(item.getId())
+                        .batchId(item.getBatchId() != null ? item.getBatchId() : batchId)
                         .itemIndex(item.getItemIndex())
                         .partNumber(item.getPartNumber())
                         .serialNumber(item.getSerialNumber())
@@ -191,6 +193,7 @@ public class DataPreparationService {
             itemDtos = batch.getItems().stream()
                     .map(item -> ProductionBatchItemDto.builder()
                             .id(item.getId())
+                            .batchId(item.getBatchId() != null ? item.getBatchId() : batch.getBatchId())
                             .itemIndex(item.getItemIndex())
                             .partNumber(item.getPartNumber())
                             .serialNumber(item.getSerialNumber())
