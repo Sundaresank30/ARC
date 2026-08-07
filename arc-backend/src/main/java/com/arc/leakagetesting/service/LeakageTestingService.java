@@ -183,15 +183,25 @@ public class LeakageTestingService {
                 .orElseThrow(() -> new IllegalArgumentException("Embossing job not found with id: " + jobId));
 
         job.setEmbossingStatus(EmbossingStatus.FAILED);
-        job.setTestValue(testValue != null ? testValue : 82.5);
-        job.setDirection(direction != null ? direction : "up");
-        job.setAttempt(attempt != null ? attempt : "1/2");
-        job.setAction(action != null ? action : "Pending");
         job.setEmbossingCompletedTime(LocalDateTime.now());
+        embossingJobRepository.save(job);
 
-        EmbossingJob saved = embossingJobRepository.save(job);
-        log.info("Marked job ID {} ({}) as FAILED", jobId, saved.getPartNumber());
-        return toItemDto(saved, "Failed");
+        FailedLeakageTestResult fResult = FailedLeakageTestResult.builder()
+                .batchId(job.getBatchId())
+                .partNumber(job.getPartNumber())
+                .serialNumber(job.getSerialNumber())
+                .pressureValue(testValue != null ? testValue : 82.5)
+                .unit("kPa")
+                .status("FAILED")
+                .direction(direction != null ? direction : "up")
+                .attempt(attempt != null ? attempt : "1/2")
+                .action(action != null ? action : "Pending")
+                .testedAt(LocalDateTime.now())
+                .build();
+
+        FailedLeakageTestResult saved = failedResultRepository.save(fResult);
+        log.info("Marked job ID {} ({}) as FAILED", jobId, job.getPartNumber());
+        return toItemDto(saved);
     }
 
     private LeakageTestItemDto toItemDto(PassedLeakageTestResult result) {
