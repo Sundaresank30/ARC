@@ -39,10 +39,10 @@ export const LeakageMachinePage: React.FC = () => {
   const [state, setState] = useState<MachineState>({
     machineStatus: 'IDLE',
     activeBatch: 'No Active Batch',
-    fileName: 'Batch.csv',
-    warningThreshold: 75.0,
-    alarmThreshold: 80.0,
-    unit: 'kPa',
+    fileName: 'No File',
+    warningThreshold: undefined as unknown as number,
+    alarmThreshold: undefined as unknown as number,
+    unit: '',
     totalEmbossed: 0,
     totalTested: 0,
     passedParts: 0,
@@ -131,8 +131,8 @@ export const LeakageMachinePage: React.FC = () => {
   const isTesting = state.machineStatus === 'TESTING';
   const chamber = state.activeChamber;
   const currentTestValue = chamber?.currentPressure ?? null;
-  const warningThreshold = state.warningThreshold || 75.0;
-  const alarmThreshold = state.alarmThreshold || 80.0;
+  const warningThreshold = state.warningThreshold;
+  const alarmThreshold = state.alarmThreshold;
   const queue = state.queue || [];
   const history = state.history || [];
   const trendData = state.trendData || [];
@@ -153,12 +153,18 @@ export const LeakageMachinePage: React.FC = () => {
               {state.activeBatch}
             </span>
           </div>
-          <p className="text-xs text-[#8a8596]">
-            Target threshold vacuum range extracted from <span className="font-semibold text-white">{state.fileName}</span>:
-            <span className="ml-1 text-sm font-bold text-indigo-400 bg-indigo-950/40 px-2 py-0.5 rounded border border-indigo-900/60">
-              {warningThreshold} – {alarmThreshold} {state.unit}
-            </span>
-          </p>
+          {state.activeBatch !== 'No Active Batch' && warningThreshold != null && alarmThreshold != null ? (
+            <p className="text-xs text-[#8a8596]">
+              Target threshold vacuum range extracted from <span className="font-semibold text-white">{state.fileName}</span>:
+              <span className="ml-1 text-sm font-bold text-indigo-400 bg-indigo-950/40 px-2 py-0.5 rounded border border-indigo-900/60">
+                {warningThreshold} – {alarmThreshold} {state.unit || 'kPa'}
+              </span>
+            </p>
+          ) : (
+            <p className="text-xs text-[#8a8596]">
+              Target threshold vacuum range: <span className="font-semibold text-gray-500">None (No Active Batch)</span>
+            </p>
+          )}
         </div>
 
         {/* Action Controls */}
@@ -166,8 +172,8 @@ export const LeakageMachinePage: React.FC = () => {
           <div className="flex items-center space-x-2 bg-[#13111c] border border-[#221e33] p-1 rounded-xl">
             <button
               onClick={handleStart}
-              disabled={isTesting || state.totalEmbossed === state.totalTested}
-              className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg font-bold text-xs transition-all duration-150 ${isTesting || state.totalEmbossed === state.totalTested
+              disabled={isTesting || state.totalEmbossed === 0 || state.activeBatch === 'No Active Batch'}
+              className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg font-bold text-xs transition-all duration-150 ${isTesting || state.totalEmbossed === 0 || state.activeBatch === 'No Active Batch'
                 ? 'text-gray-600 cursor-not-allowed'
                 : 'bg-[#7c3aed] text-white hover:bg-[#6d28d9]'
                 }`}
@@ -230,14 +236,18 @@ export const LeakageMachinePage: React.FC = () => {
         <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-150 relative overflow-hidden">
           <span className="text-xs font-bold text-emerald-500">Passed Parts</span>
           <div className="text-3xl font-extrabold text-emerald-450 mt-1">{state.passedParts}</div>
-          <div className="text-[10px] text-emerald-600 mt-0.5">Range: {warningThreshold} – {alarmThreshold} {state.unit}</div>
+          <div className="text-[10px] text-emerald-600 mt-0.5">
+            {warningThreshold != null && alarmThreshold != null ? `Range: ${warningThreshold} – ${alarmThreshold} ${state.unit || 'kPa'}` : 'No Active Range'}
+          </div>
           <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
         </div>
         {/* KPI 4 */}
         <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-150 relative overflow-hidden">
           <span className="text-xs font-bold text-red-500">Failed Parts</span>
           <div className="text-3xl font-extrabold text-red-400 mt-1">{state.failedParts}</div>
-          <div className="text-[10px] text-red-400/70 mt-0.5">Outside {warningThreshold} – {alarmThreshold} {state.unit}</div>
+          <div className="text-[10px] text-red-400/70 mt-0.5">
+            {warningThreshold != null && alarmThreshold != null ? `Outside ${warningThreshold} – ${alarmThreshold} ${state.unit || 'kPa'}` : 'No Active Range'}
+          </div>
           {state.failedParts > 0 && (
             <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-red-500 animate-pulse" />
           )}

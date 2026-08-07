@@ -27,14 +27,14 @@ export type { LeakageTestRecord, LeakageTestingDashboardData };
 
 export const LeakageTestingView: React.FC = () => {
   const [data, setData] = useState<LeakageTestingDashboardData>({
-    activeBatch: 'Batch_1',
+    activeBatch: 'No Active Batch',
     failedCount: 0,
     passedCount: 0,
-    batchProgressPercent: 100,
-    completedCount: 100,
-    totalParts: 100,
-    dateDisplay: '06 August, 2026',
-    batchStatus: '100% completed',
+    batchProgressPercent: 0,
+    completedCount: 0,
+    totalParts: 0,
+    dateDisplay: '',
+    batchStatus: 'No Batch',
     failures: [],
     passed: [],
   });
@@ -240,9 +240,11 @@ export const LeakageTestingView: React.FC = () => {
                 <span className="text-red-400 bg-[#ef4444]/15 px-3 py-1 rounded-md border border-[#ef4444]/20">
                   Requires quality action
                 </span>
-                <span className="text-red-400 bg-[#ef4444]/15 px-3 py-1 rounded-md border border-[#ef4444]/20">
-                  Threshold Range: 75.0 – 80.0 kPa
-                </span>
+                {data.activeBatch !== 'No Active Batch' && (
+                  <span className="text-red-400 bg-[#ef4444]/15 px-3 py-1 rounded-md border border-[#ef4444]/20">
+                    Quality Inspection Log
+                  </span>
+                )}
               </div>
             </div>
 
@@ -338,9 +340,11 @@ export const LeakageTestingView: React.FC = () => {
                 <span className="text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded-md border border-emerald-900/40">
                   Quality Approved
                 </span>
-                <span className="text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded-md border border-emerald-900/40">
-                  Within 75.0 – 80.0 kPa
-                </span>
+                {data.activeBatch !== 'No Active Batch' && (
+                  <span className="text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded-md border border-emerald-900/40">
+                    Quality Approved Log
+                  </span>
+                )}
               </div>
             </div>
 

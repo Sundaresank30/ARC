@@ -173,7 +173,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
                 Requires quality action
               </span>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#3a1012] text-[#ef4444] border border-[#ef4444]/30">
-                Threshold Range: 75.0 – 80.0 kPa
+                Quality Exception Log
               </span>
             </div>
           </div>
