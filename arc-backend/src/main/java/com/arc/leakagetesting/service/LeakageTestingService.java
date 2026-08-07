@@ -183,6 +183,10 @@ public class LeakageTestingService {
                 .orElseThrow(() -> new IllegalArgumentException("Embossing job not found with id: " + jobId));
 
         job.setEmbossingStatus(EmbossingStatus.FAILED);
+        job.setTestValue(testValue != null ? testValue : 82.5);
+        job.setDirection(direction != null ? direction : "up");
+        job.setAttempt(attempt != null ? attempt : "1/2");
+        job.setAction(action != null ? action : "Pending");
         job.setEmbossingCompletedTime(LocalDateTime.now());
 
         EmbossingJob saved = embossingJobRepository.save(job);

@@ -124,6 +124,24 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1c182a] bg-[#0D0E19]">
+                {carryForwardData.map((row) => (
+                  <tr key={row.id} className="hover:bg-[#120e21]/50 transition-colors">
+                    <td className="px-4 py-4 font-semibold text-white">{row.partNo}</td>
+                    <td className="px-4 py-4 text-gray-300 font-medium">{row.serialNo}</td>
+                    <td className="px-4 py-4">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-[#2d1c0b] text-[#f59e0b] border border-[#f59e0b]/20">
+                        {row.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-gray-400 font-medium">{row.remainingSince}</td>
+                    <td className="px-4 py-4 text-gray-400 font-medium">{row.nextShift}</td>
+                    <td className="px-4 py-4">
+                      <button
+                        onClick={() => handleCarryForwardAction(row.id, row.partNo, row.action)}
+                        className="font-bold text-gray-400 hover:text-[#8b5cf6] transition-colors"
+                      >
+                        {row.action}
+                      </button>
                 {carryForwardData.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-4 py-8 text-center text-xs text-gray-500 font-medium">
@@ -193,6 +211,34 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1c182a] bg-[#0D0E19]">
+                {leakageFailuresData.map((row) => (
+                  <tr key={row.id} className="hover:bg-[#120e21]/50 transition-colors">
+                    <td className="px-4 py-4 font-semibold text-white">{row.partNo}</td>
+                    <td className="px-4 py-4 text-gray-300 font-medium">{row.serialNo}</td>
+                    <td className="px-4 py-4">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-[#3a1012] text-[#ef4444] border border-[#ef4444]/20">
+                        {row.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center space-x-1 text-[#ef4444] font-bold">
+                        <span>{row.testValue.toFixed(2)}</span>
+                        {row.direction === 'up' ? (
+                          <ChevronUp className="w-4 h-4 text-[#ef4444] stroke-[3]" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4 text-[#ef4444] stroke-[3]" />
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-gray-400 font-medium">{row.timestamp}</td>
+                    <td className="px-4 py-4 text-gray-400 font-semibold">{row.attempt}</td>
+                    <td className="px-4 py-4">
+                      <button
+                        onClick={() => handleLeakageAction(row.id, row.partNo, row.action)}
+                        className="font-bold text-gray-400 hover:text-[#8b5cf6] transition-colors"
+                      >
+                        {row.action}
+                      </button>
                 {leakageFailuresData.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-4 py-8 text-center text-xs text-gray-500 font-medium">

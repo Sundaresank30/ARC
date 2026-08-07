@@ -226,6 +226,7 @@ export const LeakageTestingView: React.FC = () => {
           </div>
 
           <div>
+            <span className="text-xs font-semibold text-red-500">-from this batch</span>
             <span className="text-xs font-semibold text-red-500">-from active batch ({data.activeBatch})</span>
           </div>
         </div>
@@ -247,6 +248,7 @@ export const LeakageTestingView: React.FC = () => {
         </div>
 
         {/* Inner Content Area */}
+        <div className="border border-[#1b172a] rounded-2xl overflow-hidden shadow-sm space-y-4 p-4 sm:p-6 bg-[#0D0E19]">
         <div className="border border-[#1b172a] rounded-2xl overflow-hidden shadow-sm space-y-6 p-4 sm:p-6 bg-[#0D0E19]">
 
           {/* ----------------------------------------------------------------- */}
@@ -260,6 +262,13 @@ export const LeakageTestingView: React.FC = () => {
                 <span>Leaked Testing Failures ({failureResults.length})</span>
               </div>
 
+            <div className="flex items-center flex-wrap gap-2 text-xs font-semibold">
+              <span className="text-red-400 bg-[#ef4444]/15 px-3 py-1 rounded-md border border-[#ef4444]/20">
+                Requires quality action
+              </span>
+              <span className="text-red-400 bg-[#ef4444]/15 px-3 py-1 rounded-md border border-[#ef4444]/20">
+                Threshold Range: 75.0 – 80.0 kPa
+              </span>
               <div className="flex items-center flex-wrap gap-2 text-xs font-semibold">
                 <span className="text-red-400 bg-[#ef4444]/15 px-3 py-1 rounded-md border border-[#ef4444]/20">
                   Requires quality action
@@ -298,6 +307,23 @@ export const LeakageTestingView: React.FC = () => {
                           </span>
                         </div>
                       </td>
+                      <td className="py-3.5 px-4 text-gray-500">
+                        {item.timestamp}
+                      </td>
+                      <td className="py-3.5 px-4 text-gray-500">
+                        {item.attempt}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <button
+                          onClick={() => handleActionToggle(item)}
+                          className={`font-bold px-2.5 py-1 rounded-md transition-colors text-xs border ${item.action === 'Scrap'
+                            ? 'bg-[#271012] text-red-400 border-[#ef4444]/20 hover:bg-[#3d1317]'
+                            : 'bg-[#20150b] text-[#f59e0b] border-[#f59e0b]/20 hover:bg-[#301b0c]'
+                            }`}
+                          title="Click to toggle action"
+                        >
+                          {item.action}
+                        </button>
                     </tr>
                   ) : (
                     failureResults.map((item, idx) => (
