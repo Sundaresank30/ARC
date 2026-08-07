@@ -11,6 +11,11 @@ import { useAuthStore } from '../../store/authStore';
 import { getDefaultTab, modulesToTabs } from '../../utils/navigation';
 import { DataPreparationPage } from '../DataPreparation/DataPreparationPage';
 import { UserRole } from '../../types';
+import {
+  getDashboardSummary,
+  resolveCarryForward,
+  resolveLeakageFailure,
+} from '../../api/dashboard';
 
 interface DashboardLayoutProps {
   selectedRole?: UserRole;
@@ -66,11 +71,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
 
   const fetchDashboardData = async () => {
     try {
-      const res = await fetch('/api/dashboard');
-      if (res.ok) {
-        const data = await res.json();
-        setDashboardData(data);
-      }
+      const data = await getDashboardSummary();
+      setDashboardData(data);
     } catch (err) {
       console.warn('Backend API offline, using local state.');
     }
@@ -86,7 +88,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
 
   const handleResolveCarryForward = async (id: string, partNo: string) => {
     try {
-      await fetch(`/api/dashboard/carry-forward/${id}/resolve`, { method: 'POST' });
+      await resolveCarryForward(id);
     } catch (e) { }
 
     setDashboardData((prev) => {
@@ -103,7 +105,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
 
   const handleResolveLeakage = async (id: string, partNo: string) => {
     try {
-      await fetch(`/api/dashboard/leakage-failures/${id}/resolve`, { method: 'POST' });
+      await resolveLeakageFailure(id);
     } catch (e) { }
 
     setDashboardData((prev) => {

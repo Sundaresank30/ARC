@@ -23,64 +23,17 @@ import {
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { API_BASE_URL } from '../../config/api';
-
-interface MachineState {
-  machineStatus: string;
-  activeBatch: string;
-  fileName: string;
-  warningThreshold: number;
-  alarmThreshold: number;
-  unit: string;
-  totalEmbossed: number;
-  totalTested: number;
-  passedParts: number;
-  failedParts: number;
-  progressPercent: number;
-  activeChamber?: LiveChamber;
-  trendData?: TrendPoint[];
-  queue?: QueueItem[];
-  history?: TestedRecord[];
-}
-
-interface LiveChamber {
-  batchId: string;
-  partNumber: string;
-  serialNumber: string;
-  currentPressure: number | null;
-  unit: string;
-  warningThreshold: number;
-  alarmThreshold: number;
-  status: string;
-  cycleTimeSeconds: number;
-  timestamp: string;
-}
-
-interface TrendPoint {
-  serialNumber: string;
-  partNumber: string;
-  pressureValue: number;
-  passed: boolean;
-  timestamp: string;
-}
-
-interface QueueItem {
-  id: number;
-  batchId: string;
-  partNumber: string;
-  serialNumber: string;
-  status: string;
-}
-
-interface TestedRecord {
-  id: number;
-  batchId: string;
-  partNumber: string;
-  serialNumber: string;
-  pressureValue: number;
-  unit: string;
-  status: string;
-  timestamp: string;
-}
+import {
+  getLeakageMachineState,
+  startLeakageMachine,
+  pauseLeakageMachine,
+  resetLeakageMachine,
+  LeakageMachineState as MachineState,
+  LiveChamber,
+  TrendPoint,
+  QueueItem,
+  TestedRecord,
+} from '../../api/leakageMachine';
 
 export const LeakageMachinePage: React.FC = () => {
   const [state, setState] = useState<MachineState>({
@@ -106,11 +59,8 @@ export const LeakageMachinePage: React.FC = () => {
   // Fetch initial machine state from REST API
   const fetchMachineState = useCallback(async () => {
     try {
-      const res = await fetch('/api/leakage-testing/machine/state');
-      if (res.ok) {
-        const data = await res.json();
-        setState(data);
-      }
+      const data = await getLeakageMachineState();
+      setState(data);
     } catch (err) {
       console.error('Failed to fetch leakage machine state:', err);
     } finally {
@@ -153,11 +103,8 @@ export const LeakageMachinePage: React.FC = () => {
   // Action controls
   const handleStart = async () => {
     try {
-      const res = await fetch('/api/leakage-testing/machine/start', { method: 'POST' });
-      if (res.ok) {
-        const data = await res.json();
-        setState(data);
-      }
+      const data = await startLeakageMachine();
+      setState(data);
     } catch (err) {
       console.error('Failed to start leakage testing:', err);
     }
@@ -165,11 +112,8 @@ export const LeakageMachinePage: React.FC = () => {
 
   const handlePause = async () => {
     try {
-      const res = await fetch('/api/leakage-testing/machine/pause', { method: 'POST' });
-      if (res.ok) {
-        const data = await res.json();
-        setState(data);
-      }
+      const data = await pauseLeakageMachine();
+      setState(data);
     } catch (err) {
       console.error('Failed to pause leakage testing:', err);
     }
@@ -177,11 +121,8 @@ export const LeakageMachinePage: React.FC = () => {
 
   const handleReset = async () => {
     try {
-      const res = await fetch('/api/leakage-testing/machine/reset', { method: 'POST' });
-      if (res.ok) {
-        const data = await res.json();
-        setState(data);
-      }
+      const data = await resetLeakageMachine();
+      setState(data);
     } catch (err) {
       console.error('Failed to reset leakage testing:', err);
     }

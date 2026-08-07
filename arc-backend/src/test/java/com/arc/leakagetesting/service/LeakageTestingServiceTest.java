@@ -62,6 +62,8 @@ class LeakageTestingServiceTest {
 
         when(embossingJobRepository.findByEmbossingStatusOrderByIdDesc(EmbossingStatus.COMPLETED))
                 .thenReturn(Collections.singletonList(completed1));
+        when(embossingJobRepository.findByBatchIdOrderByIdAsc("Batch_1"))
+                .thenReturn(Collections.singletonList(completed1));
 
         LeakageTestingResponseDto response = leakageTestingService.getDashboardData();
 
