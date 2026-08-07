@@ -45,17 +45,43 @@ public class PurgeDummyDataRunner implements CommandLineRunner {
             carryForwardEmbossingRepository.deleteAll();
             leakageFailureRepository.deleteAll();
 
-            // Purge dummy BATCH-001 or sample batches if existing
-            productionBatchRepository.findByBatchId("BATCH-001").ifPresent(batch -> {
-                log.info("Purging sample batch BATCH-001...");
-                productionBatchItemRepository.deleteAll(productionBatchItemRepository.findByProductionBatchBatchIdOrderByItemIndexAsc("BATCH-001"));
-                productionBatchRepository.delete(batch);
+            // Purge dummy/sample batches (such as BATCH-001, Batch_1, sample, dummy)
+            productionBatchRepository.findAll().forEach(batch -> {
+                if (batch.getBatchId() != null && (
+                        batch.getBatchId().equalsIgnoreCase("BATCH-001") ||
+                        batch.getBatchId().equalsIgnoreCase("Batch_1") ||
+                        batch.getBatchId().toLowerCase().contains("dummy") ||
+                        batch.getBatchId().toLowerCase().contains("sample")
+                )) {
+                    log.info("Purging sample batch: {}", batch.getBatchId());
+                    productionBatchItemRepository.deleteAll(
+                            productionBatchItemRepository.findByProductionBatchBatchIdOrderByItemIndexAsc(batch.getBatchId())
+                    );
+                    productionBatchRepository.delete(batch);
+                }
             });
 
-            productionBatchRepository.findByBatchId("Batch_1").ifPresent(batch -> {
-                log.info("Purging sample batch Batch_1...");
-                productionBatchItemRepository.deleteAll(productionBatchItemRepository.findByProductionBatchBatchIdOrderByItemIndexAsc("Batch_1"));
-                productionBatchRepository.delete(batch);
+            // Purge dummy embossing jobs
+            embossingJobRepository.findAll().forEach(job -> {
+                if (job.getBatchId() != null && (
+                        job.getBatchId().equalsIgnoreCase("BATCH-001") ||
+                        job.getBatchId().equalsIgnoreCase("Batch_1") ||
+                        job.getBatchId().toLowerCase().contains("dummy") ||
+                        job.getBatchId().toLowerCase().contains("sample")
+                )) {
+                    log.info("Purging dummy embossing job ID: {}", job.getId());
+                    embossingJobRepository.delete(job);
+                }
+            });
+
+            // Purge dummy embossing queue items
+            embossingQueueRepository.findAll().forEach(q -> {
+                if (q.getSerialNumber() != null && (
+                        q.getSerialNumber().toLowerCase().contains("dummy") ||
+                        q.getSerialNumber().toLowerCase().contains("sample")
+                )) {
+                    embossingQueueRepository.delete(q);
+                }
             });
 
             log.info("Dummy data purge verification complete. Database contains real data only.");

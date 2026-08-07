@@ -219,8 +219,22 @@ public class EmbossingService {
             if (latestJob.isPresent() && latestJob.get().getBatchId() != null && !latestJob.get().getBatchId().isBlank()) {
                 return latestJob.get().getBatchId();
             }
+
+            List<EmbossingJob> allJobs = embossingJobRepository.findAll();
+            if (!allJobs.isEmpty()) {
+                return allJobs.get(allJobs.size() - 1).getBatchId();
+            }
         }
-        return null;
+        if (productionBatchRepository != null) {
+            List<ProductionBatch> batches = productionBatchRepository.findAll();
+            if (!batches.isEmpty()) {
+                return batches.get(batches.size() - 1).getBatchId();
+            }
+        }
+        if (simulationProperties != null && simulationProperties.getActiveBatch() != null && !simulationProperties.getActiveBatch().isBlank()) {
+            return simulationProperties.getActiveBatch();
+        }
+        return "Batch_1";
     }
 
     private CurrentMachineResponse toCurrentMachineResponse(EmbossingJob job) {

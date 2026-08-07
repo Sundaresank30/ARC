@@ -224,30 +224,6 @@ public class LeakageTestingMachineService {
             EmbossingJob jobToTest = nextJobOpt.get();
             currentProcessingJobId = jobToTest.getId();
 
-            // Evaluate test pressure reading: prioritize explicit database job value, or
-            // generate within DBL range (75.0 - 80.0 kPa)
-            double simulatedPressure;
-            if (jobToTest.getTestValue() != null && jobToTest.getTestValue() > 0) {
-                simulatedPressure = jobToTest.getTestValue();
-            } else {
-                boolean pass = ThreadLocalRandom.current().nextDouble() > 0.15;
-                double minVac = Math.min(thresholds.warningThreshold != null ? thresholds.warningThreshold : 75.0, thresholds.alarmThreshold != null ? thresholds.alarmThreshold : 80.0);
-                double maxVac = Math.max(thresholds.warningThreshold != null ? thresholds.warningThreshold : 75.0, thresholds.alarmThreshold != null ? thresholds.alarmThreshold : 80.0);
-                if (pass) {
-                    simulatedPressure = Math.round(
-                            (minVac + ThreadLocalRandom.current().nextDouble() * (maxVac - minVac)) * 10.0) / 10.0;
-                } else {
-                    simulatedPressure = Math
-                            .round((maxVac + 0.5 + ThreadLocalRandom.current().nextDouble() * 4.5) * 10.0) / 10.0;
-                }
-            }
-
-            livePressure = simulatedPressure;
-            double minVac = Math.min(thresholds.warningThreshold != null ? thresholds.warningThreshold : 75.0, thresholds.alarmThreshold != null ? thresholds.alarmThreshold : 80.0);
-            double maxVac = Math.max(thresholds.warningThreshold != null ? thresholds.warningThreshold : 75.0, thresholds.alarmThreshold != null ? thresholds.alarmThreshold : 80.0);
-            boolean isPass = simulatedPressure >= minVac && simulatedPressure <= maxVac;
-            String status = isPass ? "PASSED" : "FAILED";
-
             // Evaluate test pressure reading within DBL range (75.0 - 80.0 kPa)
             double simulatedPressure;
             boolean pass = ThreadLocalRandom.current().nextDouble() > 0.15;
@@ -350,17 +326,11 @@ public class LeakageTestingMachineService {
     // -------------------------------------------------------------------------
     // Helper Methods & Resolvers
     // -------------------------------------------------------------------------
-    private String resolveActiveBatchId() {
+    public String resolveActiveBatchId() {
         if (activeBatchId != null) {
             return activeBatchId;
         }
 
-        // 1. Check completed embossing jobs starting from most recent (ID desc)
-        List<EmbossingJob> completedJobsDesc = embossingJobRepository
-                .findByEmbossingStatusOrderByIdDesc(EmbossingStatus.COMPLETED);
-        for (EmbossingJob job : completedJobsDesc) {
-            String bId = job.getBatchId();
-    public String resolveActiveBatchId() {
         // 1. Get all completed embossing jobs ordered by most recent job ID desc
         List<EmbossingJob> completedJobsDesc = embossingJobRepository
                 .findByEmbossingStatusOrderByIdDesc(EmbossingStatus.COMPLETED);
@@ -380,17 +350,6 @@ public class LeakageTestingMachineService {
                 activeBatchId = bId;
                 return bId;
             }
-        }
-
-        // 2. Latest batch from completed embossing jobs
-        if (!completedJobsDesc.isEmpty()) {
-            return completedJobsDesc.get(0).getBatchId();
-        }
-
-        // 3. Fallback to latest production batch
-        List<ProductionBatch> batches = productionBatchRepository.findAllByOrderByCreatedAtDesc();
-        if (!batches.isEmpty()) {
-            return batches.get(0).getBatchId();
         }
 
         // 2. If all embossed batches are fully tested, return the LATEST embossed batch ID
@@ -413,8 +372,6 @@ public class LeakageTestingMachineService {
     private String findNextBatchWithEmbossedItems() {
         List<EmbossingJob> completedJobsDesc = embossingJobRepository
                 .findByEmbossingStatusOrderByIdDesc(EmbossingStatus.COMPLETED);
-        for (EmbossingJob job : completedJobsDesc) {
-            String batchId = job.getBatchId();
         List<String> distinctBatches = completedJobsDesc.stream()
                 .map(EmbossingJob::getBatchId)
                 .filter(b -> b != null && !b.isBlank())
