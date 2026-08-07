@@ -120,7 +120,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
   };
 
   const getFormattedDate = () => {
-    return '20 July, 2026';
+    return new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   };
 
   return (

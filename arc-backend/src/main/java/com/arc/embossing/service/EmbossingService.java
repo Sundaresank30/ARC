@@ -98,7 +98,11 @@ public class EmbossingService {
             long completedRecords = Math.max(completedFromJobs, completedFromItems);
             pendingCount = Math.max(0, totalRecords - completedRecords);
         } else {
-            pendingCount = jobs.stream().filter(job -> job.getEmbossingStatus() == EmbossingStatus.PENDING).count();
+            pendingCount = jobs.stream()
+                    .filter(job -> job.getEmbossingStatus() == EmbossingStatus.PENDING
+                                || job.getEmbossingStatus() == EmbossingStatus.PRINTING
+                                || job.getEmbossingStatus() == EmbossingStatus.IN_MACHINE)
+                    .count();
         }
 
         return EmbossingDashboardResponse.builder()

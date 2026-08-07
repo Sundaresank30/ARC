@@ -59,17 +59,6 @@ public class EmbossingJob {
     @Column(length = 500)
     private String remarks;
 
-    private Double testValue;
-
-    @Column(length = 10)
-    private String direction;
-
-    @Column(length = 20)
-    private String attempt;
-
-    @Column(length = 20)
-    private String action;
-
     @PrePersist
     @SuppressWarnings("unused")
     protected void onCreate() {

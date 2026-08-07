@@ -435,7 +435,7 @@ export const LeakageMachinePage: React.FC = () => {
                     tickLine={false}
                   />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0d0b14', border: '1px solid #1b172a', borderRadius: '10px' }}
+                    contentStyle={{ backgroundColor: '#0D0E19', border: '1px solid #1b172a', borderRadius: '10px' }}
                     labelStyle={{ color: '#fff', fontFamily: 'monospace', fontSize: 11 }}
                     itemStyle={{ color: '#8b5cf6', fontSize: 12 }}
                     formatter={(value: any) => [`${value} ${state.unit}`, 'Vacuum Pressure']}

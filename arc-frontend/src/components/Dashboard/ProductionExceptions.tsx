@@ -5,7 +5,7 @@ interface CarryForwardItem {
   id: string;
   partNo: string;
   serialNo: string;
-  status: 'Pending' | 'Queued' | 'Completed';
+  status: 'Pending' | 'Queued' | 'Completed' | string;
   remainingSince: string;
   nextShift: string;
   action: string;
@@ -15,9 +15,9 @@ interface LeakageFailureItem {
   id: string;
   partNo: string;
   serialNo: string;
-  status: 'Failed' | 'Scrap' | 'Pending';
+  status: 'Failed' | 'Scrap' | 'Pending' | string;
   testValue: number;
-  direction: 'up' | 'down';
+  direction: 'up' | 'down' | string;
   timestamp: string;
   attempt: string;
   action: string;
@@ -31,79 +31,17 @@ interface ProductionExceptionsProps {
 }
 
 export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
-  carryForwardData: initialCarryForward,
-  leakageFailuresData: initialLeakage,
+  carryForwardData: initialCarryForward = [],
+  leakageFailuresData: initialLeakage = [],
   onResolveCarryForward,
   onResolveLeakage,
 }) => {
   const [carryForwardData, setCarryForwardData] = useState<CarryForwardItem[]>(
-    initialCarryForward || [
-      {
-        id: '1',
-        partNo: 'Pn00111c',
-        serialNo: 'P0011156',
-        status: 'Pending',
-        remainingSince: '17:57, 20 Jul',
-        nextShift: '21 Jul',
-        action: 'Queued',
-      },
-      {
-        id: '2',
-        partNo: 'Pn00112c',
-        serialNo: 'P0011157',
-        status: 'Pending',
-        remainingSince: '17:58, 20 Jul',
-        nextShift: '21 Jul',
-        action: 'Queued',
-      },
-      {
-        id: '3',
-        partNo: 'Pn00113c',
-        serialNo: 'P0011158',
-        status: 'Pending',
-        remainingSince: '18:00, 20 Jul',
-        nextShift: '21 Jul',
-        action: 'Queued',
-      },
-    ]
+    initialCarryForward || []
   );
 
   const [leakageFailuresData, setLeakageFailuresData] = useState<LeakageFailureItem[]>(
-    initialLeakage || [
-      {
-        id: '1',
-        partNo: 'Pn00111c',
-        serialNo: 'P0011156',
-        status: 'Failed',
-        testValue: 0.42,
-        direction: 'down',
-        timestamp: '17:57, 20 Jul',
-        attempt: '2/2',
-        action: 'Scrap',
-      },
-      {
-        id: '2',
-        partNo: 'Pn00112c',
-        serialNo: 'P0011157',
-        status: 'Failed',
-        testValue: 1.08,
-        direction: 'up',
-        timestamp: '17:58, 20 Jul',
-        attempt: '1/2',
-        action: 'Pending',
-      },
-      {
-        id: '3',
-        partNo: 'Pn00113c',
-        serialNo: 'P0011158',
-        status: 'Failed',
-        testValue: 0.48,
-        direction: 'down',
-        timestamp: '18:00, 20 Jul',
-        attempt: '1/2',
-        action: 'Pending',
-      },
-    ]
+    initialLeakage || []
   );
 
   React.useEffect(() => {
@@ -204,9 +142,35 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
                       >
                         {row.action}
                       </button>
+                {carryForwardData.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-xs text-gray-500 font-medium">
+                      No pending carry-forward embossing exceptions recorded.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  carryForwardData.map((row) => (
+                    <tr key={row.id} className="hover:bg-[#120e21]/50 transition-colors">
+                      <td className="px-4 py-4 font-semibold text-white">{row.partNo}</td>
+                      <td className="px-4 py-4 text-gray-300 font-medium">{row.serialNo}</td>
+                      <td className="px-4 py-4">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-[#2d1c0b] text-[#f59e0b] border border-[#f59e0b]/20">
+                          {row.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 text-gray-400 font-medium">{row.remainingSince}</td>
+                      <td className="px-4 py-4 text-gray-400 font-medium">{row.nextShift}</td>
+                      <td className="px-4 py-4">
+                        <button
+                          onClick={() => handleCarryForwardAction(row.id, row.partNo, row.action)}
+                          className="font-bold text-gray-400 hover:text-[#8b5cf6] transition-colors"
+                        >
+                          {row.action}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -227,7 +191,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
                 Requires quality action
               </span>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#3a1012] text-[#ef4444] border border-[#ef4444]/30">
-                Threshold Range: 0.50 – 1.00
+                Threshold Range: 75.0 – 80.0 kPa
               </span>
             </div>
           </div>
@@ -275,9 +239,45 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
                       >
                         {row.action}
                       </button>
+                {leakageFailuresData.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-4 py-8 text-center text-xs text-gray-500 font-medium">
+                      No leakage inspection failures recorded.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  leakageFailuresData.map((row) => (
+                    <tr key={row.id} className="hover:bg-[#120e21]/50 transition-colors">
+                      <td className="px-4 py-4 font-semibold text-white">{row.partNo}</td>
+                      <td className="px-4 py-4 text-gray-300 font-medium">{row.serialNo}</td>
+                      <td className="px-4 py-4">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-[#3a1012] text-[#ef4444] border border-[#ef4444]/20">
+                          {row.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center space-x-1 text-[#ef4444] font-bold">
+                          <span>{typeof row.testValue === 'number' ? row.testValue.toFixed(2) : row.testValue}</span>
+                          {row.direction === 'up' ? (
+                            <ChevronUp className="w-4 h-4 text-[#ef4444] stroke-[3]" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4 text-[#ef4444] stroke-[3]" />
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-gray-400 font-medium">{row.timestamp}</td>
+                      <td className="px-4 py-4 text-gray-400 font-semibold">{row.attempt}</td>
+                      <td className="px-4 py-4">
+                        <button
+                          onClick={() => handleLeakageAction(row.id, row.partNo, row.action)}
+                          className="font-bold text-gray-400 hover:text-[#8b5cf6] transition-colors"
+                        >
+                          {row.action}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

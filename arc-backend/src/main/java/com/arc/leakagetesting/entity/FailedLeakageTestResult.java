@@ -6,12 +6,12 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "leakage_test_results")
+@Table(name = "failed_leakage_test_results")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LeakageTestResult {
+public class FailedLeakageTestResult {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +39,7 @@ public class LeakageTestResult {
     private Double alarmThreshold;
 
     @Column(name = "status")
-    private String status; // PASSED or FAILED
+    private String status; // FAILED
 
     @Column(name = "cycle_time_seconds")
     private Double cycleTimeSeconds;
@@ -48,7 +48,7 @@ public class LeakageTestResult {
     private String attempt;
 
     @Column(name = "action")
-    private String action;
+    private String action; // Pending, Scrap
 
     @Column(name = "direction")
     private String direction;
@@ -60,6 +60,12 @@ public class LeakageTestResult {
     protected void onCreate() {
         if (testedAt == null) {
             testedAt = LocalDateTime.now();
+        }
+        if (status == null) {
+            status = "FAILED";
+        }
+        if (action == null) {
+            action = "Pending";
         }
     }
 }
