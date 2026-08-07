@@ -39,6 +39,7 @@
     opacity: 0;
     transform: scale(0.98) translateY(6px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -48,3 +49,19 @@
 .animate-fade-in {
   animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Pulsing glow for progress bar container when active or in progress */
+@keyframes progress-glow {
+  0%, 100% {
+    box-shadow: 0 0 4px rgba(0, 176, 116, 0.2);
+    border-color: rgba(0, 176, 116, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(0, 176, 116, 0.45);
+    border-color: rgba(0, 176, 116, 0.5);
+  }
+}
+
+.animate-progress-active {
+  animation: progress-glow 2s ease-in-out infinite;
+}

@@ -120,7 +120,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
   };
 
   const getFormattedDate = () => {
-    return '20 July, 2026';
+    return new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   };
 
   return (
@@ -181,7 +181,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
         ) : activeTab === 'data-preparation' ? (
           <DataPreparationPage />
         ) : (
-          <div className="bg-[#0d0b14] rounded-3xl p-8 shadow-sm border border-[#1b172a] animate-fade-in">
+          <div className="bg-[#0D0E19] rounded-3xl p-8 shadow-sm border border-[#1b172a] animate-fade-in">
             <h1 className="text-2xl font-bold text-white capitalize mb-4">
               {activeTab.replace('-', ' ')}
             </h1>

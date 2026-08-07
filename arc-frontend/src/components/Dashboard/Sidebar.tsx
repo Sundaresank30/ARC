@@ -40,7 +40,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const visibleItems = menuItems.filter((item) => allowedTabs.includes(item.id));
 
   return (
-    <aside className="w-64 bg-[#0d0b14] border-r border-[#1b172a] flex flex-col justify-between h-screen sticky top-0 shrink-0 select-none">
+    <aside className="w-64 bg-[#0D0E19] border-r border-[#1b172a] flex flex-col justify-between h-screen sticky top-0 shrink-0 select-none">
       <div className="flex flex-col pt-6 px-4">
         <div className="flex items-center space-x-3 px-3 mb-8">
           <div className="w-9 h-9 rounded-lg bg-[#7c3aed] text-white flex items-center justify-center shadow-md shadow-purple-500/10">

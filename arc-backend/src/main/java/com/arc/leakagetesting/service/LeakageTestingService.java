@@ -6,13 +6,23 @@ import com.arc.embossing.enums.EmbossingStatus;
 import com.arc.embossing.repository.EmbossingJobRepository;
 import com.arc.leakagetesting.dto.LeakageTestItemDto;
 import com.arc.leakagetesting.dto.LeakageTestingResponseDto;
+import com.arc.leakagetesting.entity.FailedLeakageTestResult;
+import com.arc.leakagetesting.entity.LeakageTestResult;
+import com.arc.leakagetesting.entity.PassedLeakageTestResult;
+import com.arc.leakagetesting.repository.FailedLeakageTestResultRepository;
+import com.arc.leakagetesting.repository.LeakageTestResultRepository;
+import com.arc.leakagetesting.repository.PassedLeakageTestResultRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,65 +30,151 @@ import java.util.stream.Collectors;
 public class LeakageTestingService {
 
     private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("HH:mm, dd MMM");
+    private static final DateTimeFormatter DATE_DISPLAY_FORMATTER = DateTimeFormatter.ofPattern("d MMMM, yyyy");
 
     private final EmbossingJobRepository embossingJobRepository;
     private final EmbossingSimulationProperties simulationProperties;
+    private final LeakageTestResultRepository resultRepository;
+    private final PassedLeakageTestResultRepository passedResultRepository;
+    private final FailedLeakageTestResultRepository failedResultRepository;
+    private final LeakageTestingMachineService machineService;
 
+    @Autowired
     public LeakageTestingService(
             EmbossingJobRepository embossingJobRepository,
-            EmbossingSimulationProperties simulationProperties) {
+            EmbossingSimulationProperties simulationProperties,
+            LeakageTestResultRepository resultRepository,
+            PassedLeakageTestResultRepository passedResultRepository,
+            FailedLeakageTestResultRepository failedResultRepository,
+            @Autowired(required = false) LeakageTestingMachineService machineService) {
         this.embossingJobRepository = embossingJobRepository;
         this.simulationProperties = simulationProperties;
+        this.resultRepository = resultRepository;
+        this.passedResultRepository = passedResultRepository;
+        this.failedResultRepository = failedResultRepository;
+        this.machineService = machineService;
     }
 
     @Transactional(readOnly = true)
     public LeakageTestingResponseDto getDashboardData() {
-        String activeBatch = simulationProperties.getActiveBatch();
-        if (activeBatch == null || activeBatch.isEmpty()) {
-            activeBatch = "Batch_1";
+        String activeBatch = resolveActiveBatchId();
+
+        List<PassedLeakageTestResult> passedEntities = passedResultRepository.findByBatchIdOrderByIdAsc(activeBatch);
+        List<FailedLeakageTestResult> failedEntities = failedResultRepository.findByBatchIdOrderByIdAsc(activeBatch);
+        List<LeakageTestResult> allTestResults = resultRepository.findByBatchIdOrderByIdAsc(activeBatch);
+        List<EmbossingJob> embossingJobs = embossingJobRepository.findByBatchIdOrderByIdAsc(activeBatch);
+
+        long totalParts = Math.max(embossingJobs.size(), allTestResults.size());
+
+        List<LeakageTestItemDto> failureDtos;
+        List<LeakageTestItemDto> passedDtos;
+
+        if (!failedEntities.isEmpty() || !passedEntities.isEmpty()) {
+            failureDtos = failedEntities.stream().map(this::toItemDto).collect(Collectors.toList());
+            passedDtos = passedEntities.stream().map(this::toItemDto).collect(Collectors.toList());
+        } else if (!allTestResults.isEmpty()) {
+            failureDtos = new ArrayList<>();
+            passedDtos = new ArrayList<>();
+            for (LeakageTestResult res : allTestResults) {
+                LeakageTestItemDto dto = toItemDto(res);
+                if ("FAILED".equalsIgnoreCase(res.getStatus())) {
+                    failureDtos.add(dto);
+                } else {
+                    passedDtos.add(dto);
+                }
+            }
+        } else {
+            // Fallback to embossing jobs if no machine test runs exist yet
+            failureDtos = new ArrayList<>();
+            passedDtos = new ArrayList<>();
+            for (EmbossingJob job : embossingJobs) {
+                if (job.getEmbossingStatus() == EmbossingStatus.FAILED) {
+                    failureDtos.add(toItemDto(job, "Failed"));
+                } else if (job.getEmbossingStatus() == EmbossingStatus.COMPLETED) {
+                    passedDtos.add(toItemDto(job, "Passed"));
+                }
+            }
         }
 
-        List<EmbossingJob> allJobs = embossingJobRepository.findByBatchIdOrderByIdAsc(activeBatch);
-        long totalParts = allJobs.size();
+        long completedCount = failureDtos.size() + passedDtos.size();
+        long failedCount = failureDtos.size();
+        long passedCount = passedDtos.size();
 
-        // Completed or Failed jobs count towards processed total
-        long processedCount = allJobs.stream()
-                .filter(j -> j.getEmbossingStatus() == EmbossingStatus.COMPLETED || j.getEmbossingStatus() == EmbossingStatus.FAILED)
-                .count();
+        int progressPercent = totalParts > 0 ? (int) Math.round((double) completedCount / totalParts * 100) : 0;
+        if (progressPercent > 100) {
+            progressPercent = 100;
+        }
 
-        // ONLY jobs with FAILED status in embossing_jobs are shown in the inspection table
-        List<EmbossingJob> failedJobs = allJobs.stream()
-                .filter(j -> j.getEmbossingStatus() == EmbossingStatus.FAILED)
-                .collect(Collectors.toList());
-
-        long failedCount = failedJobs.size();
-
-        int progressPercent = totalParts > 0 ? (int) Math.round((double) processedCount / totalParts * 100) : 0;
-
-        List<LeakageTestItemDto> failureDtos = failedJobs.stream()
-                .map(this::toItemDto)
-                .collect(Collectors.toList());
+        String batchStatus = (progressPercent >= 100 && totalParts > 0) ? "100% completed" : (totalParts == 0 ? "No Batch" : "In Progress");
+        String currentDateDisplay = LocalDate.now().format(DATE_DISPLAY_FORMATTER);
 
         return LeakageTestingResponseDto.builder()
                 .activeBatch(activeBatch)
                 .failedCount(failedCount)
+                .passedCount(passedCount)
                 .batchProgressPercent(progressPercent)
-                .completedCount(processedCount)
+                .completedCount(completedCount)
                 .totalParts(totalParts)
-                .dateDisplay("20 July, 2026")
+                .dateDisplay(currentDateDisplay)
+                .batchStatus(batchStatus)
                 .failures(failureDtos)
+                .passed(passedDtos)
                 .build();
     }
 
-    @Transactional
-    public LeakageTestItemDto updateJobAction(Long jobId, String newAction) {
-        EmbossingJob job = embossingJobRepository.findById(jobId)
-                .orElseThrow(() -> new IllegalArgumentException("Embossing job not found with id: " + jobId));
+    public String resolveActiveBatchId() {
+        // 1. Live Active Batch from Leakage Machine
+        if (machineService != null) {
+            try {
+                String active = machineService.resolveActiveBatchId();
+                if (active != null && !active.isBlank() && !"No Active Batch".equalsIgnoreCase(active)) {
+                    return active;
+                }
+            } catch (Exception e) {
+                log.warn("Could not retrieve active batch from machine service: {}", e.getMessage());
+            }
+        }
 
-        job.setAction(newAction);
-        EmbossingJob saved = embossingJobRepository.save(job);
-        log.info("Updated action for job ID {} ({}) to {}", jobId, saved.getPartNumber(), newAction);
-        return toItemDto(saved);
+        // 2. Latest completed embossing job batch
+        List<EmbossingJob> completedJobs = embossingJobRepository.findByEmbossingStatusOrderByIdDesc(EmbossingStatus.COMPLETED);
+        if (!completedJobs.isEmpty()) {
+            return completedJobs.get(0).getBatchId();
+        }
+
+        // 3. Latest embossing job batch overall
+        List<EmbossingJob> allJobs = embossingJobRepository.findAll();
+        if (!allJobs.isEmpty()) {
+            return allJobs.get(allJobs.size() - 1).getBatchId();
+        }
+
+        return "No Active Batch";
+    }
+
+    @Transactional
+    public LeakageTestItemDto updateJobAction(Long id, String newAction) {
+        Optional<FailedLeakageTestResult> failedOpt = failedResultRepository.findById(id);
+        if (failedOpt.isPresent()) {
+            FailedLeakageTestResult fResult = failedOpt.get();
+            fResult.setAction(newAction);
+            FailedLeakageTestResult saved = failedResultRepository.save(fResult);
+            log.info("Updated action for FailedLeakageTestResult ID {} ({}) to {}", id, saved.getPartNumber(), newAction);
+            return toItemDto(saved);
+        }
+
+        Optional<LeakageTestResult> resultOpt = resultRepository.findById(id);
+        if (resultOpt.isPresent()) {
+            LeakageTestResult result = resultOpt.get();
+            result.setAction(newAction);
+            LeakageTestResult saved = resultRepository.save(result);
+            log.info("Updated action for LeakageTestResult ID {} ({}) to {}", id, saved.getPartNumber(), newAction);
+            return toItemDto(saved);
+        }
+
+        EmbossingJob job = embossingJobRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Leakage test record or embossing job not found with id: " + id));
+
+        log.info("Requested action update for EmbossingJob ID {} ({}) to {}", id, job.getPartNumber(), newAction);
+        return toItemDto(job, "Failed");
     }
 
     @Transactional
@@ -94,24 +190,80 @@ public class LeakageTestingService {
         job.setEmbossingCompletedTime(LocalDateTime.now());
 
         EmbossingJob saved = embossingJobRepository.save(job);
-        log.info("Marked job ID {} ({}) as FAILED with test value {}", jobId, saved.getPartNumber(), testValue);
-        return toItemDto(saved);
+        log.info("Marked job ID {} ({}) as FAILED", jobId, saved.getPartNumber());
+        return toItemDto(saved, "Failed");
     }
 
-    private LeakageTestItemDto toItemDto(EmbossingJob job) {
+    private LeakageTestItemDto toItemDto(PassedLeakageTestResult result) {
+        LocalDateTime time = result.getTestedAt() != null ? result.getTestedAt() : LocalDateTime.now();
+        String formattedTime = time.format(TIMESTAMP_FORMATTER);
+
+        return LeakageTestItemDto.builder()
+                .id(result.getId())
+                .partNo(result.getPartNumber())
+                .serialNo(result.getSerialNumber())
+                .status("Passed")
+                .testValue(result.getPressureValue() != null ? result.getPressureValue() : 78.5)
+                .direction(result.getDirection() != null ? result.getDirection() : "up")
+                .timestamp(formattedTime)
+                .attempt(result.getAttempt() != null ? result.getAttempt() : "1/2")
+                .action(result.getAction() != null ? result.getAction() : "Passed")
+                .build();
+    }
+
+    private LeakageTestItemDto toItemDto(FailedLeakageTestResult result) {
+        LocalDateTime time = result.getTestedAt() != null ? result.getTestedAt() : LocalDateTime.now();
+        String formattedTime = time.format(TIMESTAMP_FORMATTER);
+
+        return LeakageTestItemDto.builder()
+                .id(result.getId())
+                .partNo(result.getPartNumber())
+                .serialNo(result.getSerialNumber())
+                .status("Failed")
+                .testValue(result.getPressureValue() != null ? result.getPressureValue() : 82.5)
+                .direction(result.getDirection() != null ? result.getDirection() : "down")
+                .timestamp(formattedTime)
+                .attempt(result.getAttempt() != null ? result.getAttempt() : "1/2")
+                .action(result.getAction() != null ? result.getAction() : "Pending")
+                .build();
+    }
+
+    private LeakageTestItemDto toItemDto(LeakageTestResult result) {
+        LocalDateTime time = result.getTestedAt() != null ? result.getTestedAt() : LocalDateTime.now();
+        String formattedTime = time.format(TIMESTAMP_FORMATTER);
+
+        String statusDisplay = "PASSED".equalsIgnoreCase(result.getStatus()) ? "Passed" : "Failed";
+        String direction = result.getDirection() != null ? result.getDirection() : ("Passed".equalsIgnoreCase(statusDisplay) ? "up" : "down");
+        String attempt = result.getAttempt() != null ? result.getAttempt() : "1/2";
+        String action = result.getAction() != null ? result.getAction() : ("Passed".equalsIgnoreCase(statusDisplay) ? "Passed" : "Pending");
+
+        return LeakageTestItemDto.builder()
+                .id(result.getId())
+                .partNo(result.getPartNumber())
+                .serialNo(result.getSerialNumber())
+                .status(statusDisplay)
+                .testValue(result.getPressureValue() != null ? result.getPressureValue() : 78.5)
+                .direction(direction)
+                .timestamp(formattedTime)
+                .attempt(attempt)
+                .action(action)
+                .build();
+    }
+
+    private LeakageTestItemDto toItemDto(EmbossingJob job, String statusDisplay) {
         LocalDateTime time = job.getEmbossingCompletedTime() != null ? job.getEmbossingCompletedTime() : job.getCreatedTime();
-        String formattedTime = time != null ? time.format(TIMESTAMP_FORMATTER) : "17:57, 20 Jul";
+        String formattedTime = time != null ? time.format(TIMESTAMP_FORMATTER) : LocalDateTime.now().format(TIMESTAMP_FORMATTER);
 
         return LeakageTestItemDto.builder()
                 .id(job.getId())
                 .partNo(job.getPartNumber())
                 .serialNo(job.getSerialNumber())
-                .status("Failed")
-                .testValue(job.getTestValue() != null ? job.getTestValue() : 0.42)
-                .direction(job.getDirection() != null ? job.getDirection() : "down")
+                .status(statusDisplay)
+                .testValue("Passed".equalsIgnoreCase(statusDisplay) ? 77.4 : 82.5)
+                .direction("Passed".equalsIgnoreCase(statusDisplay) ? "up" : "down")
                 .timestamp(formattedTime)
-                .attempt(job.getAttempt() != null ? job.getAttempt() : "1/2")
-                .action(job.getAction() != null ? job.getAction() : "Pending")
+                .attempt("1/2")
+                .action("Passed".equalsIgnoreCase(statusDisplay) ? "Passed" : "Pending")
                 .build();
     }
 }

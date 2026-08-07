@@ -7,6 +7,11 @@ import com.arc.dashboard.entity.CarryForwardEmbossing;
 import com.arc.dashboard.entity.LeakageFailure;
 import com.arc.dashboard.repository.CarryForwardEmbossingRepository;
 import com.arc.dashboard.repository.LeakageFailureRepository;
+import com.arc.datapreparation.repository.ProductionBatchRepository;
+import com.arc.embossing.enums.EmbossingStatus;
+import com.arc.embossing.repository.EmbossingJobRepository;
+import com.arc.leakagetesting.repository.LeakageTestResultRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,12 +23,22 @@ public class DashboardService {
 
     private final CarryForwardEmbossingRepository carryForwardRepository;
     private final LeakageFailureRepository leakageFailureRepository;
+    private final ProductionBatchRepository productionBatchRepository;
+    private final EmbossingJobRepository embossingJobRepository;
+    private final LeakageTestResultRepository leakageTestResultRepository;
 
+    @Autowired
     public DashboardService(
             CarryForwardEmbossingRepository carryForwardRepository,
-            LeakageFailureRepository leakageFailureRepository) {
+            LeakageFailureRepository leakageFailureRepository,
+            @Autowired(required = false) ProductionBatchRepository productionBatchRepository,
+            @Autowired(required = false) EmbossingJobRepository embossingJobRepository,
+            @Autowired(required = false) LeakageTestResultRepository leakageTestResultRepository) {
         this.carryForwardRepository = carryForwardRepository;
         this.leakageFailureRepository = leakageFailureRepository;
+        this.productionBatchRepository = productionBatchRepository;
+        this.embossingJobRepository = embossingJobRepository;
+        this.leakageTestResultRepository = leakageTestResultRepository;
     }
 
     @Transactional(readOnly = true)
@@ -31,18 +46,17 @@ public class DashboardService {
         List<CarryForwardEmbossing> carryForwardList = carryForwardRepository.findAll();
         List<LeakageFailure> leakageFailureList = leakageFailureRepository.findAll();
 
-        long pendingEmbossingCount = carryForwardList.stream()
-                .filter(item -> !"Completed".equalsIgnoreCase(item.getStatus()))
-                .count();
+        long completedJobsCount = (embossingJobRepository != null)
+                ? embossingJobRepository.countByEmbossingStatus(EmbossingStatus.COMPLETED)
+                : 0;
 
-        long leakageFailuresCount = leakageFailureList.stream()
-                .filter(item -> "Failed".equalsIgnoreCase(item.getStatus()))
-                .count();
+        long leakageFailuresCount = (leakageTestResultRepository != null)
+                ? leakageTestResultRepository.countByStatus("FAILED")
+                : leakageFailureList.stream().filter(item -> "Failed".equalsIgnoreCase(item.getStatus())).count();
 
-        // Base values per initial specification: completed 460, failed 3, total batches 5
-        // When zero pending embossing and zero leakage failures remain, completed updates to 498
-        int baseCompleted = 460;
-        int completedCount = (pendingEmbossingCount == 0 && leakageFailuresCount == 0) ? 498 : baseCompleted;
+        long totalBatchesCount = (productionBatchRepository != null)
+                ? productionBatchRepository.count()
+                : 0;
 
         List<CarryForwardDTO> carryForwardDTOs = carryForwardList.stream()
                 .map(item -> CarryForwardDTO.builder()
@@ -71,9 +85,9 @@ public class DashboardService {
                 .collect(Collectors.toList());
 
         return DashboardResponseDTO.builder()
-                .completedCount(completedCount)
+                .completedCount((int) completedJobsCount)
                 .failedCount((int) leakageFailuresCount)
-                .totalBatches(5)
+                .totalBatches((int) totalBatchesCount)
                 .carryForwardEmbossing(carryForwardDTOs)
                 .leakageTestingFailures(leakageFailureDTOs)
                 .build();

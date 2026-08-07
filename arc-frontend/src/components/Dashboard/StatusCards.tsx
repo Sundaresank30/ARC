@@ -8,15 +8,15 @@ interface StatusCardProps {
 }
 
 export const StatusCards: React.FC<StatusCardProps> = ({
-  completedCount = 498,
-  failedCount = 3,
-  totalBatches = 5,
+  completedCount = 0,
+  failedCount = 0,
+  totalBatches = 0,
 }) => {
   const cards = [
     {
       title: 'Completed',
       value: completedCount,
-      changeText: '+from this week',
+      changeText: '+from actual production data',
       icon: CheckCircle2,
       subtextColorClass: 'text-[#10b981]',
       iconBgClass: 'bg-[#0c1f19] border border-[#10b981]/30 text-[#10b981]',
@@ -24,7 +24,7 @@ export const StatusCards: React.FC<StatusCardProps> = ({
     {
       title: 'Failed',
       value: failedCount,
-      changeText: '-from this week',
+      changeText: '-from actual production data',
       icon: AlertCircle,
       subtextColorClass: 'text-[#ef4444]',
       iconBgClass: 'bg-[#271012] border border-[#ef4444]/30 text-[#ef4444]',
@@ -32,7 +32,7 @@ export const StatusCards: React.FC<StatusCardProps> = ({
     {
       title: 'Total batches',
       value: totalBatches,
-      changeText: '+from this week',
+      changeText: 'total registered batches',
       icon: FileText,
       subtextColorClass: 'text-[#6366f1]',
       iconBgClass: 'bg-[#141235] border border-[#6366f1]/30 text-[#6366f1]',
@@ -46,7 +46,7 @@ export const StatusCards: React.FC<StatusCardProps> = ({
         return (
           <div
             key={idx}
-            className="bg-[#0d0b14] border border-[#1c182a] rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-150"
+            className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1c182a] rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-150"
           >
             {/* Top row: Title (left) & Icon (right) */}
             <div className="flex items-center justify-between mb-4">

@@ -14,9 +14,12 @@ import java.util.List;
 public class LeakageTestingResponseDto {
     private String activeBatch;
     private long failedCount;
+    private long passedCount;
     private int batchProgressPercent;
     private long completedCount;
     private long totalParts;
     private String dateDisplay;
+    private String batchStatus;
     private List<LeakageTestItemDto> failures;
+    private List<LeakageTestItemDto> passed;
 }

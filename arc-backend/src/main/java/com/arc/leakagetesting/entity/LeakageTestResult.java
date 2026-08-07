@@ -44,6 +44,15 @@ public class LeakageTestResult {
     @Column(name = "cycle_time_seconds")
     private Double cycleTimeSeconds;
 
+    @Column(name = "attempt")
+    private String attempt;
+
+    @Column(name = "action")
+    private String action;
+
+    @Column(name = "direction")
+    private String direction;
+
     @Column(name = "tested_at")
     private LocalDateTime testedAt;
 
