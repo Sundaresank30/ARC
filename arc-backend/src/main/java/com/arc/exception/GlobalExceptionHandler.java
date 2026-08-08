@@ -56,6 +56,11 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public void handleAccessDenied(org.springframework.security.access.AccessDeniedException ex) throws org.springframework.security.access.AccessDeniedException {
+        throw ex;
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleGenericException(
             Exception ex,
