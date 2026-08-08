@@ -52,7 +52,7 @@ export const LeakageTestingView: React.FC = () => {
     const percent = data.batchProgressPercent;
     const completedCount = data.completedCount;
     const totalCount = data.totalParts;
-    const isActive = !isBatchCompleted;
+    const isActive = data.batchStatus === 'In Progress';
 
     return (
       <div
@@ -228,8 +228,8 @@ export const LeakageTestingView: React.FC = () => {
                     <tr>
                       <td colSpan={6} className="py-8 text-center text-gray-500 font-medium bg-[#13111c]/10">
                         <div className="flex flex-col items-center justify-center space-y-1.5">
-                          <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-                          <span className="text-xs text-gray-400 font-semibold">
+                          <Info className="w-6 h-6 text-gray-500" />
+                          <span className="text-xs text-gray-500 font-semibold">
                             No leakage inspection failures recorded for active batch
                           </span>
                         </div>
@@ -328,8 +328,8 @@ export const LeakageTestingView: React.FC = () => {
                       <td colSpan={6} className="py-8 text-center text-gray-500 font-medium bg-[#13111c]/10">
                         <div className="flex flex-col items-center justify-center space-y-1.5">
                           <Info className="w-6 h-6 text-gray-500" />
-                          <span className="text-xs text-gray-400 font-semibold">
-                            No passed inspection results recorded for active batch yet
+                          <span className="text-xs text-gray-500 font-semibold">
+                            No passed inspection results recorded for active batch
                           </span>
                         </div>
                       </td>

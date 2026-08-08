@@ -138,8 +138,13 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
 
                     {tableJobs.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="px-4 py-6 text-center text-sm text-gray-400 font-medium">
-                          No pending or active jobs
+                        <td colSpan={6} className="py-8 text-center text-gray-500 font-medium bg-[#13111c]/10">
+                          <div className="flex flex-col items-center justify-center space-y-1.5">
+                            <Info className="w-6 h-6 text-gray-500" />
+                            <span className="text-xs text-gray-500 font-semibold">
+                              No pending or active jobs recorded for active batch
+                            </span>
+                          </div>
                         </td>
                       </tr>
                     ) : (
@@ -211,8 +216,13 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
 
                     {completedJobs.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="px-4 py-6 text-center text-sm text-gray-400 font-medium">
-                          No completed jobs yet
+                        <td colSpan={6} className="py-8 text-center text-gray-500 font-medium bg-[#13111c]/10">
+                          <div className="flex flex-col items-center justify-center space-y-1.5">
+                            <Info className="w-6 h-6 text-gray-500" />
+                            <span className="text-xs text-gray-500 font-semibold">
+                              No completed jobs recorded for active batch
+                            </span>
+                          </div>
                         </td>
                       </tr>
                     ) : (

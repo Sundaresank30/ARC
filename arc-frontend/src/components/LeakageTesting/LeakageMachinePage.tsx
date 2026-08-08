@@ -34,6 +34,7 @@ import {
   QueueItem,
   TestedRecord,
 } from '../../api/leakageMachine';
+import { Info } from 'lucide-react';
 
 export const LeakageMachinePage: React.FC = () => {
   const [state, setState] = useState<MachineState>({
@@ -455,8 +456,13 @@ export const LeakageMachinePage: React.FC = () => {
             <tbody className="divide-y divide-[#1b172a] text-xs sm:text-sm font-semibold">
               {queue.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-gray-500 font-medium">
-                    No embossed parts found in active queue. Ensure active batch is embossed.
+                  <td colSpan={7} className="py-8 text-center text-gray-500 font-medium bg-[#13111c]/10">
+                    <div className="flex flex-col items-center justify-center space-y-1.5">
+                      <Info className="w-6 h-6 text-gray-500" />
+                      <span className="text-xs text-gray-500 font-semibold">
+                        No embossed parts found in active queue. Ensure active batch is embossed
+                      </span>
+                    </div>
                   </td>
                 </tr>
               ) : (

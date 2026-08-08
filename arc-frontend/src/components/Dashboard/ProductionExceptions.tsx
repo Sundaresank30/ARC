@@ -87,7 +87,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
 
       {/* Main Title Header */}
       <div className="flex items-center space-x-2 mb-6">
-        <h2 className="text-xl font-bold text-white tracking-tight">
+        <h2 className="text-xl font-semibold text-white tracking-tight">
           Production Exceptions
         </h2>
         <Info className="w-4 h-4 text-gray-500 cursor-pointer hover:text-gray-300" />
@@ -125,8 +125,13 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
               <tbody className="divide-y divide-[#1c182a] bg-[#0D0E19]">
                 {carryForwardData.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-4 py-8 text-center text-xs text-gray-500 font-medium">
-                      No pending carry-forward embossing exceptions recorded.
+                    <td colSpan={6} className="py-8 text-center text-gray-500 font-medium bg-[#13111c]/10">
+                      <div className="flex flex-col items-center justify-center space-y-1.5">
+                        <Info className="w-6 h-6 text-gray-500" />
+                        <span className="text-xs text-gray-500 font-semibold">
+                          No pending carry-forward embossing exceptions recorded
+                        </span>
+                      </div>
                     </td>
                   </tr>
                 ) : (
@@ -185,8 +190,13 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
               <tbody className="divide-y divide-[#1c182a] bg-[#0D0E19]">
                 {leakageFailuresData.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-xs text-gray-500 font-medium">
-                      No leakage inspection failures recorded.
+                    <td colSpan={6} className="py-8 text-center text-gray-500 font-medium bg-[#13111c]/10">
+                      <div className="flex flex-col items-center justify-center space-y-1.5">
+                        <Info className="w-6 h-6 text-gray-500" />
+                        <span className="text-xs text-gray-500 font-semibold">
+                          No leakage inspection failures recorded
+                        </span>
+                      </div>
                     </td>
                   </tr>
                 ) : (
