@@ -39,10 +39,10 @@ export const LeakageMachinePage: React.FC = () => {
   const [state, setState] = useState<MachineState>({
     machineStatus: 'IDLE',
     activeBatch: 'No Active Batch',
-    fileName: 'No File',
-    warningThreshold: undefined as unknown as number,
-    alarmThreshold: undefined as unknown as number,
-    unit: '',
+    fileName: 'Batch.csv',
+    warningThreshold: 0,
+    alarmThreshold: 0,
+    unit: 'kPa',
     totalEmbossed: 0,
     totalTested: 0,
     passedParts: 0,
@@ -131,8 +131,8 @@ export const LeakageMachinePage: React.FC = () => {
   const isTesting = state.machineStatus === 'TESTING';
   const chamber = state.activeChamber;
   const currentTestValue = chamber?.currentPressure ?? null;
-  const warningThreshold = state.warningThreshold;
-  const alarmThreshold = state.alarmThreshold;
+  const warningThreshold = state.warningThreshold || 75.0;
+  const alarmThreshold = state.alarmThreshold || 80.0;
   const queue = state.queue || [];
   const history = state.history || [];
   const trendData = state.trendData || [];
@@ -143,7 +143,7 @@ export const LeakageMachinePage: React.FC = () => {
       <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 bg-[#0D0E19] border border-[#1b172a] p-6 rounded-3xl shadow-sm">
         <div className="space-y-2">
           <div className="flex items-center space-x-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#8b5cf6] bg-[#19122a] border border-[#3c1e6d] px-3 py-1 rounded-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#8b5cf6] bg-[#19122a] px-3 py-1 rounded-full">
               Leakage Machine
             </span>
             <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
@@ -153,18 +153,12 @@ export const LeakageMachinePage: React.FC = () => {
               {state.activeBatch}
             </span>
           </div>
-          {state.activeBatch !== 'No Active Batch' && warningThreshold != null && alarmThreshold != null ? (
-            <p className="text-xs text-[#8a8596]">
-              Target threshold vacuum range extracted from <span className="font-semibold text-white">{state.fileName}</span>:
-              <span className="ml-1 text-sm font-bold text-indigo-400 bg-indigo-950/40 px-2 py-0.5 rounded border border-indigo-900/60">
-                {warningThreshold} – {alarmThreshold} {state.unit || 'kPa'}
-              </span>
-            </p>
-          ) : (
-            <p className="text-xs text-[#8a8596]">
-              Target threshold vacuum range: <span className="font-semibold text-gray-500">None (No Active Batch)</span>
-            </p>
-          )}
+          <p className="text-xs text-[#8a8596]">
+            Target threshold vacuum range extracted from <span className="font-semibold text-white">{state.fileName}</span>:
+            <span className="ml-1 text-sm font-bold text-indigo-400 bg-indigo-950/40 px-2 py-0.5 rounded border border-indigo-900/60">
+              {warningThreshold} – {alarmThreshold} {state.unit}
+            </span>
+          </p>
         </div>
 
         {/* Action Controls */}
@@ -172,8 +166,8 @@ export const LeakageMachinePage: React.FC = () => {
           <div className="flex items-center space-x-2 bg-[#13111c] border border-[#221e33] p-1 rounded-xl">
             <button
               onClick={handleStart}
-              disabled={isTesting || state.totalEmbossed === 0 || state.activeBatch === 'No Active Batch'}
-              className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg font-bold text-xs transition-all duration-150 ${isTesting || state.totalEmbossed === 0 || state.activeBatch === 'No Active Batch'
+              disabled={isTesting || state.totalEmbossed === state.totalTested}
+              className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg font-bold text-xs transition-all duration-150 ${isTesting || state.totalEmbossed === state.totalTested
                 ? 'text-gray-600 cursor-not-allowed'
                 : 'bg-[#7c3aed] text-white hover:bg-[#6d28d9]'
                 }`}
@@ -186,7 +180,7 @@ export const LeakageMachinePage: React.FC = () => {
               disabled={!isTesting}
               className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg font-bold text-xs transition-all duration-150 ${!isTesting
                 ? 'text-gray-600 cursor-not-allowed'
-                : 'bg-amber-600/25 text-amber-450 border border-amber-500/25 hover:bg-amber-600/40'
+                : 'bg-amber-600/25 text-amber-400 border border-amber-500/25 hover:bg-amber-600/40'
                 }`}
             >
               <Pause className="w-3.5 h-3.5" />
@@ -224,30 +218,26 @@ export const LeakageMachinePage: React.FC = () => {
         <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-150">
           <span className="text-xs font-bold text-[#8a8596]">Total Embossed</span>
           <div className="text-3xl font-extrabold text-white mt-1">{state.totalEmbossed}</div>
-          <div className="text-[10px] text-gray-500 mt-0.5">Ready for testing</div>
+          <div className="text-[10px] text-[#f59e0b] mt-0.5">Ready for testing</div>
         </div>
         {/* KPI 2 */}
         <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-150">
           <span className="text-xs font-bold text-[#8a8596]">Total Tested</span>
           <div className="text-3xl font-extrabold text-white mt-1">{state.totalTested}</div>
-          <div className="text-[10px] text-gray-500 mt-0.5">Tested items</div>
+          <div className="text-[10px] text-[#6366f1] mt-0.5">Tested items</div>
         </div>
         {/* KPI 3 */}
         <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-150 relative overflow-hidden">
-          <span className="text-xs font-bold text-emerald-500">Passed Parts</span>
-          <div className="text-3xl font-extrabold text-emerald-450 mt-1">{state.passedParts}</div>
-          <div className="text-[10px] text-emerald-600 mt-0.5">
-            {warningThreshold != null && alarmThreshold != null ? `Range: ${warningThreshold} – ${alarmThreshold} ${state.unit || 'kPa'}` : 'No Active Range'}
-          </div>
+          <span className="text-xs font-bold text-[#8a8596]">Passed Parts</span>
+          <div className="text-3xl font-extrabold text-white mt-1">{state.passedParts}</div>
+          <div className="text-[10px] text-emerald-600 mt-0.5">Range: {warningThreshold} – {alarmThreshold} {state.unit}</div>
           <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
         </div>
         {/* KPI 4 */}
         <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-150 relative overflow-hidden">
-          <span className="text-xs font-bold text-red-500">Failed Parts</span>
-          <div className="text-3xl font-extrabold text-red-400 mt-1">{state.failedParts}</div>
-          <div className="text-[10px] text-red-400/70 mt-0.5">
-            {warningThreshold != null && alarmThreshold != null ? `Outside ${warningThreshold} – ${alarmThreshold} ${state.unit || 'kPa'}` : 'No Active Range'}
-          </div>
+          <span className="text-xs font-bold text-[#8a8596]">Failed Parts</span>
+          <div className="text-3xl font-extrabold text-white mt-1">{state.failedParts}</div>
+          <div className="text-[10px] text-[#ef4444]/90 mt-0.5">Outside {warningThreshold} – {alarmThreshold} {state.unit}</div>
           {state.failedParts > 0 && (
             <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-red-500 animate-pulse" />
           )}
@@ -303,17 +293,17 @@ export const LeakageMachinePage: React.FC = () => {
                   {/* Visual Status Indicator Light */}
                   <div className="pt-2 flex justify-center">
                     {chamber.status === 'FAILED' ? (
-                      <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full border border-red-500/20 bg-red-500/10 text-red-500 font-extrabold text-xs">
+                      <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-red-500/10 text-red-500 font-extrabold text-xs">
                         <AlertCircle className="w-3.5 h-3.5" />
                         <span>FAILED (Outside Threshold Range)</span>
                       </div>
                     ) : chamber.status === 'PASSED' ? (
-                      <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 font-bold text-xs">
+                      <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 font-bold text-xs">
                         <CheckCircle className="w-3.5 h-3.5" />
                         <span>PASSED (Within Range)</span>
                       </div>
                     ) : (
-                      <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full border border-yellow-500/20 bg-yellow-500/10 text-yellow-400 font-semibold text-xs">
+                      <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-400 font-semibold text-xs">
                         <Activity className="w-3.5 h-3.5 animate-spin" />
                         <span>TESTING...</span>
                       </div>
@@ -474,18 +464,18 @@ export const LeakageMachinePage: React.FC = () => {
                   const testedRecord = history.find((h) => h.serialNumber === item.serialNumber);
 
                   let inspBadge = (
-                    <span className="bg-[#19122a] text-[#8b5cf6] border border-[#3c1e6d] px-2 py-0.5 rounded text-[10px]">
+                    <span className="bg-[#19122a] text-[#8b5cf6] px-2 py-0.5 rounded text-[10px]">
                       Ready
                     </span>
                   );
 
                   if (testedRecord) {
                     inspBadge = equalsIgnoreCase('PASSED', testedRecord.status) ? (
-                      <span className="bg-emerald-950/40 text-emerald-450 border border-emerald-900/40 px-2 py-0.5 rounded text-[10px]">
+                      <span className="bg-emerald-950/40 text-emerald-400 px-2 py-0.5 rounded text-[10px]">
                         Pass
                       </span>
                     ) : (
-                      <span className="bg-red-950/40 text-red-450 border border-red-900/40 px-2 py-0.5 rounded text-[10px]">
+                      <span className="bg-red-950/40 text-red-400 px-2 py-0.5 rounded text-[10px]">
                         Fail
                       </span>
                     );
@@ -503,14 +493,14 @@ export const LeakageMachinePage: React.FC = () => {
                       <td className="py-3 px-4 text-white font-mono">{item.partNumber}</td>
                       <td className="py-3 px-4 text-white font-mono">{item.serialNumber}</td>
                       <td className="py-3 px-4">
-                        <span className="text-[10px] px-2 py-0.5 rounded bg-blue-950/40 text-blue-400 border border-blue-900/40">
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-blue-950/40 text-blue-400">
                           COMPLETED
                         </span>
                       </td>
                       <td className="py-3 px-4">{inspBadge}</td>
                       <td className="py-3 px-4 font-mono font-bold">
                         {testedRecord ? (
-                          <span className={isValuePass ? 'text-emerald-450' : 'text-red-400'}>
+                          <span className={isValuePass ? 'text-emerald-400' : 'text-red-400'}>
                             {testedRecord.pressureValue.toFixed(1)} {state.unit}
                           </span>
                         ) : (

@@ -66,3 +66,28 @@ export interface CurrentMachine {
 export interface ApiError {
   message: string;
 }
+
+export interface LeakageTestRecord {
+  id?: number;
+  partNo: string;
+  serialNo: string;
+  status: 'Failed' | 'Passed' | string;
+  testValue: number;
+  direction: 'up' | 'down' | string;
+  timestamp: string;
+  attempt: string;
+  action: 'Scrap' | 'Pending' | 'Passed' | string;
+}
+
+export interface LeakageTestingDashboardData {
+  activeBatch: string;
+  failedCount: number;
+  passedCount?: number;
+  batchProgressPercent: number;
+  completedCount: number;
+  totalParts: number;
+  dateDisplay: string;
+  batchStatus?: string;
+  failures: LeakageTestRecord[];
+  passed?: LeakageTestRecord[];
+}

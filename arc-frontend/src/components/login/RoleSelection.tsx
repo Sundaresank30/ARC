@@ -21,7 +21,7 @@ export const RoleSelection: React.FC = () => {
   return (
     <div className="w-full max-w-[780px] bg-[#111827]/30 rounded-3xl p-8 sm:p-12 shadow-[0_0_50px_rgba(139,92,246,0.25)] border border-[#201538] animate-fade-in relative overflow-hidden">
       <div className="mb-8">
-        <h1 className="text-3xl sm:text-3xl font-bold text-white tracking-tight">
+        <h1 className="text-3xl sm:text-3xl font-semibold text-white tracking-tight">
           Choose Your Role
         </h1>
         <p className="mt-2 text-base text-gray-400 font-normal">
@@ -39,11 +39,10 @@ export const RoleSelection: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         <div
           onClick={() => !isLoading && setSelectedRole('manager')}
-          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-300 bg-gradient-to-b from-[#09040A] to-[#111827] hover:from-[#170e2b] hover:to-[#1b253b] hover:shadow-[0_0_25px_rgba(139,92,246,0.25)] hover:border-[#8b5cf6]/50 opacity-100 ${
-            selectedRole === 'manager'
-              ? 'border-[#7c3aed] shadow-lg shadow-purple-500/10 ring-1 ring-[#7c3aed]/30'
-              : 'border-[#1e1b29]'
-          } ${isLoading ? 'pointer-events-none' : ''}`}
+          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-300 bg-gradient-to-b from-[#09040A] to-[#111827] hover:from-[#170e2b] hover:to-[#1b253b] hover:shadow-[0_0_25px_rgba(139,92,246,0.25)] hover:border-[#8b5cf6]/50 opacity-100 ${selectedRole === 'manager'
+            ? 'border-[#7c3aed] shadow-lg shadow-purple-500/10 ring-1 ring-[#7c3aed]/30'
+            : 'border-[#1e1b29]'
+            } ${isLoading ? 'pointer-events-none' : ''}`}
         >
           <div className="h-44 flex items-center justify-center mb-4 w-full">
             <ManagerIllustration />
@@ -53,7 +52,7 @@ export const RoleSelection: React.FC = () => {
             <Briefcase className="w-6 h-6 stroke-[2]" />
           </div>
 
-          <h2 className="text-xl font-bold text-white mb-2">Manager</h2>
+          <h2 className="text-xl font-semibold text-white mb-2">Manager</h2>
           <p className="text-sm text-gray-400 leading-relaxed max-w-[220px]">
             Upload data, manage production, and review reports
           </p>
@@ -61,11 +60,10 @@ export const RoleSelection: React.FC = () => {
 
         <div
           onClick={() => !isLoading && setSelectedRole('operator')}
-          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-300 bg-gradient-to-b from-[#09040A] to-[#111827] hover:from-[#170e2b] hover:to-[#1b253b] hover:shadow-[0_0_25px_rgba(139,92,246,0.25)] hover:border-[#8b5cf6]/50 opacity-100 ${
-            selectedRole === 'operator'
-              ? 'border-[#7c3aed] shadow-lg shadow-purple-500/10 ring-1 ring-[#7c3aed]/30'
-              : 'border-[#1e1b29]'
-          } ${isLoading ? 'pointer-events-none' : ''}`}
+          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-300 bg-gradient-to-b from-[#09040A] to-[#111827] hover:from-[#170e2b] hover:to-[#1b253b] hover:shadow-[0_0_25px_rgba(139,92,246,0.25)] hover:border-[#8b5cf6]/50 opacity-100 ${selectedRole === 'operator'
+            ? 'border-[#7c3aed] shadow-lg shadow-purple-500/10 ring-1 ring-[#7c3aed]/30'
+            : 'border-[#1e1b29]'
+            } ${isLoading ? 'pointer-events-none' : ''}`}
         >
           <div className="h-44 flex items-center justify-center mb-4 w-full">
             <OperatorIllustration />
@@ -75,7 +73,7 @@ export const RoleSelection: React.FC = () => {
             <Settings className="w-6 h-6 stroke-[2]" />
           </div>
 
-          <h2 className="text-xl font-bold text-white mb-2">Operator</h2>
+          <h2 className="text-xl font-semibold text-white mb-2">Operator</h2>
           <p className="text-sm text-gray-400 leading-relaxed max-w-[220px]">
             Monitor production, Track progress, and oversee operations
           </p>

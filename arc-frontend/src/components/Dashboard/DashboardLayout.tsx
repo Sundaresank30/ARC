@@ -140,7 +140,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
           <div className="animate-fade-in space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-[28px] font-bold text-white tracking-tight leading-tight">
+                <h1 className="text-[28px] font-semibold text-white tracking-tight leading-tight">
                   Welcome Back
                 </h1>
                 <p className="mt-1 text-sm sm:text-base text-[#8a8596] font-medium">
@@ -155,7 +155,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
             </div>
 
             <div>
-              <h2 className="text-lg font-bold text-white tracking-tight mb-4">
+              <h2 className="text-lg font-semibold text-white tracking-tight mb-4">
                 Production Status
               </h2>
               <StatusCards
