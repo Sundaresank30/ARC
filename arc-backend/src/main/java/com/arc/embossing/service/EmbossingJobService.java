@@ -51,7 +51,7 @@ public class EmbossingJobService {
             ProductionBatchItem item = items.isEmpty() ? null : items.get(0);
             String batchId = (item != null && item.getProductionBatch() != null)
                     ? item.getProductionBatch().getBatchId()
-                    : "Batch_1";
+                    : null;
 
             job = EmbossingJob.builder()
                     .batchId(batchId)
@@ -119,7 +119,7 @@ public class EmbossingJobService {
             ProductionBatchItem item = items.isEmpty() ? null : items.get(0);
             String batchId = (item != null && item.getProductionBatch() != null)
                     ? item.getProductionBatch().getBatchId()
-                    : "Batch_1";
+                    : null;
 
             job = EmbossingJob.builder()
                     .batchId(batchId)

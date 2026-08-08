@@ -108,7 +108,6 @@ public class PdfExtractionService {
     }
 
     private String extractBatchId(String text) {
-        String batch = extractFlexibleValue(text, "Batch ID", "Batch Id", "BatchNo", "Batch No", "Batch");
-        return batch != null ? batch : "Batch_1";
+        return extractFlexibleValue(text, "Batch ID", "Batch Id", "BatchNo", "Batch No", "Batch");
     }
 }

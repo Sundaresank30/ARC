@@ -148,8 +148,8 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
                           key={job.id}
                           className="bg-[#0D0E19] hover:bg-[#151221]/30 transition-colors border-b border-[#1b172a] last:border-b-0"
                         >
-                          <td className="px-4 py-4 text-gray-400 font-medium">{job.partNumber}</td>
-                          <td className="px-4 py-4 text-gray-400 font-medium">{job.serialNumber}</td>
+                          <td className="px-4 py-4 text-gray-400 font-mono">{job.partNumber}</td>
+                          <td className="px-4 py-4 text-gray-400 font-mono">{job.serialNumber}</td>
                           <td className="px-4 py-4">
                             <StatusBadge status={job.embossingStatus} />
                           </td>
@@ -221,8 +221,8 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
                           key={job.id}
                           className="bg-[#0D0E19] hover:bg-[#151221]/30 transition-colors border-b border-[#1b172a] last:border-b-0"
                         >
-                          <td className="px-4 py-4 text-gray-400 font-medium">{job.partNumber}</td>
-                          <td className="px-4 py-4 text-gray-400 font-medium">{job.serialNumber}</td>
+                          <td className="px-4 py-4 text-gray-400 font-mono">{job.partNumber}</td>
+                          <td className="px-4 py-4 text-gray-400 font-mono">{job.serialNumber}</td>
                           <td className="px-4 py-4">
                             <StatusBadge status={job.embossingStatus} />
                           </td>

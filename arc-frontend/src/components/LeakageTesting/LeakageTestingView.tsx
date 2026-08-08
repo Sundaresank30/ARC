@@ -28,11 +28,11 @@ export const LeakageTestingView: React.FC = () => {
     activeBatch: 'Batch_1',
     failedCount: 0,
     passedCount: 0,
-    batchProgressPercent: 100,
-    completedCount: 100,
-    totalParts: 100,
-    dateDisplay: '06 August, 2026',
-    batchStatus: '100% completed',
+    batchProgressPercent: 0,
+    completedCount: 0,
+    totalParts: 0,
+    dateDisplay: '',
+    batchStatus: 'No Batch',
     failures: [],
     passed: [],
   };
@@ -84,7 +84,7 @@ export const LeakageTestingView: React.FC = () => {
       {/* Top Workspace Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold text-white tracking-tight leading-tight">
+          <h1 className="text-[28px] font-semibold text-white tracking-tight leading-tight">
             Leakage Testing
           </h1>
           <p className="mt-1 text-sm sm:text-base text-[#8a8596] font-medium">
@@ -135,7 +135,7 @@ export const LeakageTestingView: React.FC = () => {
               <div className="w-9 h-9 rounded-lg bg-[#13111c] border border-[#221e33] flex items-center justify-center text-[#8a8596]">
                 <ShieldCheck className="w-5 h-5 stroke-[2]" />
               </div>
-              <span className="text-base font-semibold text-gray-500">Leakage Testing</span>
+              <span className="text-base font-bold text-gray-500">Leakage Testing</span>
             </div>
           </div>
         </div>
@@ -156,7 +156,7 @@ export const LeakageTestingView: React.FC = () => {
           </div>
 
           <div>
-            <span className="text-xs font-semibold text-red-500">-from active batch ({data.activeBatch})</span>
+            <span className="text-xs font-semibold text-red-500">-from active batch</span>
           </div>
         </div>
       </div>
@@ -199,7 +199,7 @@ export const LeakageTestingView: React.FC = () => {
 
             {/* Table Container */}
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left text-xs sm:text-sm border-collapse">
                 <thead>
                   <tr className="bg-[#13111c]/30 text-gray-500 font-semibold border-b border-[#221e33]">
                     <th className="py-3.5 px-4">Part no.</th>
@@ -238,7 +238,7 @@ export const LeakageTestingView: React.FC = () => {
                   ) : (
                     failureResults.map((item, idx) => (
                       <tr key={item.id ?? idx} className="bg-[#0D0E19] hover:bg-[#151221]/30 transition-colors border-b border-[#1b172a] last:border-b-0">
-                        <td className="px-4 py-4 font-semibold text-white font-mono">
+                        <td className="px-4 py-4 font-semibold text-gray-400 font-mono">
                           {item.partNo}
                         </td>
                         <td className="px-4 py-4 text-gray-400 font-mono">
@@ -288,15 +288,17 @@ export const LeakageTestingView: React.FC = () => {
                 <span className="text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded-md border border-emerald-900/40">
                   Quality Approved
                 </span>
-                <span className="text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded-md border border-emerald-900/40">
-                  Within 75.0 – 80.0 kPa
-                </span>
+                {data.activeBatch !== 'No Active Batch' && (
+                  <span className="text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded-md border border-emerald-900/40">
+                    Quality Approved Log
+                  </span>
+                )}
               </div>
             </div>
 
             {/* Table Container */}
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left text-xs sm:text-sm border-collapse">
                 <thead>
                   <tr className="bg-[#13111c]/30 text-gray-500 font-semibold border-b border-[#221e33]">
                     <th className="py-3.5 px-4">Part no.</th>
@@ -335,7 +337,7 @@ export const LeakageTestingView: React.FC = () => {
                   ) : (
                     passedResults.map((item, idx) => (
                       <tr key={item.id ?? idx} className="bg-[#0D0E19] hover:bg-[#151221]/30 transition-colors border-b border-[#1b172a] last:border-b-0">
-                        <td className="px-4 py-4 font-semibold text-white font-mono">
+                        <td className="px-4 py-4 font-semibold text-gray-400 font-mono">
                           {item.partNo}
                         </td>
                         <td className="px-4 py-4 text-gray-400 font-mono">

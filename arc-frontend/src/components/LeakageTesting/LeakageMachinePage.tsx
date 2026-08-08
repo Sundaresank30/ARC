@@ -40,8 +40,8 @@ export const LeakageMachinePage: React.FC = () => {
     machineStatus: 'IDLE',
     activeBatch: 'No Active Batch',
     fileName: 'Batch.csv',
-    warningThreshold: 75.0,
-    alarmThreshold: 80.0,
+    warningThreshold: 0,
+    alarmThreshold: 0,
     unit: 'kPa',
     totalEmbossed: 0,
     totalTested: 0,
@@ -237,7 +237,7 @@ export const LeakageMachinePage: React.FC = () => {
         <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-150 relative overflow-hidden">
           <span className="text-xs font-bold text-[#8a8596]">Failed Parts</span>
           <div className="text-3xl font-extrabold text-white mt-1">{state.failedParts}</div>
-          <div className="text-[10px] text-red-400/70 mt-0.5">Outside {warningThreshold} – {alarmThreshold} {state.unit}</div>
+          <div className="text-[10px] text-[#ef4444]/90 mt-0.5">Outside {warningThreshold} – {alarmThreshold} {state.unit}</div>
           {state.failedParts > 0 && (
             <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-red-500 animate-pulse" />
           )}

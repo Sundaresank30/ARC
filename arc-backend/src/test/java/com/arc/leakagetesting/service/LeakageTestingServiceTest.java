@@ -60,10 +60,23 @@ class LeakageTestingServiceTest {
                 .machineStatus(MachineStatus.IDLE)
                 .build();
 
+        com.arc.leakagetesting.entity.PassedLeakageTestResult pResult = com.arc.leakagetesting.entity.PassedLeakageTestResult.builder()
+                .id(1L)
+                .batchId("Batch_1")
+                .partNumber("Pn00001c")
+                .serialNumber("P0010001")
+                .pressureValue(77.5)
+                .unit("kPa")
+                .status("PASSED")
+                .testedAt(LocalDateTime.now())
+                .build();
+
         when(embossingJobRepository.findByEmbossingStatusOrderByIdDesc(EmbossingStatus.COMPLETED))
                 .thenReturn(Collections.singletonList(completed1));
         when(embossingJobRepository.findByBatchIdOrderByIdAsc("Batch_1"))
                 .thenReturn(Collections.singletonList(completed1));
+        when(passedResultRepository.findByBatchIdOrderByIdAsc("Batch_1"))
+                .thenReturn(Collections.singletonList(pResult));
 
         LeakageTestingResponseDto response = leakageTestingService.getDashboardData();
 
@@ -86,20 +99,23 @@ class LeakageTestingServiceTest {
                 .machineStatus(MachineStatus.IDLE)
                 .build();
 
-        EmbossingJob failed = EmbossingJob.builder()
+        com.arc.leakagetesting.entity.FailedLeakageTestResult fResult = com.arc.leakagetesting.entity.FailedLeakageTestResult.builder()
                 .id(2L)
                 .batchId("Batch_1")
                 .partNumber("Pn00111c")
                 .serialNumber("P0011156")
-                .embossingStatus(EmbossingStatus.FAILED)
-                .createdTime(LocalDateTime.now())
-                .machineStatus(MachineStatus.IDLE)
+                .pressureValue(82.1)
+                .unit("kPa")
+                .status("FAILED")
+                .testedAt(LocalDateTime.now())
                 .build();
 
         when(embossingJobRepository.findByEmbossingStatusOrderByIdDesc(EmbossingStatus.COMPLETED))
                 .thenReturn(Collections.singletonList(completed));
         when(embossingJobRepository.findByBatchIdOrderByIdAsc("Batch_1"))
-                .thenReturn(Arrays.asList(completed, failed));
+                .thenReturn(Collections.singletonList(completed));
+        when(failedResultRepository.findByBatchIdOrderByIdAsc("Batch_1"))
+                .thenReturn(Collections.singletonList(fResult));
 
         LeakageTestingResponseDto response = leakageTestingService.getDashboardData();
 

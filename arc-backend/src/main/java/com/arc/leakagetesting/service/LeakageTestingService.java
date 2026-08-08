@@ -59,6 +59,22 @@ public class LeakageTestingService {
     public LeakageTestingResponseDto getDashboardData() {
         String activeBatch = resolveActiveBatchId();
 
+        if (activeBatch == null || activeBatch.isBlank() || "No Active Batch".equalsIgnoreCase(activeBatch)) {
+            String currentDateDisplay = LocalDate.now().format(DATE_DISPLAY_FORMATTER);
+            return LeakageTestingResponseDto.builder()
+                    .activeBatch("No Active Batch")
+                    .failedCount(0L)
+                    .passedCount(0L)
+                    .batchProgressPercent(0)
+                    .completedCount(0L)
+                    .totalParts(0L)
+                    .dateDisplay(currentDateDisplay)
+                    .batchStatus("No Batch")
+                    .failures(new ArrayList<>())
+                    .passed(new ArrayList<>())
+                    .build();
+        }
+
         List<PassedLeakageTestResult> passedEntities = passedResultRepository.findByBatchIdOrderByIdAsc(activeBatch);
         List<FailedLeakageTestResult> failedEntities = failedResultRepository.findByBatchIdOrderByIdAsc(activeBatch);
         List<LeakageTestResult> allTestResults = resultRepository.findByBatchIdOrderByIdAsc(activeBatch);
@@ -84,16 +100,8 @@ public class LeakageTestingService {
                 }
             }
         } else {
-            // Fallback to embossing jobs if no machine test runs exist yet
             failureDtos = new ArrayList<>();
             passedDtos = new ArrayList<>();
-            for (EmbossingJob job : embossingJobs) {
-                if (job.getEmbossingStatus() == EmbossingStatus.FAILED) {
-                    failureDtos.add(toItemDto(job, "Failed"));
-                } else if (job.getEmbossingStatus() == EmbossingStatus.COMPLETED) {
-                    passedDtos.add(toItemDto(job, "Passed"));
-                }
-            }
         }
 
         long completedCount = failureDtos.size() + passedDtos.size();
