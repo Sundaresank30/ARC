@@ -46,11 +46,11 @@ export const StatusCards: React.FC<StatusCardProps> = ({
         return (
           <div
             key={idx}
-            className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1c182a] rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-150"
+            className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-6 shadow-sm flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-150"
           >
             {/* Top row: Title (left) & Icon (right) */}
-            <div className="flex items-center justify-between mb-4">
-              <span className="font-bold text-[15px] text-gray-300">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-[15px] text-gray-300">
                 {card.title}
               </span>
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${card.iconBgClass}`}>
@@ -59,8 +59,8 @@ export const StatusCards: React.FC<StatusCardProps> = ({
             </div>
 
             {/* Middle: Large Value */}
-            <div className="mb-3">
-              <span className="text-[46px] font-bold leading-none tracking-tight text-white">
+            <div className="my-1">
+              <span className="text-[44px] font-bold leading-none tracking-tight text-white">
                 {card.value}
               </span>
             </div>

@@ -27,7 +27,7 @@ export const DataPreparationPage: React.FC = () => {
     e.preventDefault();
     const isPart = stateType === 'part';
     const setCount = isPart ? setPartNoCount : setSerialNoCount;
-    
+
     // Perform initial click action
     if (actionType === 'inc') {
       setCount(prev => prev + 1);
@@ -305,7 +305,7 @@ export const DataPreparationPage: React.FC = () => {
       {/* Top Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold text-white tracking-tight leading-tight">
+          <h1 className="text-[28px] font-semibold text-white tracking-tight leading-tight">
             Data Preparation
           </h1>
           <p className="mt-1 text-sm sm:text-base text-[#8a8596] font-medium">
@@ -353,7 +353,7 @@ export const DataPreparationPage: React.FC = () => {
             onClick={triggerFileInput}
             className={`border-2 border-dashed rounded-3xl p-10 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 select-none min-h-[220px] shadow-[0_0_50px_rgba(139,92,246,0.25)] ${dragActive
               ? 'border-[#7c3aed] bg-[#7c3aed]/5 scale-[0.99]'
-              : 'border-[#201538] bg-[#111827]/30 hover:border-[#7c3aed] hover:bg-[#111827]/50'
+              : 'border-[#201538] bg-gradient-to-b from-[#09040A] to-[#111827]/80 hover:border-[#7c3aed] hover:bg-[#111827]/50'
               }`}
           >
             <input
@@ -388,12 +388,12 @@ export const DataPreparationPage: React.FC = () => {
 
           {/* Create Batch Card */}
           <div className="bg-[#0D0E19] rounded-3xl p-8 border border-[#1b172a] shadow-sm space-y-6">
-            <h2 className="text-xl font-bold text-white tracking-tight select-none">
+            <h2 className="text-xl font-semibold text-white tracking-tight select-none">
               Create Production Batch
             </h2>
 
             <div className="space-y-5">
-              <h3 className="text-base font-bold text-white select-none">
+              <h3 className="text-base font-semibold text-white select-none">
                 Add batch
               </h3>
 
