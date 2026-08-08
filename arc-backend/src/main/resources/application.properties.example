@@ -17,7 +17,7 @@ app.websocket.allowed-origins=http://localhost:5173
 # Embossing simulation timing (milliseconds)
 embossing.simulation.in-machine-delay-ms=2000
 embossing.simulation.printing-delay-ms=5000
-embossing.simulation.active-batch=Batch_1
+embossing.simulation.active-batch=
 embossing.simulation.dummy-job-count=5
 
 # JWT Configuration

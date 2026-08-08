@@ -14,7 +14,7 @@ public class EmbossingSimulationProperties {
     @Value("${embossing.simulation.printing-delay-ms:5000}")
     private long printingDelayMs;
 
-    @Value("${embossing.simulation.active-batch:Batch_1}")
+    @Value("${embossing.simulation.active-batch:}")
     private String activeBatch;
 
     @Value("${embossing.simulation.dummy-job-count:5}")

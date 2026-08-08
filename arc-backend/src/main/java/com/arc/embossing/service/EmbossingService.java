@@ -234,7 +234,7 @@ public class EmbossingService {
         if (simulationProperties != null && simulationProperties.getActiveBatch() != null && !simulationProperties.getActiveBatch().isBlank()) {
             return simulationProperties.getActiveBatch();
         }
-        return "Batch_1";
+        return "No Active Batch";
     }
 
     private CurrentMachineResponse toCurrentMachineResponse(EmbossingJob job) {
