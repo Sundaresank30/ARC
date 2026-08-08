@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.arc.dashboard.service.DashboardService;
+
 @Service
 @Slf4j
 public class LeakageTestingService {
@@ -38,6 +40,7 @@ public class LeakageTestingService {
     private final PassedLeakageTestResultRepository passedResultRepository;
     private final FailedLeakageTestResultRepository failedResultRepository;
     private final LeakageTestingMachineService machineService;
+    private final DashboardService dashboardService;
 
     @Autowired
     public LeakageTestingService(
@@ -46,13 +49,15 @@ public class LeakageTestingService {
             LeakageTestResultRepository resultRepository,
             PassedLeakageTestResultRepository passedResultRepository,
             FailedLeakageTestResultRepository failedResultRepository,
-            @Autowired(required = false) LeakageTestingMachineService machineService) {
+            @Autowired(required = false) LeakageTestingMachineService machineService,
+            @Autowired(required = false) DashboardService dashboardService) {
         this.embossingJobRepository = embossingJobRepository;
         this.simulationProperties = simulationProperties;
         this.resultRepository = resultRepository;
         this.passedResultRepository = passedResultRepository;
         this.failedResultRepository = failedResultRepository;
         this.machineService = machineService;
+        this.dashboardService = dashboardService;
     }
 
     @Transactional(readOnly = true)
@@ -208,6 +213,9 @@ public class LeakageTestingService {
                 .build();
 
         FailedLeakageTestResult saved = failedResultRepository.save(fResult);
+        if (dashboardService != null) {
+            dashboardService.syncLeakageFailuresFromTestResults();
+        }
         log.info("Marked job ID {} ({}) as FAILED", jobId, job.getPartNumber());
         return toItemDto(saved);
     }
