@@ -7,14 +7,14 @@ import { API_BASE_URL } from '../config/api';
 import { LeakageTestRecord, LeakageTestingDashboardData } from '../types';
 
 const FALLBACK_DASHBOARD: LeakageTestingDashboardData = {
-  activeBatch: 'Batch_1',
+  activeBatch: 'No Active Batch',
   failedCount: 0,
   passedCount: 0,
-  batchProgressPercent: 100,
-  completedCount: 100,
-  totalParts: 100,
+  batchProgressPercent: 0,
+  completedCount: 0,
+  totalParts: 0,
   dateDisplay: '06 August, 2026',
-  batchStatus: '100% completed',
+  batchStatus: 'No Batch',
   failures: [],
   passed: [],
 };
