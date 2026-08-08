@@ -11,6 +11,8 @@ import com.arc.embossing.enums.MachineStatus;
 import com.arc.embossing.mapper.EmbossingJobMapper;
 import com.arc.embossing.repository.EmbossingJobRepository;
 import com.arc.machine.entity.EmbossingQueue;
+import com.arc.dashboard.repository.CarryForwardEmbossingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,17 +26,20 @@ public class EmbossingJobService {
     private final EmbossingJobMapper jobMapper;
     private final EmbossingService embossingService;
     private final EmbossingProgressPublisher progressPublisher;
+    private final CarryForwardEmbossingRepository carryForwardRepository;
 
     public EmbossingJobService(EmbossingJobRepository jobRepository,
                                ProductionBatchItemRepository productionItemRepository,
                                EmbossingJobMapper jobMapper,
                                EmbossingService embossingService,
-                               EmbossingProgressPublisher progressPublisher) {
+                               EmbossingProgressPublisher progressPublisher,
+                               @Autowired(required = false) CarryForwardEmbossingRepository carryForwardRepository) {
         this.jobRepository = jobRepository;
         this.productionItemRepository = productionItemRepository;
         this.jobMapper = jobMapper;
         this.embossingService = embossingService;
         this.progressPublisher = progressPublisher;
+        this.carryForwardRepository = carryForwardRepository;
     }
 
     @Transactional
@@ -150,6 +155,11 @@ public class EmbossingJobService {
         for (ProductionBatchItem preparedItem : preparedItems) {
             preparedItem.setStatus("COMPLETED");
             productionItemRepository.save(preparedItem);
+        }
+
+        if (carryForwardRepository != null) {
+            carryForwardRepository.findByPartNoAndSerialNo(queueItem.getPartNumber(), queueItem.getSerialNumber())
+                    .ifPresent(carryForwardRepository::delete);
         }
 
         List<ProductionBatchItem> batchItems = productionItemRepository

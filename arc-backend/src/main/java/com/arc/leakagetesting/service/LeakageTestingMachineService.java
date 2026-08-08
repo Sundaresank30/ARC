@@ -43,6 +43,7 @@ public class LeakageTestingMachineService {
     private final com.arc.leakagetesting.repository.FailedLeakageTestResultRepository failedResultRepository;
     private final com.arc.leakagetesting.repository.LeakageMachineReadingRepository readingRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final com.arc.dashboard.service.DashboardService dashboardService;
 
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> runningTask = null;
@@ -61,7 +62,8 @@ public class LeakageTestingMachineService {
             com.arc.leakagetesting.repository.PassedLeakageTestResultRepository passedResultRepository,
             com.arc.leakagetesting.repository.FailedLeakageTestResultRepository failedResultRepository,
             com.arc.leakagetesting.repository.LeakageMachineReadingRepository readingRepository,
-            @Autowired(required = false) SimpMessagingTemplate messagingTemplate) {
+            @Autowired(required = false) SimpMessagingTemplate messagingTemplate,
+            @Autowired(required = false) com.arc.dashboard.service.DashboardService dashboardService) {
         this.embossingJobRepository = embossingJobRepository;
         this.productionItemRepository = productionItemRepository;
         this.productionBatchRepository = productionBatchRepository;
@@ -71,6 +73,7 @@ public class LeakageTestingMachineService {
         this.failedResultRepository = failedResultRepository;
         this.readingRepository = readingRepository;
         this.messagingTemplate = messagingTemplate;
+        this.dashboardService = dashboardService;
     }
 
     // -------------------------------------------------------------------------
@@ -370,6 +373,9 @@ public class LeakageTestingMachineService {
                         .testedAt(LocalDateTime.now())
                         .build();
                 failedResultRepository.save(fResult);
+                if (dashboardService != null) {
+                    dashboardService.syncLeakageFailuresFromTestResults();
+                }
             }
 
             log.info("Leakage tested part {} / {}: {} kPa [{}]", jobToTest.getPartNumber(), jobToTest.getSerialNumber(),

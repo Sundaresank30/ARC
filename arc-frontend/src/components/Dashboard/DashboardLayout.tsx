@@ -11,6 +11,9 @@ import { useAuthStore } from '../../store/authStore';
 import { getDefaultTab, modulesToTabs } from '../../utils/navigation';
 import { DataPreparationPage } from '../DataPreparation/DataPreparationPage';
 import { UserRole } from '../../types';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
+import { API_BASE_URL } from '../../config/api';
 import {
   getDashboardSummary,
   resolveCarryForward,
@@ -79,10 +82,57 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
   };
 
   useEffect(() => {
-    if (effectiveRole.toLowerCase() === 'manager') {
+    fetchDashboardData();
+
+    // 1. Polling interval every 3 seconds for active dashboard
+    const timer = setInterval(() => {
       fetchDashboardData();
+    }, 3000);
+
+    // 2. BroadcastChannel listener for cross-tab event updates
+    let channel: BroadcastChannel | null = null;
+    if ('BroadcastChannel' in window) {
+      channel = new BroadcastChannel('arc-embossing');
+      channel.onmessage = () => {
+        fetchDashboardData();
+      };
     }
-  }, [effectiveRole]);
+
+    const handleLocalUpdate = () => {
+      fetchDashboardData();
+    };
+    window.addEventListener('embossing-data-updated', handleLocalUpdate);
+
+    // 3. STOMP WebSocket connection for real-time push events from backend
+    const endpoint = `${API_BASE_URL.replace(/\/$/, '')}/ws`;
+    const client = new Client({
+      webSocketFactory: () => new SockJS(endpoint) as unknown as WebSocket,
+      reconnectDelay: 3000,
+      heartbeatIncoming: 10000,
+      heartbeatOutgoing: 10000,
+      debug: () => undefined,
+      onConnect: () => {
+        client.subscribe('/topic/embossing-progress', () => {
+          fetchDashboardData();
+        });
+        client.subscribe('/topic/leakage-testing', () => {
+          fetchDashboardData();
+        });
+        client.subscribe('/topic/leakage-progress', () => {
+          fetchDashboardData();
+        });
+      },
+    });
+
+    client.activate();
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('embossing-data-updated', handleLocalUpdate);
+      if (channel) channel.close();
+      void client.deactivate();
+    };
+  }, [effectiveRole, currentTab]);
 
   const activeTab = allowedTabs.includes(currentTab) ? currentTab : defaultTab;
 
