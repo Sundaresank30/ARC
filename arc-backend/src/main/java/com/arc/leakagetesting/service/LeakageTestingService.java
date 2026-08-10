@@ -184,7 +184,7 @@ public class LeakageTestingService {
         }
 
         EmbossingJob job = embossingJobRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Leakage test record or embossing job not found with id: " + id));
+                .orElseThrow(() -> new com.arc.exception.ResourceNotFoundException("Leakage test record or embossing job not found with id: " + id));
 
         log.info("Requested action update for EmbossingJob ID {} ({}) to {}", id, job.getPartNumber(), newAction);
         return toItemDto(job, "Failed");
@@ -193,7 +193,7 @@ public class LeakageTestingService {
     @Transactional
     public LeakageTestItemDto markJobAsFailed(Long jobId, Double testValue, String direction, String attempt, String action) {
         EmbossingJob job = embossingJobRepository.findById(jobId)
-                .orElseThrow(() -> new IllegalArgumentException("Embossing job not found with id: " + jobId));
+                .orElseThrow(() -> new com.arc.exception.ResourceNotFoundException("Embossing job not found with id: " + jobId));
 
         job.setEmbossingStatus(EmbossingStatus.FAILED);
         job.setEmbossingCompletedTime(LocalDateTime.now());

@@ -259,16 +259,18 @@ public class DashboardService {
 
     @Transactional
     public void resolveCarryForward(Long id) {
-        carryForwardRepository.findById(id).ifPresent(carryForwardRepository::delete);
+        CarryForwardEmbossing item = carryForwardRepository.findById(id)
+                .orElseThrow(() -> new com.arc.exception.ResourceNotFoundException("Carry-forward item not found with id: " + id));
+        carryForwardRepository.delete(item);
     }
 
     @Transactional
     public void resolveLeakageFailure(Long id) {
-        leakageFailureRepository.findById(id).ifPresent(item -> {
-            item.setStatus("Resolved");
-            item.setAction("Resolved");
-            leakageFailureRepository.save(item);
-        });
+        LeakageFailure item = leakageFailureRepository.findById(id)
+                .orElseThrow(() -> new com.arc.exception.ResourceNotFoundException("Leakage failure item not found with id: " + id));
+        item.setStatus("Resolved");
+        item.setAction("Resolved");
+        leakageFailureRepository.save(item);
     }
 
     private CarryForwardDTO toCarryForwardDTO(CarryForwardEmbossing item) {

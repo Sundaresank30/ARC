@@ -61,7 +61,7 @@ class SecurityAuthorizationIntegrationTest {
 
     @Test
     void manager_cannotAccessMachine() throws Exception {
-        mockMvc.perform(get("/api/machine")
+        mockMvc.perform(get("/api/machine/queue/buffer")
                         .header("Authorization", "Bearer " + managerToken))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.message").value("Forbidden"));
@@ -92,7 +92,7 @@ class SecurityAuthorizationIntegrationTest {
 
     @Test
     void operator_canAccessMachine() throws Exception {
-        mockMvc.perform(get("/api/machine")
+        mockMvc.perform(get("/api/machine/queue/buffer")
                         .header("Authorization", "Bearer " + operatorToken))
                 .andExpect(status().isOk());
     }
