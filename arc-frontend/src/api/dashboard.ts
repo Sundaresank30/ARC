@@ -1,19 +1,23 @@
 import { apiClient } from './client';
 
 export interface CarryForwardItem {
-  id: number;
+  id: number | string;
   partNo: string;
   serialNo: string;
-  date: string;
   status: string;
+  remainingSince?: string;
+  batchId: string;
+  action?: string;
 }
 
 export interface LeakageFailureItem {
-  id: number;
+  id: number | string;
+  batchId?: string;
   partNo: string;
   serialNo: string;
   testValue: number;
-  date: string;
+  timestamp?: string;
+  date?: string;
   status: string;
   direction?: string;
   attempt?: string;
