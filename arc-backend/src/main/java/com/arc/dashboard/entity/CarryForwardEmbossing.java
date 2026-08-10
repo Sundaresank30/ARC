@@ -28,8 +28,8 @@ public class CarryForwardEmbossing {
     @Column(nullable = false, length = 50)
     private String remainingSince;
 
-    @Column(nullable = false, length = 50)
-    private String nextShift;
+    @Column(name = "batch_id", nullable = false, length = 50)
+    private String batchId;
 
     @Column(nullable = false, length = 50)
     private String action;

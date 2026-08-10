@@ -148,16 +148,16 @@ public class LeakageTestingService {
             }
         }
 
-        // 2. Latest completed embossing job batch
-        List<EmbossingJob> completedJobs = embossingJobRepository.findByEmbossingStatusOrderByIdDesc(EmbossingStatus.COMPLETED);
+        // 2. Earliest completed embossing job batch (FIFO)
+        List<EmbossingJob> completedJobs = embossingJobRepository.findByEmbossingStatusOrderByIdAsc(EmbossingStatus.COMPLETED);
         if (!completedJobs.isEmpty()) {
             return completedJobs.get(0).getBatchId();
         }
 
-        // 3. Latest embossing job batch overall
+        // 3. Earliest embossing job batch overall (FIFO)
         List<EmbossingJob> allJobs = embossingJobRepository.findAll();
         if (!allJobs.isEmpty()) {
-            return allJobs.get(allJobs.size() - 1).getBatchId();
+            return allJobs.get(0).getBatchId();
         }
 
         return "No Active Batch";

@@ -145,7 +145,7 @@ class DashboardServiceTest {
                 .serialNo("P01")
                 .status("Pending")
                 .remainingSince("12:00, 08 Aug")
-                .nextShift("Shift A")
+                .batchId("Batch_1")
                 .action("Pending")
                 .build();
         when(carryForwardRepository.findByStatusNotIgnoreCase("Completed")).thenReturn(List.of(cf));

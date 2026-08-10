@@ -15,6 +15,6 @@ public class CarryForwardDTO {
     private String serialNo;
     private String status;
     private String remainingSince;
-    private String nextShift;
+    private String batchId;
     private String action;
 }

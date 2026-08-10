@@ -411,27 +411,26 @@ public class LeakageTestingMachineService {
 
         List<String> distinctBatches = new ArrayList<>();
 
-        // 1. Check completed EmbossingJobs (most recent completed job first)
-        List<EmbossingJob> completedJobsDesc = embossingJobRepository
-                .findByEmbossingStatusOrderByIdDesc(EmbossingStatus.COMPLETED);
-        for (EmbossingJob job : completedJobsDesc) {
+        // 1. Check completed EmbossingJobs (oldest completed job first for FIFO)
+        List<EmbossingJob> completedJobsAsc = embossingJobRepository
+                .findByEmbossingStatusOrderByIdAsc(EmbossingStatus.COMPLETED);
+        for (EmbossingJob job : completedJobsAsc) {
             String bId = job.getBatchId();
             if (bId != null && !bId.isBlank() && !"No Active Batch".equalsIgnoreCase(bId) && !distinctBatches.contains(bId)) {
                 distinctBatches.add(bId);
             }
         }
 
-        // 2. Check completed ProductionBatchItems
+        // 2. Check completed ProductionBatchItems in FIFO order
         List<ProductionBatchItem> completedItems = productionItemRepository.findByStatusIgnoreCaseOrderByIdAsc("COMPLETED");
-        for (int i = completedItems.size() - 1; i >= 0; i--) {
-            ProductionBatchItem item = completedItems.get(i);
+        for (ProductionBatchItem item : completedItems) {
             String bId = item.getProductionBatch() != null ? item.getProductionBatch().getBatchId() : item.getBatchId();
             if (bId != null && !bId.isBlank() && !"No Active Batch".equalsIgnoreCase(bId) && !distinctBatches.contains(bId)) {
                 distinctBatches.add(bId);
             }
         }
 
-        // Find the first (most recent) batch that has untested embossed items
+        // Find the first (FIFO) batch that has untested embossed items
         for (String bId : distinctBatches) {
             long totalBatchEmbossed = getReadyJobsForBatch(bId).size();
             long totalBatchTested = resultRepository.countByBatchId(bId);
@@ -441,7 +440,7 @@ public class LeakageTestingMachineService {
             }
         }
 
-        // If all embossed batches are fully tested, return the LATEST embossed batch ID
+        // If all embossed batches are fully tested, return the FIRST (FIFO) embossed batch ID
         if (!distinctBatches.isEmpty()) {
             activeBatchId = distinctBatches.get(0);
             return distinctBatches.get(0);
@@ -452,9 +451,9 @@ public class LeakageTestingMachineService {
     }
 
     private String findNextBatchWithEmbossedItems() {
-        List<EmbossingJob> completedJobsDesc = embossingJobRepository
-                .findByEmbossingStatusOrderByIdDesc(EmbossingStatus.COMPLETED);
-        List<String> distinctBatches = completedJobsDesc.stream()
+        List<EmbossingJob> completedJobsAsc = embossingJobRepository
+                .findByEmbossingStatusOrderByIdAsc(EmbossingStatus.COMPLETED);
+        List<String> distinctBatches = completedJobsAsc.stream()
                 .map(EmbossingJob::getBatchId)
                 .filter(b -> b != null && !b.isBlank() && !"No Active Batch".equalsIgnoreCase(b))
                 .distinct()

@@ -151,7 +151,7 @@ public class DashboardService {
                         .serialNo(queueItem.getSerialNumber())
                         .status("Pending")
                         .remainingSince(LocalDateTime.now().format(TIMESTAMP_FORMATTER))
-                        .nextShift("Shift A")
+                        .batchId(resolveBatchId(queueItem.getPartNumber(), queueItem.getSerialNumber()))
                         .action("Pending")
                         .build();
                 carryForwardRepository.save(newEntry);
@@ -178,8 +178,13 @@ public class DashboardService {
                     ? fResult.getTestedAt().format(TIMESTAMP_FORMATTER)
                     : LocalDateTime.now().format(TIMESTAMP_FORMATTER);
 
+            String batchId = fResult.getBatchId() != null && !fResult.getBatchId().isEmpty()
+                    ? fResult.getBatchId()
+                    : resolveBatchId(fResult.getPartNumber(), fResult.getSerialNumber());
+
             if (existingOpt.isEmpty()) {
                 LeakageFailure failure = LeakageFailure.builder()
+                        .batchId(batchId)
                         .partNo(fResult.getPartNumber())
                         .serialNo(fResult.getSerialNumber())
                         .status(fResult.getStatus() != null ? fResult.getStatus() : "Failed")
@@ -192,6 +197,9 @@ public class DashboardService {
                 leakageFailureRepository.save(failure);
             } else {
                 LeakageFailure existing = existingOpt.get();
+                if (existing.getBatchId() == null || existing.getBatchId().isEmpty()) {
+                    existing.setBatchId(batchId);
+                }
                 existing.setTestValue(fResult.getPressureValue() != null ? fResult.getPressureValue() : existing.getTestValue());
                 existing.setDirection(fResult.getDirection() != null ? fResult.getDirection() : existing.getDirection());
                 existing.setTimestamp(formattedTime);
@@ -200,6 +208,22 @@ public class DashboardService {
                 leakageFailureRepository.save(existing);
             }
         }
+    }
+
+    private String resolveBatchId(String partNumber, String serialNumber) {
+        if (embossingJobRepository != null) {
+            List<com.arc.embossing.entity.EmbossingJob> jobs = embossingJobRepository.findBySerialNumberAndPartNumber(serialNumber, partNumber);
+            if (!jobs.isEmpty() && jobs.get(0).getBatchId() != null && !jobs.get(0).getBatchId().isEmpty()) {
+                return jobs.get(0).getBatchId();
+            }
+        }
+        if (productionBatchItemRepository != null) {
+            List<ProductionBatchItem> items = productionBatchItemRepository.findBySerialNumberAndPartNumber(serialNumber, partNumber);
+            if (!items.isEmpty() && items.get(0).getBatchId() != null && !items.get(0).getBatchId().isEmpty()) {
+                return items.get(0).getBatchId();
+            }
+        }
+        return "Batch_1";
     }
 
     @Transactional
@@ -280,7 +304,7 @@ public class DashboardService {
                 .serialNo(item.getSerialNo())
                 .status(item.getStatus())
                 .remainingSince(item.getRemainingSince())
-                .nextShift(item.getNextShift())
+                .batchId(item.getBatchId())
                 .action(item.getAction())
                 .build();
     }
@@ -288,6 +312,7 @@ public class DashboardService {
     private LeakageFailureDTO toLeakageFailureDTO(LeakageFailure item) {
         return LeakageFailureDTO.builder()
                 .id(String.valueOf(item.getId()))
+                .batchId(item.getBatchId() != null ? item.getBatchId() : resolveBatchId(item.getPartNo(), item.getSerialNo()))
                 .partNo(item.getPartNo())
                 .serialNo(item.getSerialNo())
                 .status(item.getStatus())

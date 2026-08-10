@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LeakageFailureDTO {
     private String id;
+    private String batchId;
     private String partNo;
     private String serialNo;
     private String status;
