@@ -314,7 +314,7 @@ export const DataPreparationPage: React.FC = () => {
         </div>
 
         {/* Dynamic Server Date Widget */}
-        <div className="flex items-center space-x-2 bg-[#13111c] border border-[#221e33] px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto hover:bg-[#1a1726] cursor-pointer transition-colors duration-150">
+        <div className="flex items-center space-x-2 bg-[#181a1d] border border-[#2d333c] px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto hover:bg-[#202328] cursor-pointer transition-colors duration-150">
           <Calendar className="w-4 h-4 text-gray-400" />
           <span className="text-sm font-semibold text-gray-300 select-none">
             {currentDate}
@@ -351,9 +351,9 @@ export const DataPreparationPage: React.FC = () => {
             onDragLeave={handleDrag}
             onDrop={handleDrop}
             onClick={triggerFileInput}
-            className={`border-2 border-dashed rounded-3xl p-10 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 select-none min-h-[220px] shadow-[0_0_50px_rgba(139,92,246,0.25)] ${dragActive
-              ? 'border-[#7c3aed] bg-[#7c3aed]/5 scale-[0.99]'
-              : 'border-[#201538] bg-gradient-to-b from-[#09040A] to-[#111827]/80 hover:border-[#7c3aed] hover:bg-[#111827]/50'
+            className={`border-2 border-dashed rounded-3xl p-10 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 select-none min-h-[220px] shadow-[0_0_50px_rgba(0,216,246,0.15)] ${dragActive
+              ? 'border-[#00d8f6] bg-[#00d8f6]/5 scale-[0.99]'
+              : 'border-[#23272e] bg-[#181a1d] hover:border-[#00d8f6] hover:bg-[#1c1f24]'
               }`}
           >
             <input
@@ -364,7 +364,7 @@ export const DataPreparationPage: React.FC = () => {
               accept=".csv,.pdf,image/*"
             />
 
-            <div className="w-14 h-14 rounded-2xl bg-[#19122a] text-[#8b5cf6] flex items-center justify-center mb-4 shadow-sm">
+            <div className="w-14 h-14 rounded-2xl bg-[#19272e] text-[#00d8f6] border border-[#00d8f6]/20 flex items-center justify-center mb-4 shadow-sm">
               <Upload className="w-6 h-6 stroke-[2]" />
             </div>
 
@@ -381,13 +381,13 @@ export const DataPreparationPage: React.FC = () => {
 
           {/* OR Divider Line */}
           <div className="flex items-center text-gray-600 text-xs font-bold tracking-wider my-6 uppercase select-none">
-            <div className="flex-1 border-t border-[#1b172a]"></div>
+            <div className="flex-1 border-t border-[#23272e]"></div>
             <span className="px-4 text-gray-500 font-semibold normal-case text-sm">or</span>
-            <div className="flex-1 border-t border-[#1b172a]"></div>
+            <div className="flex-1 border-t border-[#23272e]"></div>
           </div>
 
           {/* Create Batch Card */}
-          <div className="bg-[#0D0E19] rounded-3xl p-8 border border-[#1b172a] shadow-sm space-y-6">
+          <div className="bg-[#121417] rounded-3xl p-8 border border-[#1e232a] shadow-[0_0_50px_rgba(0,216,246,0.1)] space-y-6">
             <h2 className="text-xl font-semibold text-white tracking-tight select-none">
               Create Production Batch
             </h2>
@@ -399,7 +399,7 @@ export const DataPreparationPage: React.FC = () => {
 
               {/* Batch ID Input */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#8a8596] block">
+                <label className="text-xs font-semibold text-gray-400 block">
                   Add batch ID:
                 </label>
                 <input
@@ -407,13 +407,13 @@ export const DataPreparationPage: React.FC = () => {
                   value={batchId}
                   onChange={(e) => setBatchId(e.target.value)}
                   placeholder="eg: Batch_1"
-                  className="w-full bg-[#13111c] border border-[#221e33] rounded-xl px-4 py-3 text-sm font-medium text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/15 focus:border-[#7c3aed] transition-all duration-150"
+                  className="w-full bg-[#181a1d] border border-[#2d333c] rounded-xl px-4 py-3 text-sm font-medium text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#00d8f6]/20 focus:border-[#00d8f6] transition-all duration-150"
                 />
               </div>
 
               {/* Part Number Series Input */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#8a8596] block">
+                <label className="text-xs font-semibold text-gray-400 block">
                   Add part no. series:
                 </label>
                 <div className="flex space-x-3 items-center">
@@ -422,14 +422,14 @@ export const DataPreparationPage: React.FC = () => {
                     value={partNoSeries}
                     onChange={(e) => setPartNoSeries(e.target.value)}
                     placeholder="eg: PH0156"
-                    className="flex-1 bg-[#13111c] border border-[#221e33] rounded-xl px-4 py-3 text-sm font-medium text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/15 focus:border-[#7c3aed] transition-all duration-150"
+                    className="flex-1 bg-[#181a1d] border border-[#2d333c] rounded-xl px-4 py-3 text-sm font-medium text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#00d8f6]/20 focus:border-[#00d8f6] transition-all duration-150"
                   />
-                  <div className="flex items-center space-x-3 bg-[#13111c] border border-[#221e33] rounded-xl p-1 px-2 select-none h-11 shrink-0">
+                  <div className="flex items-center space-x-3 bg-[#181a1d] border border-[#2d333c] rounded-xl p-1 px-2 select-none h-11 shrink-0">
                     <button
                       type="button"
                       onMouseDown={(e) => startCounterAction(e, 'dec', 'part')}
                       onTouchStart={(e) => startCounterAction(e, 'dec', 'part')}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors select-none"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#202328] active:bg-[#2a2e35] transition-colors select-none"
                     >
                       <Minus className="w-4 h-4 text-gray-300 stroke-[2.5]" />
                     </button>
@@ -440,13 +440,13 @@ export const DataPreparationPage: React.FC = () => {
                         const val = parseInt(e.target.value, 10);
                         setPartNoCount(isNaN(val) ? 0 : Math.max(0, val));
                       }}
-                      className="text-sm font-bold text-white bg-transparent border border-[#221e33] focus:border-[#7c3aed] focus:outline-none rounded w-12 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="text-sm font-bold text-white bg-transparent border border-[#2d333c] focus:border-[#00d8f6] focus:outline-none rounded w-12 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <button
                       type="button"
                       onMouseDown={(e) => startCounterAction(e, 'inc', 'part')}
                       onTouchStart={(e) => startCounterAction(e, 'inc', 'part')}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors select-none"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#202328] active:bg-[#2a2e35] transition-colors select-none"
                     >
                       <Plus className="w-4 h-4 text-gray-300 stroke-[2.5]" />
                     </button>
@@ -456,7 +456,7 @@ export const DataPreparationPage: React.FC = () => {
 
               {/* Serial Number Series Input */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#8a8596] block">
+                <label className="text-xs font-semibold text-gray-400 block">
                   Add serial no. series:
                 </label>
                 <div className="flex space-x-3 items-center">
@@ -465,14 +465,14 @@ export const DataPreparationPage: React.FC = () => {
                     value={serialNoSeries}
                     onChange={(e) => setSerialNoSeries(e.target.value)}
                     placeholder="eg: SR0200"
-                    className="flex-1 bg-[#13111c] border border-[#221e33] rounded-xl px-4 py-3 text-sm font-medium text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/15 focus:border-[#7c3aed] transition-all duration-150"
+                    className="flex-1 bg-[#181a1d] border border-[#2d333c] rounded-xl px-4 py-3 text-sm font-medium text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#00d8f6]/20 focus:border-[#00d8f6] transition-all duration-150"
                   />
-                  <div className="flex items-center space-x-3 bg-[#13111c] border border-[#221e33] rounded-xl p-1 px-2 select-none h-11 shrink-0">
+                  <div className="flex items-center space-x-3 bg-[#181a1d] border border-[#2d333c] rounded-xl p-1 px-2 select-none h-11 shrink-0">
                     <button
                       type="button"
                       onMouseDown={(e) => startCounterAction(e, 'dec', 'serial')}
                       onTouchStart={(e) => startCounterAction(e, 'dec', 'serial')}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors select-none"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#202328] active:bg-[#2a2e35] transition-colors select-none"
                     >
                       <Minus className="w-4 h-4 text-gray-300 stroke-[2.5]" />
                     </button>
@@ -483,13 +483,13 @@ export const DataPreparationPage: React.FC = () => {
                         const val = parseInt(e.target.value, 10);
                         setSerialNoCount(isNaN(val) ? 0 : Math.max(0, val));
                       }}
-                      className="text-sm font-bold text-white bg-transparent border border-[#221e33] focus:border-[#7c3aed] focus:outline-none rounded w-12 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="text-sm font-bold text-white bg-transparent border border-[#2d333c] focus:border-[#00d8f6] focus:outline-none rounded w-12 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <button
                       type="button"
                       onMouseDown={(e) => startCounterAction(e, 'inc', 'serial')}
                       onTouchStart={(e) => startCounterAction(e, 'inc', 'serial')}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#1a1726] active:bg-[#251e3b] transition-colors select-none"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#202328] active:bg-[#2a2e35] transition-colors select-none"
                     >
                       <Plus className="w-4 h-4 text-gray-300 stroke-[2.5]" />
                     </button>
@@ -499,34 +499,34 @@ export const DataPreparationPage: React.FC = () => {
 
               {/* Dynamic Preview Section */}
               {showPreview && isFormFilled && (
-                <div className="bg-[#131128] rounded-2xl p-6 border border-[#272352] mt-6 animate-fade-in">
+                <div className="bg-[#19272e]/50 rounded-2xl p-6 border border-[#00d8f6]/30 mt-6 animate-fade-in">
                   <div className="flex items-start space-x-2.5 mb-4">
-                    <Eye className="w-5 h-5 text-[#8b5cf6] mt-0.5" />
+                    <Eye className="w-5 h-5 text-[#00d8f6] mt-0.5" />
                     <div>
-                      <h4 className="text-sm font-bold text-[#8b5cf6]">
+                      <h4 className="text-sm font-bold text-[#00d8f6]">
                         Preview
                       </h4>
-                      <p className="text-xs font-semibold text-[#5c65a3]">
+                      <p className="text-xs font-semibold text-gray-400">
                         Preview of generated part and serial numbers
                       </p>
                     </div>
                   </div>
 
                   {/* Table */}
-                  <div className="border border-[#272352] bg-[#0D0E19] rounded-xl overflow-hidden shadow-sm">
+                  <div className="border border-[#00d8f6]/30 bg-[#121417] rounded-xl overflow-hidden shadow-sm">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#131128] border-b border-[#272352] text-[11px] font-bold text-[#8a8596] uppercase tracking-wider">
+                        <tr className="bg-[#181a1d] border-b border-[#2d333c] text-[11px] font-bold text-gray-400 uppercase tracking-wider">
                           <th className="py-2.5 px-4 w-16">#</th>
                           <th className="py-2.5 px-4">Part no.</th>
                           <th className="py-2.5 px-4">Serial no.</th>
                         </tr>
                       </thead>
-                      <tbody className="text-sm font-semibold divide-y divide-[#1b1735]">
+                      <tbody className="text-sm font-semibold divide-y divide-[#1e232a]">
                         {visibleRowsData.showEllipsis ? (
                           <>
                             {/* First Row */}
-                            <tr>
+                            <tr className="hover:bg-[#181a1d]">
                               <td className="py-2.5 px-4 text-gray-400">
                                 {visibleRowsData.firstRow?.index}
                               </td>
@@ -538,13 +538,13 @@ export const DataPreparationPage: React.FC = () => {
                               </td>
                             </tr>
                             {/* Ellipsis Row */}
-                            <tr className="bg-[#131128]/50 text-gray-500">
+                            <tr className="bg-[#181a1d]/50 text-gray-500">
                               <td className="py-2 px-4">...</td>
                               <td className="py-2 px-4">...</td>
                               <td className="py-2 px-4">...</td>
                             </tr>
                             {/* Second to Last Row */}
-                            <tr>
+                            <tr className="hover:bg-[#181a1d]">
                               <td className="py-2.5 px-4 text-gray-400">
                                 {visibleRowsData.secondToLast?.index}
                               </td>
@@ -556,7 +556,7 @@ export const DataPreparationPage: React.FC = () => {
                               </td>
                             </tr>
                             {/* Last Row */}
-                            <tr>
+                            <tr className="hover:bg-[#181a1d]">
                               <td className="py-2.5 px-4 text-gray-400">
                                 {visibleRowsData.lastRow?.index}
                               </td>
@@ -570,7 +570,7 @@ export const DataPreparationPage: React.FC = () => {
                           </>
                         ) : (
                           visibleRowsData.rows.map((row) => (
-                            <tr key={row.index}>
+                            <tr key={row.index} className="hover:bg-[#181a1d]">
                               <td className="py-2.5 px-4 text-gray-400">{row.index}</td>
                               <td className="py-2.5 px-4 font-mono text-white">{row.partNo}</td>
                               <td className="py-2.5 px-4 font-mono text-white">{row.serialNo}</td>
@@ -584,15 +584,15 @@ export const DataPreparationPage: React.FC = () => {
               )}
 
               {/* Form Action Buttons */}
-              <div className="flex items-center justify-end space-x-4 pt-6 border-t border-[#1b172a]">
+              <div className="flex items-center justify-end space-x-4 pt-6 border-t border-[#1e232a]">
                 {/* Preview Button */}
                 <button
                   type="button"
                   onClick={handlePreviewClick}
                   disabled={!isFormFilled || isSubmitting}
                   className={`px-8 py-3 rounded-xl font-bold text-sm transition-all duration-150 ${isFormFilled && !isSubmitting
-                    ? 'bg-[#13111c] border border-[#221e33] text-gray-300 hover:bg-[#201d2d] active:scale-[0.98]'
-                    : 'bg-[#13111c] border border-[#221e33]/50 text-gray-600 opacity-60 cursor-not-allowed'
+                    ? 'bg-[#181a1d] border border-[#2d333c] text-gray-300 hover:bg-[#202328] active:scale-[0.98]'
+                    : 'bg-[#181a1d] border border-[#2d333c]/50 text-gray-600 opacity-60 cursor-not-allowed'
                     }`}
                 >
                   Preview
@@ -603,12 +603,12 @@ export const DataPreparationPage: React.FC = () => {
                   type="button"
                   onClick={handleProceedClick}
                   disabled={!isFormFilled || isSubmitting}
-                  className={`px-9 py-3 rounded-xl font-bold text-sm text-white shadow-md transition-all duration-150 flex items-center space-x-2 ${isFormFilled && !isSubmitting
-                    ? 'bg-[#7c3aed] hover:bg-[#6d28d9] active:scale-[0.98] shadow-purple-500/20'
-                    : 'bg-[#1e1a2f] text-gray-500 cursor-not-allowed shadow-none'
+                  className={`px-9 py-3 rounded-xl font-bold text-sm shadow-md transition-all duration-150 flex items-center space-x-2 ${isFormFilled && !isSubmitting
+                    ? 'bg-[#00d8f6] hover:bg-[#00c4e0] active:scale-[0.98] text-[#05181e] shadow-[0_0_25px_rgba(0,216,246,0.45)] border border-[#50e6ff]/40'
+                    : 'bg-[#181a1d] text-gray-500 cursor-not-allowed shadow-none border border-[#2d333c]'
                     }`}
                 >
-                  {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {isSubmitting && <Loader2 className="w-4 h-4 animate-spin text-[#05181e]" />}
                   <span>Proceed</span>
                 </button>
               </div>
@@ -620,7 +620,7 @@ export const DataPreparationPage: React.FC = () => {
 
         {/* Right Column: Recent Uploads (Span 1) */}
         <div className="lg:col-span-1">
-          <div className="bg-[#0D0E19] rounded-3xl p-6 border border-[#1b172a] shadow-sm min-h-[500px]">
+          <div className="bg-[#121417] rounded-3xl p-6 border border-[#1e232a] shadow-[0_0_50px_rgba(0,216,246,0.1)] min-h-[500px]">
             <h2 className="text-lg font-bold text-white mb-6 select-none">
               Recent uploads
             </h2>
@@ -635,10 +635,10 @@ export const DataPreparationPage: React.FC = () => {
                 recentUploads.map((fileName, idx) => (
                   <div
                     key={`${fileName}-${idx}`}
-                    className="flex items-center space-x-3 bg-[#0a231b] border border-[#10b981]/20 rounded-xl p-3.5 px-4 transition-all duration-150 hover:shadow-sm animate-fade-in group select-none"
+                    className="flex items-center space-x-3 bg-[#19272e] border border-[#00d8f6]/30 rounded-xl p-3.5 px-4 transition-all duration-150 hover:shadow-sm animate-fade-in group select-none"
                   >
-                    <FileText className="w-5 h-5 text-[#10b981] shrink-0" />
-                    <span className="text-[#10b981] font-bold text-sm truncate" title={fileName}>
+                    <FileText className="w-5 h-5 text-[#00d8f6] shrink-0" />
+                    <span className="text-[#00d8f6] font-bold text-sm truncate" title={fileName}>
                       {fileName}
                     </span>
                   </div>

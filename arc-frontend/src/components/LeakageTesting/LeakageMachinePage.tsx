@@ -141,22 +141,22 @@ export const LeakageMachinePage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Details & Controls Bar */}
-      <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 bg-[#0D0E19] border border-[#1b172a] p-6 rounded-3xl shadow-sm">
+      <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 bg-[#121417] border border-[#1e232a] p-6 rounded-3xl shadow-[0_0_50px_rgba(0,216,246,0.1)]">
         <div className="space-y-2">
           <div className="flex items-center space-x-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#8b5cf6] bg-[#19122a] px-3 py-1 rounded-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#00d8f6] bg-[#19272e] px-3 py-1 rounded-full">
               Leakage Machine
             </span>
             <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
               Active Batch:
             </span>
-            <span className="text-sm font-bold text-white border border-[#221e33] px-2.5 py-0.5 rounded-lg bg-[#13111c]">
+            <span className="text-sm font-bold text-white border border-[#2d333c] px-2.5 py-0.5 rounded-lg bg-[#181a1d]">
               {state.activeBatch}
             </span>
           </div>
           <p className="text-xs text-[#8a8596]">
             Target threshold vacuum range extracted from <span className="font-semibold text-white">{state.fileName}</span>:
-            <span className="ml-1 text-sm font-bold text-indigo-400 bg-indigo-950/40 px-2 py-0.5 rounded border border-indigo-900/60">
+            <span className="ml-1 text-sm font-bold text-[#00d8f6] bg-[#19272e] px-2 py-0.5 rounded border border-[#00d8f6]/30">
               {warningThreshold} – {alarmThreshold} {state.unit}
             </span>
           </p>
@@ -164,13 +164,13 @@ export const LeakageMachinePage: React.FC = () => {
 
         {/* Action Controls */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center space-x-2 bg-[#13111c] border border-[#221e33] p-1 rounded-xl">
+          <div className="flex items-center space-x-2 bg-[#181a1d] border border-[#2d333c] p-1 rounded-xl">
             <button
               onClick={handleStart}
               disabled={isTesting || state.totalEmbossed === state.totalTested}
               className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg font-bold text-xs transition-all duration-150 ${isTesting || state.totalEmbossed === state.totalTested
                 ? 'text-gray-600 cursor-not-allowed'
-                : 'bg-[#7c3aed] text-white hover:bg-[#6d28d9]'
+                : 'bg-[#00d8f6] text-[#05181e] hover:bg-[#00c4e0]'
                 }`}
             >
               <Play className="w-3.5 h-3.5" />
@@ -189,7 +189,7 @@ export const LeakageMachinePage: React.FC = () => {
             </button>
             <button
               onClick={handleReset}
-              className="flex items-center space-x-1.5 px-3 py-2 rounded-lg font-bold text-xs text-gray-400 hover:bg-[#201d2d] transition-all"
+              className="flex items-center space-x-1.5 px-3 py-2 rounded-lg font-bold text-xs text-gray-400 hover:bg-[#202328] transition-all"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset</span>
@@ -197,7 +197,7 @@ export const LeakageMachinePage: React.FC = () => {
           </div>
 
           {/* Speed Selector */}
-          <div className="flex items-center space-x-2 bg-[#13111c] border border-[#221e33] px-3 py-2 rounded-xl text-xs font-semibold text-gray-400">
+          <div className="flex items-center space-x-2 bg-[#181a1d] border border-[#2d333c] px-3 py-2 rounded-xl text-xs font-semibold text-gray-400">
             <Sliders className="w-3.5 h-3.5 text-gray-500" />
             <span>Speed:</span>
             <select
@@ -205,9 +205,9 @@ export const LeakageMachinePage: React.FC = () => {
               onChange={(e) => setTestSpeed(Number(e.target.value))}
               className="bg-transparent text-white font-bold outline-none border-none cursor-pointer"
             >
-              <option value={1000} className="bg-[#13111c]">Fast (1s)</option>
-              <option value={2000} className="bg-[#13111c]">Normal (2s)</option>
-              <option value={4000} className="bg-[#13111c]">Slow (4s)</option>
+              <option value={1000} className="bg-[#181a1d]">Fast (1s)</option>
+              <option value={2000} className="bg-[#181a1d]">Normal (2s)</option>
+              <option value={4000} className="bg-[#181a1d]">Slow (4s)</option>
             </select>
           </div>
         </div>
@@ -216,26 +216,26 @@ export const LeakageMachinePage: React.FC = () => {
       {/* KPI Counters Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1 */}
-        <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-150">
+        <div className="bg-[#121417] border border-[#1e232a] rounded-2xl p-5 shadow-sm hover:border-[#00d8f6]/50 transition-all duration-150">
           <span className="text-xs font-bold text-[#8a8596]">Total Embossed</span>
           <div className="text-3xl font-extrabold text-white mt-1">{state.totalEmbossed}</div>
           <div className="text-[10px] text-[#f59e0b] mt-0.5">Ready for testing</div>
         </div>
         {/* KPI 2 */}
-        <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-150">
+        <div className="bg-[#121417] border border-[#1e232a] rounded-2xl p-5 shadow-sm hover:border-[#00d8f6]/50 transition-all duration-150">
           <span className="text-xs font-bold text-[#8a8596]">Total Tested</span>
           <div className="text-3xl font-extrabold text-white mt-1">{state.totalTested}</div>
-          <div className="text-[10px] text-[#6366f1] mt-0.5">Tested items</div>
+          <div className="text-[10px] text-[#00d8f6] mt-0.5">Tested items</div>
         </div>
         {/* KPI 3 */}
-        <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-150 relative overflow-hidden">
+        <div className="bg-[#121417] border border-[#1e232a] rounded-2xl p-5 shadow-sm hover:border-[#00d8f6]/50 transition-all duration-150 relative overflow-hidden">
           <span className="text-xs font-bold text-[#8a8596]">Passed Parts</span>
           <div className="text-3xl font-extrabold text-white mt-1">{state.passedParts}</div>
           <div className="text-[10px] text-emerald-600 mt-0.5">Range: {warningThreshold} – {alarmThreshold} {state.unit}</div>
           <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
         </div>
         {/* KPI 4 */}
-        <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-150 relative overflow-hidden">
+        <div className="bg-[#121417] border border-[#1e232a] rounded-2xl p-5 shadow-sm hover:border-[#00d8f6]/50 transition-all duration-150 relative overflow-hidden">
           <span className="text-xs font-bold text-[#8a8596]">Failed Parts</span>
           <div className="text-3xl font-extrabold text-white mt-1">{state.failedParts}</div>
           <div className="text-[10px] text-[#ef4444]/90 mt-0.5">Outside {warningThreshold} – {alarmThreshold} {state.unit}</div>
@@ -248,19 +248,19 @@ export const LeakageMachinePage: React.FC = () => {
       {/* Live Testing Monitor Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Visual Inspection Panel */}
-        <div className="lg:col-span-1 bg-[#0D0E19] border border-[#1b172a] rounded-3xl p-6 flex flex-col justify-between min-h-[350px] shadow-sm">
+        <div className="lg:col-span-1 bg-[#121417] border border-[#1e232a] rounded-3xl p-6 flex flex-col justify-between min-h-[350px] shadow-[0_0_50px_rgba(0,216,246,0.1)]">
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-bold uppercase tracking-wider text-white">
                 Live Chamber
               </h2>
-              <Activity className={`w-4 h-4 ${isTesting ? 'text-indigo-400 animate-pulse' : 'text-gray-600'}`} />
+              <Activity className={`w-4 h-4 ${isTesting ? 'text-[#00d8f6] animate-pulse' : 'text-gray-600'}`} />
             </div>
 
             {/* Chamber Box Graphic */}
             <div className={`relative border-2 rounded-2xl p-5 text-center flex flex-col items-center justify-center transition-all duration-300 min-h-[180px] bg-[#07050a] ${isTesting
-              ? 'border-[#7c3aed] shadow-[0_0_20px_rgba(124,58,237,0.15)] animate-pulse'
-              : 'border-[#221e33]'
+              ? 'border-[#00d8f6] shadow-[0_0_20px_rgba(0,216,246,0.25)] animate-pulse'
+              : 'border-[#2d333c]'
               }`}>
               {chamber && chamber.partNumber !== '-' ? (
                 <div className="space-y-3 w-full">
@@ -278,7 +278,7 @@ export const LeakageMachinePage: React.FC = () => {
                         {currentTestValue !== null ? `${currentTestValue.toFixed(1)} ${state.unit}` : 'Measuring...'}
                       </span>
                     </div>
-                    <div className="w-full bg-[#13111c] h-3 rounded-full overflow-hidden border border-[#221e33] relative">
+                    <div className="w-full bg-[#181a1d] h-3 rounded-full overflow-hidden border border-[#2d333c] relative">
                       <div
                         className={`h-full transition-all duration-200 ${currentTestValue !== null && (currentTestValue < warningThreshold || currentTestValue > alarmThreshold) ? 'bg-red-500' : 'bg-emerald-500'
                           }`}
@@ -337,10 +337,10 @@ export const LeakageMachinePage: React.FC = () => {
         </div>
 
         {/* Graphical Representation Panel */}
-        <div className="lg:col-span-2 bg-[#0D0E19] border border-[#1b172a] rounded-3xl p-6 min-h-[350px] shadow-sm">
+        <div className="lg:col-span-2 bg-[#121417] border border-[#1e232a] rounded-3xl p-6 min-h-[350px] shadow-[0_0_50px_rgba(0,216,246,0.1)]">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
-              <TrendingUp className="w-4 h-4 text-[#8b5cf6]" />
+              <TrendingUp className="w-4 h-4 text-[#00d8f6]" />
               <h2 className="text-sm font-bold uppercase tracking-wider text-white">
                 Leakage Trend per Part
               </h2>
@@ -353,15 +353,15 @@ export const LeakageMachinePage: React.FC = () => {
           {/* Chart Container */}
           <div className="w-full h-[240px]">
             {trendData.length === 0 ? (
-              <div className="w-full h-full flex flex-col items-center justify-center border border-[#221e33] border-dashed rounded-2xl bg-[#07050a] text-gray-600">
-                <TrendingUp className="w-10 h-10 text-gray-600 mb-2" />
+              <div className="w-full h-full flex flex-col items-center justify-center border border-[#2d333c] border-dashed rounded-2xl bg-[#181a1d] text-gray-500">
+                <TrendingUp className="w-10 h-10 text-gray-500 mb-2" />
                 <span className="text-xs font-bold">No test trend data yet</span>
                 <span className="text-[10px] text-gray-500 mt-0.5">Tested items will populate this live chart</span>
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid stroke="#1b172a" strokeDasharray="3 3" />
+                  <CartesianGrid stroke="#1e232a" strokeDasharray="3 3" />
                   <XAxis
                     dataKey="serialNumber"
                     stroke="#8a8596"
@@ -377,9 +377,9 @@ export const LeakageMachinePage: React.FC = () => {
                     tickLine={false}
                   />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0D0E19', border: '1px solid #1b172a', borderRadius: '10px' }}
+                    contentStyle={{ backgroundColor: '#121417', border: '1px solid #1e232a', borderRadius: '10px' }}
                     labelStyle={{ color: '#fff', fontFamily: 'monospace', fontSize: 11 }}
-                    itemStyle={{ color: '#8b5cf6', fontSize: 12 }}
+                    itemStyle={{ color: '#00d8f6', fontSize: 12 }}
                     formatter={(value: any) => [`${value} ${state.unit}`, 'Vacuum Pressure']}
                   />
                   <ReferenceLine
@@ -407,7 +407,7 @@ export const LeakageMachinePage: React.FC = () => {
                   <Line
                     type="monotone"
                     dataKey="pressureValue"
-                    stroke="#8b5cf6"
+                    stroke="#00d8f6"
                     strokeWidth={2}
                     activeDot={{ r: 6 }}
                     dot={(props: any) => {
@@ -435,7 +435,7 @@ export const LeakageMachinePage: React.FC = () => {
       </div>
 
       {/* Production Inspection Log Table */}
-      <div className="bg-[#0D0E19] border border-[#1b172a] rounded-3xl p-6 shadow-sm">
+      <div className="bg-[#121417] border border-[#1e232a] rounded-3xl p-6 shadow-[0_0_50px_rgba(0,216,246,0.1)]">
         <h2 className="text-base font-bold text-white mb-4 select-none">
           Leakage Inspection Results (Batch Status)
         </h2>
@@ -443,7 +443,7 @@ export const LeakageMachinePage: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-[#221e33] text-xs font-semibold text-gray-500 bg-[#13111c]/30">
+              <tr className="border-b border-[#2d333c] text-xs font-semibold text-gray-400 bg-[#181a1d]/50">
                 <th className="py-3 px-4">Index</th>
                 <th className="py-3 px-4">Part no.</th>
                 <th className="py-3 px-4">Serial no.</th>
@@ -453,10 +453,10 @@ export const LeakageMachinePage: React.FC = () => {
                 <th className="py-3 px-4">Timestamp</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1b172a] text-xs sm:text-sm font-semibold">
+            <tbody className="divide-y divide-[#1e232a] text-xs sm:text-sm font-semibold">
               {queue.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-gray-500 font-medium bg-[#13111c]/10">
+                  <td colSpan={7} className="py-8 text-center text-gray-500 font-medium bg-[#181a1d]/20">
                     <div className="flex flex-col items-center justify-center space-y-1.5">
                       <Info className="w-6 h-6 text-gray-500" />
                       <span className="text-xs text-gray-500 font-semibold">
@@ -470,7 +470,7 @@ export const LeakageMachinePage: React.FC = () => {
                   const testedRecord = history.find((h) => h.serialNumber === item.serialNumber);
 
                   let inspBadge = (
-                    <span className="bg-[#19122a] text-[#8b5cf6] px-2 py-0.5 rounded text-[10px]">
+                    <span className="bg-[#19272e] text-[#00d8f6] px-2 py-0.5 rounded text-[10px]">
                       Ready
                     </span>
                   );
@@ -493,7 +493,7 @@ export const LeakageMachinePage: React.FC = () => {
                   return (
                     <tr
                       key={item.id}
-                      className="hover:bg-[#151221]/30 transition-colors"
+                      className="hover:bg-[#181a1d] transition-colors"
                     >
                       <td className="py-3 px-4 text-gray-500">{idx + 1}</td>
                       <td className="py-3 px-4 text-white font-mono">{item.partNumber}</td>

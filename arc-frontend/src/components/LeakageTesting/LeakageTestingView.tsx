@@ -47,26 +47,34 @@ export const LeakageTestingView: React.FC = () => {
   const passedResults = data.passed || [];
   const failureResults = data.failures || [];
 
-  // Helper render component for Green Batch Progress Bar
-  const renderBatchProgressBar = () => {
+  // Helper render component for Batch Progress Bar (red for failures, green for passed)
+  const renderBatchProgressBar = (variant: 'red' | 'green' = 'red') => {
     const percent = data.batchProgressPercent;
     const completedCount = data.completedCount;
     const totalCount = data.totalParts;
     const isActive = data.batchStatus === 'In Progress';
+    const isGreen = variant === 'green';
+
+    const containerClasses = isGreen
+      ? 'bg-emerald-950/40 border-emerald-900/40'
+      : 'bg-[#271012] border-[#ef4444]/30';
+
+    const fillClasses = isGreen ? 'bg-emerald-500/60' : 'bg-[#ef4444]/60';
+    const textClasses = isGreen ? 'text-emerald-400' : 'text-red-400';
 
     return (
       <div
-        className={`relative w-full h-9 bg-[#041a13] rounded-lg overflow-hidden border border-[#00B074]/20 flex items-center transition-all duration-300 ${isActive ? 'animate-progress-active' : ''}`}
+        className={`relative w-full h-9 rounded-lg overflow-hidden border flex items-center transition-all duration-300 ${containerClasses} ${isActive ? 'animate-progress-active' : ''}`}
       >
         <div
-          className="absolute top-0 left-0 h-full bg-[#00B074]/60 transition-[width] duration-500 ease-out"
+          className={`absolute top-0 left-0 h-full transition-[width] duration-500 ease-out ${fillClasses}`}
           style={{ width: `${percent}%` }}
         />
         <div className="absolute inset-0 flex items-center justify-between px-4 z-10">
-          <span className="text-xs sm:text-sm font-semibold text-emerald-400">
+          <span className={`text-xs sm:text-sm font-semibold ${textClasses}`}>
             Batch Progress: {percent}% Complete ({completedCount} / {totalCount} Parts)
           </span>
-          <div className="flex items-center space-x-2 text-emerald-400">
+          <div className={`flex items-center space-x-2 ${textClasses}`}>
             {isActive && (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
             )}
@@ -93,7 +101,7 @@ export const LeakageTestingView: React.FC = () => {
         </div>
 
         {/* Date Badge - Real-time Current Day */}
-        <div className="flex items-center space-x-2 bg-[#13111c] border border-[#221e33] px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto">
+        <div className="flex items-center space-x-2 bg-[#181a1d] border border-[#2d333c] px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto">
           <Calendar className="w-4 h-4 text-gray-400" />
           <span className="text-sm font-semibold text-gray-300">
             {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -104,13 +112,13 @@ export const LeakageTestingView: React.FC = () => {
       {/* Overview Cards Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Active Batch Card */}
-        <div className="lg:col-span-2 bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-6 shadow-sm flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-150">
+        <div className="lg:col-span-2 bg-[#121417] border border-[#1e232a] rounded-2xl p-6 shadow-[0_0_20px_rgba(0,216,246,0.1)] flex flex-col justify-between h-full hover:border-[#00d8f6]/50 transition-all duration-200">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-base font-semibold text-white">
               Active Batch
             </h2>
             {data.batchProgressPercent !== undefined && (
-              <span className="text-sm font-semibold text-[#00B074]">
+              <span className="text-sm font-semibold text-[#00d8f6]">
                 {data.batchProgressPercent}% Complete
               </span>
             )}
@@ -118,30 +126,30 @@ export const LeakageTestingView: React.FC = () => {
 
           <div className="flex items-center space-x-4">
             {/* Batch Item */}
-            <div className="flex items-center space-x-2 text-emerald-400 bg-[#0a231b] px-3 py-1.5 rounded-lg border border-emerald-950/40">
-              <FileText className="w-4 h-4 text-emerald-400" />
+            <div className="flex items-center space-x-2 text-[#00d8f6] bg-[#19272e] px-3 py-1.5 rounded-lg border border-[#00d8f6]/30">
+              <FileText className="w-4 h-4 text-[#00d8f6]" />
               <span className="text-sm font-semibold">{data.activeBatch}</span>
             </div>
 
             {/* Stepper Arrow Line */}
             <div className="flex-1 flex items-center max-w-[180px]">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#1e1b29] shrink-0" />
-              <div className="flex-1 h-[1.5px] bg-[#1e1b29]" />
-              <div className="w-2 h-2 border-t-[1.5px] border-r-[1.5px] border-[#1e1b29] transform rotate-45 -ml-1 shrink-0" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#2d333c] shrink-0" />
+              <div className="flex-1 h-[1.5px] bg-[#2d333c]" />
+              <div className="w-2 h-2 border-t-[1.5px] border-r-[1.5px] border-[#2d333c] transform rotate-45 -ml-1 shrink-0" />
             </div>
 
             {/* Step Target */}
             <div className="flex items-center space-x-2">
-              <div className="w-9 h-9 rounded-lg bg-[#13111c] border border-[#221e33] flex items-center justify-center text-[#8a8596]">
+              <div className="w-9 h-9 rounded-lg bg-[#181a1d] border border-[#2d333c] flex items-center justify-center text-[#00d8f6]">
                 <ShieldCheck className="w-5 h-5 stroke-[2]" />
               </div>
-              <span className="text-base font-bold text-gray-500">Leakage Testing</span>
+              <span className="text-base font-bold text-gray-400">Leakage Testing</span>
             </div>
           </div>
         </div>
 
         {/* Failed KPI Card (Monitored in real-time) */}
-        <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-6 shadow-sm flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-150">
+        <div className="bg-[#121417] border border-[#1e232a] rounded-2xl p-6 shadow-[0_0_20px_rgba(0,216,246,0.1)] flex flex-col justify-between h-full hover:border-[#00d8f6]/50 transition-all duration-200">
           <div className="flex items-center justify-between">
             <span className="font-semibold text-[15px] text-gray-300">Failed</span>
             <div className="w-8 h-8 rounded-lg bg-[#271012] border border-[#ef4444]/20 flex items-center justify-center text-red-500">
@@ -162,7 +170,7 @@ export const LeakageTestingView: React.FC = () => {
       </div>
 
       {/* Main Leakage Inspection Results Card */}
-      <div className="bg-[#0D0E19] border border-[#1b172a] rounded-3xl p-6 sm:p-8 shadow-sm">
+      <div className="bg-[#121417] border border-[#1e232a] rounded-3xl p-6 sm:p-8 shadow-[0_0_50px_rgba(0,216,246,0.1)]">
         {/* Card Section Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
@@ -276,9 +284,9 @@ export const LeakageTestingView: React.FC = () => {
           {/* ----------------------------------------------------------------- */}
           {/* TABLE 2: PASSED INSPECTION RESULTS */}
           {/* ----------------------------------------------------------------- */}
-          <div className="border border-[#00B074]/30 rounded-2xl overflow-hidden shadow-sm">
+          <div className="border border-emerald-900/40 rounded-2xl overflow-hidden shadow-sm">
             {/* Header Success Banner */}
-            <div className="bg-[#0a231b]/50 border-b border-[#00B074]/30 px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="bg-emerald-950/40 border-b border-emerald-900/40 px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center space-x-2 text-emerald-400 font-bold text-sm sm:text-base">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 <span>Passed Inspection Results ({passedResults.length})</span>
@@ -300,7 +308,7 @@ export const LeakageTestingView: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs sm:text-sm border-collapse">
                 <thead>
-                  <tr className="bg-[#13111c]/30 text-gray-500 font-semibold border-b border-[#221e33]">
+                  <tr className="bg-[#181a1d]/50 text-gray-400 font-semibold border-b border-[#2d333c]">
                     <th className="py-3.5 px-4">Part no.</th>
                     <th className="py-3.5 px-4">Serial no.</th>
                     <th className="py-3.5 px-4">Status</th>
@@ -309,11 +317,11 @@ export const LeakageTestingView: React.FC = () => {
                     <th className="py-3.5 px-4">Attempt</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#1b172a] text-xs sm:text-sm font-medium text-gray-300">
+                <tbody className="divide-y divide-[#1e232a] text-xs sm:text-sm font-medium text-gray-300">
                   {/* Batch Progress Bar */}
                   <tr>
                     <td colSpan={6} className="px-4 py-3">
-                      {renderBatchProgressBar()}
+                      {renderBatchProgressBar('green')}
                     </td>
                   </tr>
 
@@ -325,7 +333,7 @@ export const LeakageTestingView: React.FC = () => {
                     </tr>
                   ) : passedResults.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="py-8 text-center text-gray-500 font-medium bg-[#13111c]/10">
+                      <td colSpan={6} className="py-8 text-center text-gray-500 font-medium bg-[#181a1d]/20">
                         <div className="flex flex-col items-center justify-center space-y-1.5">
                           <Info className="w-6 h-6 text-gray-500" />
                           <span className="text-xs text-gray-500 font-semibold">
@@ -336,7 +344,7 @@ export const LeakageTestingView: React.FC = () => {
                     </tr>
                   ) : (
                     passedResults.map((item, idx) => (
-                      <tr key={item.id ?? idx} className="bg-[#0D0E19] hover:bg-[#151221]/30 transition-colors border-b border-[#1b172a] last:border-b-0">
+                      <tr key={item.id ?? idx} className="bg-[#121417] hover:bg-[#181a1d] transition-colors border-b border-[#1e232a] last:border-b-0">
                         <td className="px-4 py-4 font-semibold text-gray-400 font-mono">
                           {item.partNo}
                         </td>
@@ -344,7 +352,7 @@ export const LeakageTestingView: React.FC = () => {
                           {item.serialNo}
                         </td>
                         <td className="px-4 py-4">
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-950/60 text-emerald-400">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-950/60 text-emerald-400 border border-emerald-900/40">
                             {item.status}
                           </span>
                         </td>
