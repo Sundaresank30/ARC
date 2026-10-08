@@ -7,11 +7,14 @@ import com.arc.leakagetesting.dto.UpdateLeakageActionRequest;
 import com.arc.leakagetesting.service.LeakageTestingMachineService;
 import com.arc.leakagetesting.service.LeakageTestingService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/leakage-testing")
+@Validated
 public class LeakageTestingController {
 
     private final LeakageTestingService leakageTestingService;
@@ -51,14 +54,14 @@ public class LeakageTestingController {
 
     @PatchMapping("/jobs/{id}/action")
     public ResponseEntity<LeakageTestItemDto> updateJobAction(
-            @PathVariable Long id,
+            @PathVariable @Min(value = 1, message = "ID must be a positive integer") Long id,
             @Valid @RequestBody UpdateLeakageActionRequest request) {
         return ResponseEntity.ok(leakageTestingService.updateJobAction(id, request.getAction()));
     }
 
     @PostMapping("/jobs/{id}/fail")
     public ResponseEntity<LeakageTestItemDto> markJobAsFailed(
-            @PathVariable Long id,
+            @PathVariable @Min(value = 1, message = "ID must be a positive integer") Long id,
             @RequestParam(required = false, defaultValue = "0.42") Double testValue,
             @RequestParam(required = false, defaultValue = "down") String direction,
             @RequestParam(required = false, defaultValue = "1/2") String attempt,

@@ -176,7 +176,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
   };
 
   return (
-    <div className="min-h-screen bg-[#06020c] flex w-full">
+    <div className="min-h-screen bg-[#050505] flex w-full">
       <Sidebar
         currentTab={activeTab}
         setCurrentTab={setCurrentTab}
@@ -190,15 +190,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
           <div className="animate-fade-in space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-[28px] font-semibold text-white tracking-tight leading-tight">
+                <h1 className="text-[28px] font-bold text-white tracking-tight leading-tight">
                   Welcome Back
                 </h1>
-                <p className="mt-1 text-sm sm:text-base text-[#8a8596] font-medium">
+                <p className="mt-1 text-sm sm:text-base text-[#9ca3af] font-medium">
                   Monitor production, track batches, and review automated process updates
                 </p>
               </div>
 
-              <div className="flex items-center space-x-2 bg-[#13111c] border border-[#221e33] px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto">
+              <div className="flex items-center space-x-2 bg-[#181a1d] border border-[#2d333c] px-3.5 py-1.5 rounded-xl shadow-sm self-start sm:self-auto">
                 <Calendar className="w-4 h-4 text-gray-400" />
                 <span className="text-sm font-semibold text-gray-300">{getFormattedDate()}</span>
               </div>
@@ -233,7 +233,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
         ) : activeTab === 'data-preparation' ? (
           <DataPreparationPage />
         ) : (
-          <div className="bg-[#0D0E19] rounded-3xl p-8 shadow-sm border border-[#1b172a] animate-fade-in">
+          <div className="bg-[#121417] rounded-3xl p-8 border border-[#1e232a] shadow-[0_0_50px_rgba(0,216,246,0.1)] animate-fade-in">
             <h1 className="text-2xl font-bold text-white capitalize mb-4">
               {activeTab.replace('-', ' ')}
             </h1>

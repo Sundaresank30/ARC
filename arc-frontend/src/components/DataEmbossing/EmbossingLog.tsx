@@ -18,9 +18,9 @@ function StatusBadge({ status }: { status: string }) {
   const isPrinting = status === 'PRINTING' || status === 'IN_MACHINE';
 
   const className = isCompleted
-    ? 'bg-[#00B074]/10 text-[#00B074]'
+    ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/40'
     : isPrinting
-      ? 'bg-[#5E40FF]/10 text-[#5E40FF]'
+      ? 'bg-[#00d8f6]/20 text-[#00d8f6]'
       : 'bg-[#D97706]/10 text-[#D97706]';
 
   return (
@@ -35,6 +35,7 @@ interface BatchProgressBarProps {
   completedCount: number;
   totalCount: number;
   isActive: boolean;
+  variant?: 'yellow' | 'green';
 }
 
 const BatchProgressBar: React.FC<BatchProgressBarProps> = ({
@@ -42,23 +43,32 @@ const BatchProgressBar: React.FC<BatchProgressBarProps> = ({
   completedCount,
   totalCount,
   isActive,
+  variant = 'yellow',
 }) => {
   const isInProgress = percent > 0 && percent < 100;
+  const isGreen = variant === 'green';
+
+  const containerClasses = isGreen
+    ? 'bg-emerald-950/40 border-emerald-900/40'
+    : 'bg-[#20150b] border-[#f59e0b]/30';
+
+  const fillClasses = isGreen ? 'bg-emerald-500/60' : 'bg-[#f59e0b]/60';
+  const textClasses = isGreen ? 'text-emerald-400' : 'text-[#f59e0b]';
 
   return (
     <div
-      className={`relative w-full h-9 bg-[#041a13] rounded-lg overflow-hidden border border-[#00B074]/20 flex items-center transition-all duration-300 ${(isActive || isInProgress) ? 'animate-progress-active' : ''
+      className={`relative w-full h-9 rounded-lg overflow-hidden border flex items-center transition-all duration-300 ${containerClasses} ${(isActive || isInProgress) ? 'animate-progress-active' : ''
         }`}
     >
       <div
-        className="absolute top-0 left-0 h-full bg-[#00B074]/60 transition-[width] duration-500 ease-out"
+        className={`absolute top-0 left-0 h-full transition-[width] duration-500 ease-out ${fillClasses}`}
         style={{ width: `${percent}%` }}
       />
       <div className="absolute inset-0 flex items-center justify-between px-4 z-10">
-        <span className="text-xs sm:text-sm font-semibold text-emerald-400">
+        <span className={`text-xs sm:text-sm font-semibold ${textClasses}`}>
           Batch Progress: {percent}% Complete ({completedCount} / {totalCount} Parts)
         </span>
-        <div className="flex items-center space-x-2 text-emerald-400">
+        <div className={`flex items-center space-x-2 ${textClasses}`}>
           {(isActive || isInProgress) && (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
           )}
@@ -86,7 +96,7 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
   const isActive = activeJobs.length > 0;
 
   return (
-    <div className="bg-[#0D0E19] rounded-3xl p-6 sm:p-8 border border-[#1b172a] shadow-sm relative">
+    <div className="bg-[#121417] rounded-3xl p-6 sm:p-8 border border-[#1e232a] shadow-[0_0_50px_rgba(0,216,246,0.1)] relative">
       <div className="flex items-center space-x-2 mb-6">
         <h2 className="text-xl font-semibold text-white tracking-tight">Embossing Log</h2>
         <Info className="w-4 h-4 text-gray-400 cursor-pointer hover:text-gray-600" />
@@ -108,11 +118,11 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
-                <tr className="bg-[#13111c]/30 text-gray-500 font-semibold border-b border-[#221e33]">
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Part no.</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Serial no.</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Status</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Created</th>
+                <tr className="bg-[#181a1d]/50 text-gray-400 font-semibold border-b border-[#2d333c]">
+                  <th className="px-4 py-3.5 font-semibold text-gray-400">Part no.</th>
+                  <th className="px-4 py-3.5 font-semibold text-gray-400">Serial no.</th>
+                  <th className="px-4 py-3.5 font-semibold text-gray-400">Status</th>
+                  <th className="px-4 py-3.5 font-semibold text-gray-400">Created</th>
                 </tr>
               </thead>
               <tbody>
@@ -138,7 +148,7 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
 
                     {tableJobs.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="py-8 text-center text-gray-500 font-medium bg-[#13111c]/10">
+                        <td colSpan={6} className="py-8 text-center text-gray-500 font-medium bg-[#181a1d]/20">
                           <div className="flex flex-col items-center justify-center space-y-1.5">
                             <Info className="w-6 h-6 text-gray-500" />
                             <span className="text-xs text-gray-500 font-semibold">
@@ -151,7 +161,7 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
                       tableJobs.map((job) => (
                         <tr
                           key={job.id}
-                          className="bg-[#0D0E19] hover:bg-[#151221]/30 transition-colors border-b border-[#1b172a] last:border-b-0"
+                          className="bg-[#121417] hover:bg-[#181a1d] transition-colors border-b border-[#1e232a] last:border-b-0"
                         >
                           <td className="px-4 py-4 text-gray-400 font-mono">{job.partNumber}</td>
                           <td className="px-4 py-4 text-gray-400 font-mono">{job.serialNumber}</td>
@@ -172,13 +182,13 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
         </div>
 
         {/* Panel 2: Completed Jobs */}
-        <div className="border border-[#00B074]/30 rounded-2xl overflow-hidden shadow-sm">
-          <div className="bg-[#0a231b]/50 border-b border-[#00B074]/30 px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-[#00B074]">
+        <div className="border border-emerald-900/40 rounded-2xl overflow-hidden shadow-sm">
+          <div className="bg-emerald-950/40 border-b border-emerald-900/40 px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center space-x-2 text-emerald-400">
               <CheckCircle2 className="w-4.5 h-4.5 stroke-[2.5]" />
               <span className="font-semibold text-sm sm:text-base">Completed Jobs</span>
             </div>
-            <span className="text-xs sm:text-sm font-semibold text-[#00B074]">
+            <span className="text-xs sm:text-sm font-semibold text-emerald-400">
               {completedCount} completed
             </span>
           </div>
@@ -186,11 +196,11 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
-                <tr className="bg-[#13111c]/30 text-gray-500 font-semibold border-b border-[#221e33]">
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Part no.</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Serial no.</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Status</th>
-                  <th className="px-4 py-3.5 font-semibold text-gray-500">Completed</th>
+                <tr className="bg-[#181a1d]/50 text-gray-400 font-semibold border-b border-[#2d333c]">
+                  <th className="px-4 py-3.5 font-semibold text-gray-400">Part no.</th>
+                  <th className="px-4 py-3.5 font-semibold text-gray-400">Serial no.</th>
+                  <th className="px-4 py-3.5 font-semibold text-gray-400">Status</th>
+                  <th className="px-4 py-3.5 font-semibold text-gray-400">Completed</th>
                 </tr>
               </thead>
               <tbody>
@@ -210,13 +220,14 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
                           completedCount={completedCount}
                           totalCount={totalCount}
                           isActive={isActive}
+                          variant="green"
                         />
                       </td>
                     </tr>
 
                     {completedJobs.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="py-8 text-center text-gray-500 font-medium bg-[#13111c]/10">
+                        <td colSpan={6} className="py-8 text-center text-gray-500 font-medium bg-[#181a1d]/20">
                           <div className="flex flex-col items-center justify-center space-y-1.5">
                             <Info className="w-6 h-6 text-gray-500" />
                             <span className="text-xs text-gray-500 font-semibold">
@@ -229,7 +240,7 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
                       completedJobs.map((job) => (
                         <tr
                           key={job.id}
-                          className="bg-[#0D0E19] hover:bg-[#151221]/30 transition-colors border-b border-[#1b172a] last:border-b-0"
+                          className="bg-[#121417] hover:bg-[#181a1d] transition-colors border-b border-[#1e232a] last:border-b-0"
                         >
                           <td className="px-4 py-4 text-gray-400 font-mono">{job.partNumber}</td>
                           <td className="px-4 py-4 text-gray-400 font-mono">{job.serialNumber}</td>
@@ -254,3 +265,4 @@ export const EmbossingLog: React.FC<EmbossingLogProps> = ({
 };
 
 export default EmbossingLog;
+

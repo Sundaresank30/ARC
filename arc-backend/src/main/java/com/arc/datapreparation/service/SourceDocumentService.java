@@ -19,12 +19,38 @@ public class SourceDocumentService {
     private final SourceDocumentRepository repository;
     private final PdfExtractionService pdfExtractionService;
 
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
     @Transactional
     public SourceDocumentDto processAndSavePdf(MultipartFile file, String batchId) throws IOException {
-        if (file.isEmpty()) {
+        if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Uploaded file is empty");
         }
-        SourceDocument extracted = pdfExtractionService.extractAndParsePdf(file);
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new IllegalArgumentException("Uploaded file size exceeds maximum limit of 10MB");
+        }
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename != null && originalFilename.length() > 255) {
+            throw new IllegalArgumentException("File name exceeds maximum length of 255 characters");
+        }
+        if (originalFilename != null && !originalFilename.toLowerCase().endsWith(".pdf")) {
+            throw new IllegalArgumentException("Uploaded file must be a PDF document");
+        }
+        if (file.getContentType() != null && !file.getContentType().equalsIgnoreCase("application/pdf")
+                && !file.getContentType().equalsIgnoreCase("application/x-pdf")
+                && !file.getContentType().equalsIgnoreCase("application/octet-stream")) {
+            throw new IllegalArgumentException("Invalid content type for PDF document");
+        }
+        if (batchId != null && batchId.length() > 100) {
+            throw new IllegalArgumentException("Batch ID cannot exceed 100 characters");
+        }
+
+        SourceDocument extracted;
+        try {
+            extracted = pdfExtractionService.extractAndParsePdf(file);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Failed to parse PDF document. Please verify the document format and content.");
+        }
         String finalBatchId = (batchId != null && !batchId.trim().isEmpty()) ? batchId.trim() : extracted.getBatchId();
 
         SourceDocument documentToSave;
@@ -68,14 +94,14 @@ public class SourceDocumentService {
     @Transactional(readOnly = true)
     public SourceDocumentDto getSourceDocumentById(Long id) {
         SourceDocument doc = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Source document not found with id: " + id));
+                .orElseThrow(() -> new com.arc.exception.ResourceNotFoundException("Source document not found with id: " + id));
         return mapToDto(doc);
     }
 
     @Transactional
     public void deleteSourceDocument(Long id) {
         if (!repository.existsById(id)) {
-            throw new IllegalArgumentException("Source document not found with id: " + id);
+            throw new com.arc.exception.ResourceNotFoundException("Source document not found with id: " + id);
         }
         repository.deleteById(id);
     }

@@ -81,7 +81,7 @@ export const DataEmbossingPage: React.FC = () => {
         </div>
 
         <div className="lg:col-span-1">
-          <div className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-6 shadow-sm flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-150">
+          <div className="bg-[#121417] border border-[#1e232a] rounded-2xl p-6 shadow-[0_0_20px_rgba(0,216,246,0.1)] flex flex-col justify-between h-full hover:border-[#00d8f6]/50 hover:shadow-[0_0_20px_rgba(0,216,246,0.15)] transition-all duration-200">
             <div className="flex items-center justify-between">
               <span className="font-semibold text-[15px] text-gray-300">Pending</span>
               <div className="w-8 h-8 rounded-lg bg-[#20150b] border border-[#f59e0b]/20 flex items-center justify-center text-[#f59e0b]">

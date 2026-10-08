@@ -5,9 +5,11 @@ import com.arc.datapreparation.dto.ProductionBatchItemDto;
 import com.arc.datapreparation.dto.ProductionBatchResponse;
 import com.arc.datapreparation.service.DataPreparationService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -19,6 +21,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/data-preparation")
 @RequiredArgsConstructor
+@Validated
 public class DataPreparationController {
 
     private final DataPreparationService dataPreparationService;
@@ -46,12 +49,14 @@ public class DataPreparationController {
     }
 
     @GetMapping("/batches/{batchId}")
-    public ResponseEntity<ProductionBatchResponse> getBatchByBatchId(@PathVariable String batchId) {
+    public ResponseEntity<ProductionBatchResponse> getBatchByBatchId(
+            @PathVariable @Size(max = 100, message = "Batch ID cannot exceed 100 characters") String batchId) {
         return ResponseEntity.ok(dataPreparationService.getBatchByBatchId(batchId));
     }
 
     @GetMapping("/batches/{batchId}/items")
-    public ResponseEntity<List<ProductionBatchItemDto>> getBatchItems(@PathVariable String batchId) {
+    public ResponseEntity<List<ProductionBatchItemDto>> getBatchItems(
+            @PathVariable @Size(max = 100, message = "Batch ID cannot exceed 100 characters") String batchId) {
         return ResponseEntity.ok(dataPreparationService.getBatchItems(batchId));
     }
 }

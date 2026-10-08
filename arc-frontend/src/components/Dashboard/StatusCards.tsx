@@ -16,26 +16,26 @@ export const StatusCards: React.FC<StatusCardProps> = ({
     {
       title: 'Completed',
       value: completedCount,
-      changeText: '+from actual production data',
+      changeText: '+from this week',
       icon: CheckCircle2,
-      subtextColorClass: 'text-[#10b981]',
-      iconBgClass: 'bg-[#0c1f19] border border-[#10b981]/30 text-[#10b981]',
+      subtextColorClass: 'text-[#16a34a]',
+      iconBgClass: 'bg-[#0e2a18] border border-[#16a34a]/30 text-[#22c55e]',
     },
     {
       title: 'Failed',
       value: failedCount,
-      changeText: '-from actual production data',
+      changeText: '-from this week',
       icon: AlertCircle,
-      subtextColorClass: 'text-[#ef4444]',
-      iconBgClass: 'bg-[#271012] border border-[#ef4444]/30 text-[#ef4444]',
+      subtextColorClass: 'text-[#dc2626]',
+      iconBgClass: 'bg-[#2e0e11] border border-[#dc2626]/30 text-[#ef4444]',
     },
     {
       title: 'Total batches',
       value: totalBatches,
-      changeText: 'total registered batches',
+      changeText: '+from this week',
       icon: FileText,
-      subtextColorClass: 'text-[#6366f1]',
-      iconBgClass: 'bg-[#141235] border border-[#6366f1]/30 text-[#6366f1]',
+      subtextColorClass: 'text-[#00d8f6]',
+      iconBgClass: 'bg-[#19272e] border border-[#00d8f6]/30 text-[#00d8f6]',
     },
   ];
 
@@ -46,11 +46,11 @@ export const StatusCards: React.FC<StatusCardProps> = ({
         return (
           <div
             key={idx}
-            className="bg-gradient-to-b from-[#09040A] to-[#111827]/80 border border-[#1e1b29] rounded-2xl p-6 shadow-sm flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-150"
+            className="bg-[#121417] border border-[#1e232a] rounded-2xl p-6 shadow-sm flex flex-col justify-between h-full hover:border-[#00d8f6]/50 hover:shadow-[0_0_20px_rgba(0,216,246,0.15)] transition-all duration-200"
           >
             {/* Top row: Title (left) & Icon (right) */}
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-[15px] text-gray-300">
+              <span className="font-semibold text-[15px] text-white">
                 {card.title}
               </span>
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${card.iconBgClass}`}>
@@ -59,7 +59,7 @@ export const StatusCards: React.FC<StatusCardProps> = ({
             </div>
 
             {/* Middle: Large Value */}
-            <div className="my-1">
+            <div className="my-2">
               <span className="text-[44px] font-bold leading-none tracking-tight text-white">
                 {card.value}
               </span>

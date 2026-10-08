@@ -2,7 +2,9 @@ package com.arc.machine.controller;
 
 import com.arc.machine.dto.EmbossingQueueDto;
 import com.arc.machine.service.EmbossingQueueService;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api/machine/queue")
+@Validated
 public class EmbossingQueueController {
 
     private final EmbossingQueueService queueService;
@@ -36,12 +39,14 @@ public class EmbossingQueueController {
     }
 
     @PutMapping("/{id}/in-progress")
-    public ResponseEntity<EmbossingQueueDto> markInProgress(@PathVariable Long id) {
+    public ResponseEntity<EmbossingQueueDto> markInProgress(
+            @PathVariable @Min(value = 1, message = "ID must be a positive integer") Long id) {
         return ResponseEntity.ok(queueService.markInProgress(id));
     }
 
     @PutMapping("/{id}/complete")
-    public ResponseEntity<EmbossingQueueDto> markCompleted(@PathVariable Long id) {
+    public ResponseEntity<EmbossingQueueDto> markCompleted(
+            @PathVariable @Min(value = 1, message = "ID must be a positive integer") Long id) {
         return ResponseEntity.ok(queueService.markCompleted(id));
     }
 

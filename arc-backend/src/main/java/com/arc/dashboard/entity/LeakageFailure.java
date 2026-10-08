@@ -16,6 +16,9 @@ public class LeakageFailure {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "batch_id", length = 50)
+    private String batchId;
+
     @Column(nullable = false, length = 50)
     private String partNo;
 

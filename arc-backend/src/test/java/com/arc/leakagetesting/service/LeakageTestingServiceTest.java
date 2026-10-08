@@ -71,7 +71,7 @@ class LeakageTestingServiceTest {
                 .testedAt(LocalDateTime.now())
                 .build();
 
-        when(embossingJobRepository.findByEmbossingStatusOrderByIdDesc(EmbossingStatus.COMPLETED))
+        when(embossingJobRepository.findByEmbossingStatusOrderByIdAsc(EmbossingStatus.COMPLETED))
                 .thenReturn(Collections.singletonList(completed1));
         when(embossingJobRepository.findByBatchIdOrderByIdAsc("Batch_1"))
                 .thenReturn(Collections.singletonList(completed1));
@@ -110,7 +110,7 @@ class LeakageTestingServiceTest {
                 .testedAt(LocalDateTime.now())
                 .build();
 
-        when(embossingJobRepository.findByEmbossingStatusOrderByIdDesc(EmbossingStatus.COMPLETED))
+        when(embossingJobRepository.findByEmbossingStatusOrderByIdAsc(EmbossingStatus.COMPLETED))
                 .thenReturn(Collections.singletonList(completed));
         when(embossingJobRepository.findByBatchIdOrderByIdAsc("Batch_1"))
                 .thenReturn(Collections.singletonList(completed));

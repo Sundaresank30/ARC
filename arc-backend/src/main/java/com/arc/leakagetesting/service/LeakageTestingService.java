@@ -148,16 +148,16 @@ public class LeakageTestingService {
             }
         }
 
-        // 2. Latest completed embossing job batch
-        List<EmbossingJob> completedJobs = embossingJobRepository.findByEmbossingStatusOrderByIdDesc(EmbossingStatus.COMPLETED);
+        // 2. Earliest completed embossing job batch (FIFO)
+        List<EmbossingJob> completedJobs = embossingJobRepository.findByEmbossingStatusOrderByIdAsc(EmbossingStatus.COMPLETED);
         if (!completedJobs.isEmpty()) {
             return completedJobs.get(0).getBatchId();
         }
 
-        // 3. Latest embossing job batch overall
+        // 3. Earliest embossing job batch overall (FIFO)
         List<EmbossingJob> allJobs = embossingJobRepository.findAll();
         if (!allJobs.isEmpty()) {
-            return allJobs.get(allJobs.size() - 1).getBatchId();
+            return allJobs.get(0).getBatchId();
         }
 
         return "No Active Batch";
@@ -184,7 +184,7 @@ public class LeakageTestingService {
         }
 
         EmbossingJob job = embossingJobRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Leakage test record or embossing job not found with id: " + id));
+                .orElseThrow(() -> new com.arc.exception.ResourceNotFoundException("Leakage test record or embossing job not found with id: " + id));
 
         log.info("Requested action update for EmbossingJob ID {} ({}) to {}", id, job.getPartNumber(), newAction);
         return toItemDto(job, "Failed");
@@ -193,7 +193,7 @@ public class LeakageTestingService {
     @Transactional
     public LeakageTestItemDto markJobAsFailed(Long jobId, Double testValue, String direction, String attempt, String action) {
         EmbossingJob job = embossingJobRepository.findById(jobId)
-                .orElseThrow(() -> new IllegalArgumentException("Embossing job not found with id: " + jobId));
+                .orElseThrow(() -> new com.arc.exception.ResourceNotFoundException("Embossing job not found with id: " + jobId));
 
         job.setEmbossingStatus(EmbossingStatus.FAILED);
         job.setEmbossingCompletedTime(LocalDateTime.now());

@@ -63,7 +63,7 @@ public class EmbossingQueueService {
     @Transactional
     public EmbossingQueueDto markInProgress(Long id) {
         EmbossingQueue item = repo.findByIdForUpdate(id)
-                .orElseThrow(() -> new IllegalArgumentException("Queue item not found: " + id));
+                .orElseThrow(() -> new com.arc.exception.ResourceNotFoundException("Queue item not found with id: " + id));
         if (item.getStatus() == EmbossingQueueStatus.WAITING) {
             item.setStatus(EmbossingQueueStatus.IN_PROGRESS);
             EmbossingQueue saved = repo.save(item);
@@ -79,7 +79,7 @@ public class EmbossingQueueService {
     @Transactional
     public EmbossingQueueDto markCompleted(Long id) {
         EmbossingQueue item = repo.findByIdForUpdate(id)
-                .orElseThrow(() -> new IllegalArgumentException("Queue item not found: " + id));
+                .orElseThrow(() -> new com.arc.exception.ResourceNotFoundException("Queue item not found with id: " + id));
         if (item.getStatus() == EmbossingQueueStatus.COMPLETED) {
             return toDto(item);
         }

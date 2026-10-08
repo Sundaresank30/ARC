@@ -20,17 +20,20 @@
 }
 
 .role-card-selected {
-  border-color: #5E40FF !important;
-  box-shadow: 0 10px 25px -5px rgba(94, 64, 255, 0.15), 0 8px 10px -6px rgba(94, 64, 255, 0.1) !important;
+  border-color: #00d8f6 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 216, 246, 0.2), 0 8px 10px -6px rgba(0, 216, 246, 0.15) !important;
 }
 
-/* Primary purple button styling */
-.btn-primary-purple {
-  background-color: #5E40FF;
+/* Primary cyan button styling */
+.btn-primary-purple,
+.btn-primary-cyan {
+  background-color: #00d8f6;
+  color: #05181e;
 }
 
-.btn-primary-purple:hover {
-  background-color: #4b2bee;
+.btn-primary-purple:hover,
+.btn-primary-cyan:hover {
+  background-color: #00c4e0;
 }
 
 /* Micro animations */

@@ -23,7 +23,7 @@ public class PdfExtractionService {
             text = stripper.getText(document);
         }
 
-        log.info("Extracted Raw PDF Text Stream:\n{}", text);
+        log.debug("Successfully extracted PDF text (length: {} chars)", text != null ? text.length() : 0);
 
         return SourceDocument.builder()
                 .clientName(extractFlexibleValue(text, "Client Name", "Client", "Customer", "Company"))

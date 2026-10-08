@@ -6,16 +6,20 @@ import com.arc.embossing.dto.EmbossingJobResponse;
 import com.arc.embossing.dto.SimulationStartResponse;
 import com.arc.embossing.service.EmbossingService;
 import com.arc.embossing.service.EmbossingSimulationService;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/embossing")
+@Validated
 public class EmbossingController {
 
     private final EmbossingService embossingService;
@@ -44,7 +48,8 @@ public class EmbossingController {
     }
 
     @GetMapping("/completed")
-    public ResponseEntity<List<EmbossingJobResponse>> getCompletedJobs(@org.springframework.web.bind.annotation.RequestParam(required = false) String batchId) {
+    public ResponseEntity<List<EmbossingJobResponse>> getCompletedJobs(
+            @RequestParam(required = false) @Size(max = 100, message = "Batch ID cannot exceed 100 characters") String batchId) {
         return ResponseEntity.ok(embossingService.getCompletedJobs(batchId));
     }
 

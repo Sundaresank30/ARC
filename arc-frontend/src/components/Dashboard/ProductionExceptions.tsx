@@ -7,12 +7,13 @@ interface CarryForwardItem {
   serialNo: string;
   status: 'Pending' | 'Queued' | 'Completed' | string;
   remainingSince: string;
-  nextShift: string;
+  batchId: string;
   action: string;
 }
 
 interface LeakageFailureItem {
   id: string;
+  batchId?: string;
   partNo: string;
   serialNo: string;
   status: 'Failed' | 'Scrap' | 'Pending' | string;
@@ -77,10 +78,10 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
   };
 
   return (
-    <div className="bg-[#0D0E19] rounded-3xl p-6 sm:p-8 border border-[#1b172a] shadow-sm relative">
+    <div className="bg-[#121417] rounded-3xl p-6 sm:p-8 border border-[#1e232a] shadow-[0_0_50px_rgba(0,216,246,0.1)] relative">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="absolute top-4 right-4 bg-[#1a162b] text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-lg border border-[#3b2d6a] z-50 animate-fade-in">
+        <div className="absolute top-4 right-4 bg-[#18181b] text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-lg border border-[#27272a] z-50 animate-fade-in">
           {toastMessage}
         </div>
       )}
@@ -106,7 +107,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
               </span>
             </div>
             <span className="text-xs font-semibold text-[#f59e0b]/90">
-              Scheduled for next shift
+              Active carry-forward embossing
             </span>
           </div>
 
@@ -114,18 +115,18 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
-                <tr className="bg-[#0D0E19] text-[#8a8596] font-semibold border-b border-[#221e33]">
-                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Part no.</th>
-                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Serial no.</th>
-                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Status</th>
-                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Remaining Since</th>
-                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Next Shift</th>
+                <tr className="bg-[#0c0c0e] text-[#9ca3af] font-semibold border-b border-[#1c1c21]">
+                  <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Part no.</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Serial no.</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Status</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Remaining Since</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Batch ID</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1c182a] bg-[#0D0E19]">
+              <tbody className="divide-y divide-[#1c1c21] bg-[#0c0c0e]">
                 {carryForwardData.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-8 text-center text-gray-500 font-medium bg-[#13111c]/10">
+                    <td colSpan={5} className="py-8 text-center text-gray-500 font-medium bg-[#141414]/30">
                       <div className="flex flex-col items-center justify-center space-y-1.5">
                         <Info className="w-6 h-6 text-gray-500" />
                         <span className="text-xs text-gray-500 font-semibold">
@@ -136,7 +137,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
                   </tr>
                 ) : (
                   carryForwardData.map((row) => (
-                    <tr key={row.id} className="hover:bg-[#120e21]/50 transition-colors">
+                    <tr key={row.id} className="hover:bg-[#141416] transition-colors">
                       <td className="px-4 py-4 font-semibold text-white">{row.partNo}</td>
                       <td className="px-4 py-4 text-gray-300 font-medium">{row.serialNo}</td>
                       <td className="px-4 py-4">
@@ -145,7 +146,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
                         </span>
                       </td>
                       <td className="px-4 py-4 text-gray-400 font-medium">{row.remainingSince}</td>
-                      <td className="px-4 py-4 text-gray-400 font-medium">{row.nextShift}</td>
+                      <td className="px-4 py-4 text-gray-400 font-medium">{row.batchId}</td>
                     </tr>
                   ))
                 )}
@@ -178,19 +179,20 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
-                <tr className="bg-[#0D0E19] text-[#8a8596] font-semibold border-b border-[#221e33]">
-                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Part no.</th>
-                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Serial no.</th>
-                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Status</th>
-                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Test Value</th>
-                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Timestamp</th>
-                  <th className="px-4 py-3.5 font-semibold text-[#8a8596]">Attempt</th>
+                <tr className="bg-[#0c0c0e] text-[#9ca3af] font-semibold border-b border-[#1c1c21]">
+                  <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Part no.</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Serial no.</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Batch ID</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Status</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Test Value</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Timestamp</th>
+                  <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Attempt</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1c182a] bg-[#0D0E19]">
+              <tbody className="divide-y divide-[#1c1c21] bg-[#0c0c0e]">
                 {leakageFailuresData.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-8 text-center text-gray-500 font-medium bg-[#13111c]/10">
+                    <td colSpan={7} className="py-8 text-center text-gray-500 font-medium bg-[#141414]/30">
                       <div className="flex flex-col items-center justify-center space-y-1.5">
                         <Info className="w-6 h-6 text-gray-500" />
                         <span className="text-xs text-gray-500 font-semibold">
@@ -201,9 +203,10 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
                   </tr>
                 ) : (
                   leakageFailuresData.map((row) => (
-                    <tr key={row.id} className="hover:bg-[#120e21]/50 transition-colors">
+                    <tr key={row.id} className="hover:bg-[#141416] transition-colors">
                       <td className="px-4 py-4 font-semibold text-white">{row.partNo}</td>
                       <td className="px-4 py-4 text-gray-300 font-medium">{row.serialNo}</td>
+                      <td className="px-4 py-4 text-gray-300 font-medium">{row.batchId || 'N/A'}</td>
                       <td className="px-4 py-4">
                         <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-[#3a1012] text-[#ef4444]">
                           {row.status}
