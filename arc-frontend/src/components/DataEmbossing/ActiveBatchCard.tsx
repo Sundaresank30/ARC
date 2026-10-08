@@ -14,13 +14,13 @@ export const ActiveBatchCard: React.FC<ActiveBatchCardProps> = ({
   isLoading = false,
 }) => {
   return (
-    <div className="bg-[#121417] border border-[#1e232a] rounded-2xl p-6 shadow-[0_0_20px_rgba(0,216,246,0.1)] flex flex-col justify-between h-full">
+    <div className="bg-[#101010] border border-[#1e232a] rounded-2xl p-6 shadow-sm flex flex-col justify-between h-full">
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-base font-semibold text-white">
           Active Batch
         </h2>
         {progress && (
-          <span className="text-sm font-semibold text-[#00d8f6]">
+          <span className="text-sm font-semibold text-emerald-400">
             {progress.progressPercent}% Complete
           </span>
         )}

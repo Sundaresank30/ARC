@@ -198,7 +198,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
                 </p>
               </div>
 
-              <div className="flex items-center space-x-2 bg-[#181a1d] border border-[#2d333c] px-3.5 py-1.5 rounded-xl shadow-sm self-start sm:self-auto">
+              <div className="flex items-center space-x-2 bg-[#101010] border border-[#1e232a] px-3.5 py-1.5 rounded-xl shadow-sm self-start sm:self-auto">
                 <Calendar className="w-4 h-4 text-gray-400" />
                 <span className="text-sm font-semibold text-gray-300">{getFormattedDate()}</span>
               </div>
@@ -233,7 +233,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ selectedRole: 
         ) : activeTab === 'data-preparation' ? (
           <DataPreparationPage />
         ) : (
-          <div className="bg-[#121417] rounded-3xl p-8 border border-[#1e232a] shadow-[0_0_50px_rgba(0,216,246,0.1)] animate-fade-in">
+          <div className="bg-[#101010] rounded-3xl p-8 border border-[#1e232a] animate-fade-in">
             <h1 className="text-2xl font-bold text-white capitalize mb-4">
               {activeTab.replace('-', ' ')}
             </h1>

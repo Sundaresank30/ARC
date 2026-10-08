@@ -314,7 +314,7 @@ export const DataPreparationPage: React.FC = () => {
         </div>
 
         {/* Dynamic Server Date Widget */}
-        <div className="flex items-center space-x-2 bg-[#181a1d] border border-[#2d333c] px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto hover:bg-[#202328] cursor-pointer transition-colors duration-150">
+        <div className="flex items-center space-x-2 bg-[#101010] border border-[#1e232a] px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto hover:bg-[#181818] cursor-pointer transition-colors duration-150">
           <Calendar className="w-4 h-4 text-gray-400" />
           <span className="text-sm font-semibold text-gray-300 select-none">
             {currentDate}
@@ -387,7 +387,7 @@ export const DataPreparationPage: React.FC = () => {
           </div>
 
           {/* Create Batch Card */}
-          <div className="bg-[#121417] rounded-3xl p-8 border border-[#1e232a] shadow-[0_0_50px_rgba(0,216,246,0.1)] space-y-6">
+          <div className="bg-[#101010] rounded-3xl p-8 border border-[#1e232a] space-y-6">
             <h2 className="text-xl font-semibold text-white tracking-tight select-none">
               Create Production Batch
             </h2>
@@ -513,20 +513,20 @@ export const DataPreparationPage: React.FC = () => {
                   </div>
 
                   {/* Table */}
-                  <div className="border border-[#00d8f6]/30 bg-[#121417] rounded-xl overflow-hidden shadow-sm">
+                  <div className="border border-[#00d8f6]/30 bg-[#101010] rounded-xl overflow-hidden shadow-sm">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#181a1d] border-b border-[#2d333c] text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                        <tr className="bg-[#18181b] border-b border-[#232328] text-[11px] font-bold text-[#9ca3af] uppercase tracking-wider">
                           <th className="py-2.5 px-4 w-16">#</th>
                           <th className="py-2.5 px-4">Part no.</th>
                           <th className="py-2.5 px-4">Serial no.</th>
                         </tr>
                       </thead>
-                      <tbody className="text-sm font-semibold divide-y divide-[#1e232a]">
+                      <tbody className="text-sm font-semibold divide-y divide-[#1f1f25] bg-[#141414]">
                         {visibleRowsData.showEllipsis ? (
                           <>
                             {/* First Row */}
-                            <tr className="hover:bg-[#181a1d]">
+                            <tr className="hover:bg-[#16161a]">
                               <td className="py-2.5 px-4 text-gray-400">
                                 {visibleRowsData.firstRow?.index}
                               </td>
@@ -538,13 +538,13 @@ export const DataPreparationPage: React.FC = () => {
                               </td>
                             </tr>
                             {/* Ellipsis Row */}
-                            <tr className="bg-[#181a1d]/50 text-gray-500">
+                            <tr className="bg-[#18181b]/50 text-gray-500">
                               <td className="py-2 px-4">...</td>
                               <td className="py-2 px-4">...</td>
                               <td className="py-2 px-4">...</td>
                             </tr>
                             {/* Second to Last Row */}
-                            <tr className="hover:bg-[#181a1d]">
+                            <tr className="hover:bg-[#16161a]">
                               <td className="py-2.5 px-4 text-gray-400">
                                 {visibleRowsData.secondToLast?.index}
                               </td>
@@ -556,7 +556,7 @@ export const DataPreparationPage: React.FC = () => {
                               </td>
                             </tr>
                             {/* Last Row */}
-                            <tr className="hover:bg-[#181a1d]">
+                            <tr className="hover:bg-[#16161a]">
                               <td className="py-2.5 px-4 text-gray-400">
                                 {visibleRowsData.lastRow?.index}
                               </td>
@@ -570,7 +570,7 @@ export const DataPreparationPage: React.FC = () => {
                           </>
                         ) : (
                           visibleRowsData.rows.map((row) => (
-                            <tr key={row.index} className="hover:bg-[#181a1d]">
+                            <tr key={row.index} className="hover:bg-[#1c1c1c]">
                               <td className="py-2.5 px-4 text-gray-400">{row.index}</td>
                               <td className="py-2.5 px-4 font-mono text-white">{row.partNo}</td>
                               <td className="py-2.5 px-4 font-mono text-white">{row.serialNo}</td>
@@ -620,7 +620,7 @@ export const DataPreparationPage: React.FC = () => {
 
         {/* Right Column: Recent Uploads (Span 1) */}
         <div className="lg:col-span-1">
-          <div className="bg-[#121417] rounded-3xl p-6 border border-[#1e232a] shadow-[0_0_50px_rgba(0,216,246,0.1)] min-h-[500px]">
+          <div className="bg-[#101010] rounded-3xl p-6 border border-[#1e232a] min-h-[500px]">
             <h2 className="text-lg font-bold text-white mb-6 select-none">
               Recent uploads
             </h2>

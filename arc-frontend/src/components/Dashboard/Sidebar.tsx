@@ -40,10 +40,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const visibleItems = menuItems.filter((item) => allowedTabs.includes(item.id));
 
   return (
-    <aside className="w-64 bg-[#121417] border-r border-[#1e232a] flex flex-col justify-between h-screen sticky top-0 shrink-0 select-none">
+    <aside className="w-64 bg-[#101010] border-r border-[#1e232a] flex flex-col justify-between h-screen sticky top-0 shrink-0 select-none">
       <div className="flex flex-col pt-6 px-4">
-        <div className="flex items-center px-3 mb-8">
-          <img src="/assets/logo.png" alt="ARC Logo" className="h-10 object-contain" />
+        <div className="flex items-center px-2 mb-8">
+          <img src="/assets/logo.png" alt="ARC Logo" className="h-14 object-contain max-w-full" />
         </div>
 
         <nav className="space-y-1">

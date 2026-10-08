@@ -275,7 +275,7 @@ export const MachinePage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
         {/* LEFT PANEL: Machine Module List (5 Columns) */}
-        <div className="lg:col-span-5 bg-[#121417] rounded-3xl border border-[#1e232a] shadow-[0_0_50px_rgba(0,216,246,0.1)] p-6 space-y-5">
+        <div className="lg:col-span-5 bg-[#101010] rounded-3xl border border-[#1e232a] p-6 space-y-5">
           <div className="flex items-center justify-between pb-4 border-b border-[#1e232a]">
             <div className="flex items-center space-x-2.5">
               <Layers className="w-5 h-5 text-[#00d8f6]" />
@@ -301,7 +301,7 @@ export const MachinePage: React.FC = () => {
                   key={item.id}
                   className={`p-4 rounded-2xl border transition-all duration-200 flex items-center justify-between ${
                     isInProgress
-                      ? 'bg-[#19272e] border-[#00d8f6] shadow-[0_0_20px_rgba(0,216,246,0.25)] ring-1 ring-[#00d8f6]/30'
+                      ? 'bg-[#19272e] border-[#00d8f6] ring-1 ring-[#00d8f6]/30'
                       : isNextToMark
                       ? 'bg-[#20150b]/40 border-amber-500/30 hover:border-amber-500/50 shadow-sm'
                       : isCompleted
@@ -381,7 +381,7 @@ export const MachinePage: React.FC = () => {
         <div className="lg:col-span-7 space-y-5">
 
           {/* Machine Chamber Main Container */}
-          <div className="bg-[#121417] rounded-3xl border border-[#1e232a] shadow-[0_0_50px_rgba(0,216,246,0.1)] p-6 space-y-4">
+          <div className="bg-[#101010] rounded-3xl border border-[#1e232a] p-6 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-[#1e232a]">
               <div className="flex items-center space-x-2.5">
                 <Zap className="w-5 h-5 text-[#00d8f6]" />
@@ -425,11 +425,11 @@ export const MachinePage: React.FC = () => {
 
               {/* ABSOLUTE POSITIONED OVERLAY BOX OVER IMAGE TARGET AREA */}
               <div
-                className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#121417]/95 backdrop-blur-md border-2 ${
+                className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#101010]/95 backdrop-blur-md border-2 ${
                   isProcessing
                     ? 'border-amber-400 shadow-[0_0_35px_rgba(245,158,11,0.6)] scale-105'
                     : activeItem || lastCompletedItem
-                    ? 'border-[#00d8f6] shadow-[0_0_30px_rgba(0,216,246,0.45)]'
+                    ? 'border-[#00d8f6]'
                     : 'border-[#2d333c] shadow-xl'
                 } rounded-2xl p-6 text-center min-w-[280px] max-w-[90%] transition-all duration-300 z-10`}
               >
@@ -460,7 +460,7 @@ export const MachinePage: React.FC = () => {
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       SERIAL NUMBER
                     </div>
-                    <div className="text-2xl sm:text-3xl font-black font-mono text-[#00d8f6] tracking-widest drop-shadow-[0_2px_8px_rgba(0,216,246,0.4)]">
+                    <div className="text-2xl sm:text-3xl font-black font-mono text-[#00d8f6] tracking-widest">
                       {displayActiveItem
                         ? displayActiveItem.serialNumber
                         : lastCompletedItem
