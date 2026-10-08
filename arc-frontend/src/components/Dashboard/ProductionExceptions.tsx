@@ -78,7 +78,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
   };
 
   return (
-    <div className="bg-[#121417] rounded-3xl p-6 sm:p-8 border border-[#1e232a] shadow-[0_0_50px_rgba(0,216,246,0.1)] relative">
+    <div className="bg-[#101010] rounded-3xl p-6 sm:p-8 border border-[#1e232a] relative">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="absolute top-4 right-4 bg-[#18181b] text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-lg border border-[#27272a] z-50 animate-fade-in">
@@ -115,7 +115,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
-                <tr className="bg-[#0c0c0e] text-[#9ca3af] font-semibold border-b border-[#1c1c21]">
+                <tr className="bg-[#18181b] text-[#9ca3af] font-semibold border-b border-[#232328]">
                   <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Part no.</th>
                   <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Serial no.</th>
                   <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Status</th>
@@ -123,7 +123,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
                   <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Batch ID</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1c1c21] bg-[#0c0c0e]">
+              <tbody className="divide-y divide-[#1f1f25] bg-[#141619]">
                 {carryForwardData.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="py-8 text-center text-gray-500 font-medium bg-[#141414]/30">
@@ -137,7 +137,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
                   </tr>
                 ) : (
                   carryForwardData.map((row) => (
-                    <tr key={row.id} className="hover:bg-[#141416] transition-colors">
+                    <tr key={row.id} className="hover:bg-[#1a1d22] transition-colors">
                       <td className="px-4 py-4 font-semibold text-white">{row.partNo}</td>
                       <td className="px-4 py-4 text-gray-300 font-medium">{row.serialNo}</td>
                       <td className="px-4 py-4">
@@ -179,7 +179,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
-                <tr className="bg-[#0c0c0e] text-[#9ca3af] font-semibold border-b border-[#1c1c21]">
+                <tr className="bg-[#18181b] text-[#9ca3af] font-semibold border-b border-[#232328]">
                   <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Part no.</th>
                   <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Serial no.</th>
                   <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Batch ID</th>
@@ -189,7 +189,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
                   <th className="px-4 py-3.5 font-semibold text-[#9ca3af]">Attempt</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1c1c21] bg-[#0c0c0e]">
+              <tbody className="divide-y divide-[#1f1f25] bg-[#141619]">
                 {leakageFailuresData.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-8 text-center text-gray-500 font-medium bg-[#141414]/30">
@@ -203,7 +203,7 @@ export const ProductionExceptions: React.FC<ProductionExceptionsProps> = ({
                   </tr>
                 ) : (
                   leakageFailuresData.map((row) => (
-                    <tr key={row.id} className="hover:bg-[#141416] transition-colors">
+                    <tr key={row.id} className="hover:bg-[#1a1d22] transition-colors">
                       <td className="px-4 py-4 font-semibold text-white">{row.partNo}</td>
                       <td className="px-4 py-4 text-gray-300 font-medium">{row.serialNo}</td>
                       <td className="px-4 py-4 text-gray-300 font-medium">{row.batchId || 'N/A'}</td>

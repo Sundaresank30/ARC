@@ -19,7 +19,7 @@ export const RoleSelection: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-[780px] bg-[#121417] rounded-3xl p-8 sm:p-12 shadow-[0_0_50px_rgba(0,216,246,0.15)] border border-[#1e232a] animate-fade-in relative overflow-hidden">
+    <div className="w-full max-w-[780px] bg-[#101010] rounded-3xl p-8 sm:p-12 shadow-[0_0_50px_rgba(0,216,246,0.15)] border border-[#1e232a] animate-fade-in relative overflow-hidden">
       <div className="mb-8">
         <h1 className="text-3xl sm:text-3xl font-semibold text-white tracking-tight">
           Choose Your Role
@@ -39,7 +39,7 @@ export const RoleSelection: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         <div
           onClick={() => !isLoading && setSelectedRole('manager')}
-          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-300 bg-[#181a1d] hover:bg-[#1c1f24] hover:shadow-[0_0_25px_rgba(0,216,246,0.2)] hover:border-[#00d8f6]/50 opacity-100 ${selectedRole === 'manager'
+          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-300 bg-[#111111] hover:bg-[#161616] hover:shadow-[0_0_25px_rgba(0,216,246,0.2)] hover:border-[#00d8f6]/50 opacity-100 ${selectedRole === 'manager'
             ? 'border-[#00d8f6] shadow-lg shadow-cyan-500/20 ring-1 ring-[#00d8f6]/30'
             : 'border-[#23272e]'
             } ${isLoading ? 'pointer-events-none' : ''}`}
@@ -60,7 +60,7 @@ export const RoleSelection: React.FC = () => {
 
         <div
           onClick={() => !isLoading && setSelectedRole('operator')}
-          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-300 bg-[#181a1d] hover:bg-[#1c1f24] hover:shadow-[0_0_25px_rgba(0,216,246,0.2)] hover:border-[#00d8f6]/50 opacity-100 ${selectedRole === 'operator'
+          className={`role-card cursor-pointer rounded-2xl border-2 p-6 flex flex-col items-center text-center relative transition-all duration-300 bg-[#111111] hover:bg-[#161616] hover:shadow-[0_0_25px_rgba(0,216,246,0.2)] hover:border-[#00d8f6]/50 opacity-100 ${selectedRole === 'operator'
             ? 'border-[#00d8f6] shadow-lg shadow-cyan-500/20 ring-1 ring-[#00d8f6]/30'
             : 'border-[#23272e]'
             } ${isLoading ? 'pointer-events-none' : ''}`}
@@ -84,7 +84,7 @@ export const RoleSelection: React.FC = () => {
         <button
           type="button"
           disabled={isLoading}
-          className="px-8 py-3 rounded-xl bg-[#181a1d] hover:bg-[#202328] border border-[#2d333c] text-gray-200 font-semibold text-base transition-colors duration-150 focus:outline-none disabled:opacity-50 cursor-pointer"
+          className="px-8 py-3 rounded-xl bg-[#111111] hover:bg-[#181818] border border-[#23272e] text-white font-semibold text-base transition-colors duration-150 focus:outline-none disabled:opacity-50 cursor-pointer"
         >
           Back
         </button>

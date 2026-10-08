@@ -59,7 +59,7 @@ export const DataEmbossingPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center space-x-2 bg-[#13111c] border border-[#221e33] px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto">
+        <div className="flex items-center space-x-2 bg-[#101010] border border-[#1e232a] px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto">
           <Calendar className="w-4 h-4 text-gray-400" />
           <span className="text-sm font-semibold text-gray-300">{getFormattedDate()}</span>
         </div>
@@ -81,7 +81,7 @@ export const DataEmbossingPage: React.FC = () => {
         </div>
 
         <div className="lg:col-span-1">
-          <div className="bg-[#121417] border border-[#1e232a] rounded-2xl p-6 shadow-[0_0_20px_rgba(0,216,246,0.1)] flex flex-col justify-between h-full hover:border-[#00d8f6]/50 hover:shadow-[0_0_20px_rgba(0,216,246,0.15)] transition-all duration-200">
+          <div className="bg-[#101010] border border-[#1e232a] hover:border-[#2d333c] rounded-2xl p-6 shadow-sm flex flex-col justify-between h-full transition-all duration-200">
             <div className="flex items-center justify-between">
               <span className="font-semibold text-[15px] text-gray-300">Pending</span>
               <div className="w-8 h-8 rounded-lg bg-[#20150b] border border-[#f59e0b]/20 flex items-center justify-center text-[#f59e0b]">
